@@ -14,7 +14,7 @@ export default function ForecastSlider({ value, onChange, disabled = false }: Pr
         <span className="text-4xl font-mono font-bold text-accent-green tabular-nums">
           {value}%
         </span>
-        <span className="text-text-secondary text-sm">Certain
+        <span className="text-text-secondary text-sm">Certain</span>
       </div>
 
       <input
