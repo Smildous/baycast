@@ -10,11 +10,11 @@ export default function ForecastSlider({ value, onChange, disabled = false }: Pr
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-text-secondary text-sm">Improbable</span>
+        <span className="text-text-secondary text-sm">Unlikely</span>
         <span className="text-4xl font-mono font-bold text-accent-green tabular-nums">
           {value}%
         </span>
-        <span className="text-text-secondary text-sm">Certain</span>
+        <span className="text-text-secondary text-sm">Certain
       </div>
 
       <input

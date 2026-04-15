@@ -29,13 +29,13 @@ export default async function AdminPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-outfit font-bold mb-1">Admin</h1>
-          <p className="text-text-secondary">Gère les questions et la plateforme.</p>
+          <p className="text-text-secondary">Manage questions and the platform.</p>
         </div>
         <Link
           href="/admin/questions/new"
           className="px-5 py-2.5 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors"
         >
-          + Nouvelle question
+          + New question
         </Link>
       </div>
 
@@ -44,9 +44,9 @@ export default async function AdminPage() {
           <thead>
             <tr className="border-b border-border-dark text-text-secondary text-sm">
               <th className="text-left px-4 py-3">Question</th>
-              <th className="text-left px-4 py-3 hidden sm:table-cell">Catégorie</th>
+              <th className="text-left px-4 py-3 hidden sm:table-cell">Category</th>
               <th className="text-left px-4 py-3 hidden md:table-cell">Status</th>
-              <th className="text-left px-4 py-3 hidden md:table-cell">Fermeture</th>
+              <th className="text-left px-4 py-3 hidden md:table-cell">Closes</th>
               <th className="text-right px-4 py-3">Actions</th>
             </tr>
           </thead>
@@ -71,14 +71,14 @@ export default async function AdminPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-text-secondary text-sm hidden md:table-cell">
-                  {new Date(q.closes_at).toLocaleDateString('fr-FR')}
+                  {new Date(q.closes_at).toLocaleDateString('en-US')}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <Link
                     href={`/admin/questions/${q.id}`}
                     className="text-accent-blue hover:underline text-sm"
                   >
-                    Éditer
+                    Edit
                   </Link>
                 </td>
               </tr>

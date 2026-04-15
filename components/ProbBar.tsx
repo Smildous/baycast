@@ -28,8 +28,8 @@ export default function ProbBar({ probability, compact = false }: Props) {
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
-        <span className="text-text-secondary">Non</span>
-        <span className="text-text-secondary">Oui</span>
+        <span className="text-text-secondary">No</span>
+        <span className="text-text-secondary">Yes</span>
       </div>
       <div className="w-full h-3 bg-border-dark rounded-full overflow-hidden relative">
         <div

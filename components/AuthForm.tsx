@@ -37,7 +37,7 @@ export default function AuthForm({ mode }: Props) {
       if (error) {
         setError(error.message)
       } else {
-        setInfo('Vérifie ton email pour confirmer ton compte.')
+        setInfo('Check your email to confirm your account.')
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -73,19 +73,19 @@ export default function AuthForm({ mode }: Props) {
           <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
           <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
         </svg>
-        Continuer avec Google
+        Continue with Google
       </button>
 
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-border-dark" />
-        <span className="text-text-secondary text-sm">ou</span>
+        <span className="text-text-secondary text-sm">or</span>
         <div className="flex-1 h-px bg-border-dark" />
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {mode === 'signup' && (
           <div>
-            <label className="block text-sm text-text-secondary mb-1.5">Pseudo</label>
+            <label className="block text-sm text-text-secondary mb-1.5">Username</label>
             <input
               type="text"
               value={displayName}
@@ -93,7 +93,7 @@ export default function AuthForm({ mode }: Props) {
               required
               minLength={3}
               maxLength={30}
-              placeholder="VotreNom"
+              placeholder="YourName"
               className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors"
             />
           </div>
@@ -112,7 +112,7 @@ export default function AuthForm({ mode }: Props) {
         </div>
 
         <div>
-          <label className="block text-sm text-text-secondary mb-1.5">Mot de passe</label>
+          <label className="block text-sm text-text-secondary mb-1.5">Password</label>
           <input
             type="password"
             value={password}
@@ -140,7 +140,7 @@ export default function AuthForm({ mode }: Props) {
           disabled={loading}
           className="w-full py-3 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 disabled:opacity-50 transition-colors"
         >
-          {loading ? 'Chargement...' : mode === 'login' ? 'Se connecter' : 'Créer mon compte'}
+          {loading ? 'Loading...' : mode === 'login' ? 'Log in' : 'Create my account'}
         </button>
       </form>
     </div>

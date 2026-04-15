@@ -72,14 +72,14 @@ export default function QuestionForm({ mode, question: q }: Props) {
   return (
     <form onSubmit={handleSubmit} className="bg-bg-surface border border-border-dark rounded-xl p-6 space-y-5">
       <div>
-        <label className="block text-sm text-text-secondary mb-1.5">Titre *</label>
+        <label className="block text-sm text-text-secondary mb-1.5">Title *</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
           maxLength={300}
-          placeholder="Est-ce que X va se produire avant Y ?"
+          placeholder="Will X happen before Y?"
           className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors"
         />
       </div>
@@ -90,14 +90,14 @@ export default function QuestionForm({ mode, question: q }: Props) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
-          placeholder="Critères de résolution, contexte..."
+          placeholder="Resolution criteria, context..."
           className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors resize-none"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-text-secondary mb-1.5">Catégorie *</label>
+          <label className="block text-sm text-text-secondary mb-1.5">Category *</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value as Category)}
@@ -110,7 +110,7 @@ export default function QuestionForm({ mode, question: q }: Props) {
         </div>
 
         <div>
-          <label className="block text-sm text-text-secondary mb-1.5">Source de résolution</label>
+          <label className="block text-sm text-text-secondary mb-1.5">Resolution source</label>
           <input
             type="url"
             value={resolutionSource}
@@ -123,7 +123,7 @@ export default function QuestionForm({ mode, question: q }: Props) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-text-secondary mb-1.5">Ouvre le *</label>
+          <label className="block text-sm text-text-secondary mb-1.5">Opens on *</label>
           <input
             type="datetime-local"
             value={opensAt}
@@ -133,7 +133,7 @@ export default function QuestionForm({ mode, question: q }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm text-text-secondary mb-1.5">Ferme le *</label>
+          <label className="block text-sm text-text-secondary mb-1.5">Closes on *</label>
           <input
             type="datetime-local"
             value={closesAt}
@@ -156,14 +156,14 @@ export default function QuestionForm({ mode, question: q }: Props) {
           disabled={loading}
           className="px-6 py-2.5 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 disabled:opacity-50 transition-colors"
         >
-          {loading ? 'Enregistrement...' : mode === 'create' ? 'Créer la question' : 'Sauvegarder'}
+          {loading ? 'Saving...' : mode === 'create' ? 'Create question' : 'Save'}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
           className="px-6 py-2.5 rounded-lg border border-border-dark text-text-secondary hover:text-text-primary transition-colors"
         >
-          Annuler
+          Cancel
         </button>
       </div>
     </form>

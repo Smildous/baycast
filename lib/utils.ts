@@ -37,7 +37,7 @@ export function cn(...classes: (string | undefined | false | null)[]): string {
 }
 
 export function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('fr-FR', {
+  return new Date(iso).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

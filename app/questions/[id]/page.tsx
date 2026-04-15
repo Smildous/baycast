@@ -75,12 +75,12 @@ export default async function QuestionDetailPage({ params }: Props) {
       {/* Resolution (if resolved) */}
       {isResolved && q.resolution && (
         <div className="mb-6 p-4 rounded-xl border border-success/40 bg-success/10">
-          <div className="text-success font-semibold mb-1">Question résolue</div>
+          <div className="text-success font-semibold mb-1">Question resolved</div>
           <div className="text-text-primary">
-            Résolution : <span className="font-mono font-bold">{JSON.stringify(q.resolution)}</span>
+            Resolution: <span className="font-mono font-bold">{JSON.stringify(q.resolution)}</span>
           </div>
           <div className="text-text-secondary text-sm mt-1">
-            {q.resolved_at && `Le ${formatDate(q.resolved_at)}`}
+            {q.resolved_at && `On ${formatDate(q.resolved_at)}`}
           </div>
         </div>
       )}
@@ -101,7 +101,7 @@ export default async function QuestionDetailPage({ params }: Props) {
           <div className="text-2xl font-mono font-bold text-text-primary">
             {formatDate(q.closes_at)}
           </div>
-          <div className="text-text-secondary text-sm">Fermeture</div>
+          <div className="text-text-secondary text-sm">Closes</div>
         </div>
       </div>
 
@@ -115,7 +115,7 @@ export default async function QuestionDetailPage({ params }: Props) {
       {/* Sparkline */}
       {historyData.length > 1 && (
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 mb-8">
-          <div className="text-sm text-text-secondary mb-3">Évolution du consensus</div>
+          <div className="text-sm text-text-secondary mb-3">Consensus over time</div>
           <Sparkline data={historyData} />
         </div>
       )}
@@ -123,7 +123,7 @@ export default async function QuestionDetailPage({ params }: Props) {
       {/* Source */}
       {q.resolution_source && (
         <div className="mb-8 text-sm text-text-secondary">
-          Source de résolution :{' '}
+          Resolution source:{' '}
           <a
             href={q.resolution_source}
             target="_blank"
@@ -139,7 +139,7 @@ export default async function QuestionDetailPage({ params }: Props) {
       {isOpen && (
         <div className="bg-bg-surface border border-border-dark rounded-xl p-6">
           <h2 className="text-xl font-outfit font-semibold mb-4">
-            {userForecast ? 'Modifier ta prédiction' : 'Soumettre une prédiction'}
+            {userForecast ? 'Update your prediction' : 'Submit a prediction'}
           </h2>
           <ForecastForm
             questionId={q.id}

@@ -53,7 +53,7 @@ export default function SettingsForm({ profile, userEmail }: Props) {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm text-text-secondary mb-1.5">Pseudo</label>
+          <label className="block text-sm text-text-secondary mb-1.5">Username</label>
           <input
             type="text"
             value={displayName}
@@ -72,7 +72,7 @@ export default function SettingsForm({ profile, userEmail }: Props) {
             onChange={(e) => setBio(e.target.value)}
             rows={3}
             maxLength={200}
-            placeholder="Quelques mots sur toi..."
+            placeholder="A few words about yourself..."
             className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors resize-none"
           />
         </div>
@@ -84,7 +84,7 @@ export default function SettingsForm({ profile, userEmail }: Props) {
         )}
         {success && (
           <div className="p-3 rounded-lg bg-success/10 border border-success/30 text-success text-sm">
-            Profil mis à jour !
+            Profile updated!
           </div>
         )}
 
@@ -93,7 +93,7 @@ export default function SettingsForm({ profile, userEmail }: Props) {
           disabled={loading}
           className="px-6 py-2.5 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 disabled:opacity-50 transition-colors"
         >
-          {loading ? 'Enregistrement...' : 'Sauvegarder'}
+          {loading ? 'Saving...' : 'Save'}
         </button>
       </form>
     </div>

@@ -69,30 +69,30 @@ export default async function ProfilePage({ params }: Props) {
               <div className="text-xl font-mono font-bold text-accent-green">
                 {avgBrier !== null ? avgBrier.toFixed(4) : '—'}
               </div>
-              <div className="text-text-secondary text-sm">Score Brier moyen</div>
+              <div className="text-text-secondary text-sm">Avg Brier score</div>
             </div>
             <div>
               <div className="text-xl font-mono font-bold text-text-primary">
                 {forecasts?.length ?? 0}
               </div>
-              <div className="text-text-secondary text-sm">Prédictions récentes</div>
+              <div className="text-text-secondary text-sm">Recent predictions</div>
             </div>
             <div>
               <div className="text-xl font-mono font-bold text-text-primary">
                 {scoreList.length}
               </div>
-              <div className="text-text-secondary text-sm">Questions résolues</div>
+              <div className="text-text-secondary text-sm">Resolved questions</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Recent forecasts */}
-      <h2 className="text-xl font-outfit font-semibold mb-4">Prédictions récentes</h2>
+      <h2 className="text-xl font-outfit font-semibold mb-4">Recent predictions</h2>
       <div className="space-y-2">
         {forecasts?.length === 0 ? (
           <div className="text-center py-8 text-text-secondary border border-border-dark rounded-xl">
-            Aucune prédiction pour l&apos;instant.
+            No predictions yet.
           </div>
         ) : (
           forecasts?.map((f: any) => (

@@ -34,7 +34,7 @@ export default async function EditQuestionPage({ params }: Props) {
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 space-y-10">
       <div>
-        <h1 className="text-3xl font-outfit font-bold mb-2">Éditer la question</h1>
+        <h1 className="text-3xl font-outfit font-bold mb-2">Edit question</h1>
         <p className="text-text-secondary line-clamp-2">{q.title}</p>
       </div>
 
@@ -42,7 +42,7 @@ export default async function EditQuestionPage({ params }: Props) {
 
       {q.status !== 'resolved' && (
         <div className="border-t border-border-dark pt-8">
-          <h2 className="text-xl font-outfit font-semibold mb-4">Résoudre la question</h2>
+          <h2 className="text-xl font-outfit font-semibold mb-4">Resolve question</h2>
           <ResolveForm questionId={q.id} />
         </div>
       )}

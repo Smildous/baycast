@@ -33,12 +33,12 @@ export default function ForecastForm({
   if (!isLoggedIn) {
     return (
       <div className="text-center py-6">
-        <p className="text-text-secondary mb-4">Connecte-toi pour soumettre une prédiction.</p>
+        <p className="text-text-secondary mb-4">Log in to submit a prediction.</p>
         <Link
           href="/auth/login"
           className="px-6 py-2.5 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors"
         >
-          Se connecter
+          Log in
         </Link>
       </div>
     )
@@ -53,7 +53,7 @@ export default function ForecastForm({
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      setError('Session expirée. Reconnecte-toi.')
+      setError('Session expired. Please log in again.')
       setLoading(false)
       return
     }
@@ -90,7 +90,7 @@ export default function ForecastForm({
       )}
       {success && (
         <div className="p-3 rounded-lg bg-success/10 border border-success/30 text-success text-sm">
-          Prédiction enregistrée !
+          Prediction saved!
         </div>
       )}
 
@@ -99,12 +99,12 @@ export default function ForecastForm({
         disabled={loading}
         className="w-full py-3 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {loading ? 'Envoi...' : existingForecast ? 'Mettre à jour' : 'Soumettre'}
+        {loading ? 'Submitting...' : existingForecast ? 'Update' : 'Submit'}
       </button>
 
       {existingForecast && (
         <p className="text-center text-text-secondary text-sm">
-          Ta prédiction actuelle :{' '}
+          Your current prediction:{' '}
           <span className="font-mono text-accent-green font-bold">
             {existingForecast.prediction?.probability}%
           </span>

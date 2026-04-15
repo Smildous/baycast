@@ -15,7 +15,7 @@ export default function ResolveForm({ questionId }: Props) {
 
   async function handleResolve(e: React.FormEvent) {
     e.preventDefault()
-    if (!confirm(`Résoudre cette question avec "${outcome}" ? Cette action est irréversible.`)) return
+    if (!confirm(`Resolve this question as "${outcome}"? This action is irreversible.`)) return
 
     setLoading(true)
     setError(null)
@@ -29,7 +29,7 @@ export default function ResolveForm({ questionId }: Props) {
     const data = await res.json()
 
     if (!res.ok) {
-      setError(data.error ?? 'Erreur lors de la résolution')
+      setError(data.error ?? 'Error while resolving')
       setLoading(false)
       return
     }
@@ -41,7 +41,7 @@ export default function ResolveForm({ questionId }: Props) {
   return (
     <form onSubmit={handleResolve} className="bg-bg-surface border border-border-dark rounded-xl p-6 space-y-5">
       <div>
-        <label className="block text-sm text-text-secondary mb-3">Résultat</label>
+        <label className="block text-sm text-text-secondary mb-3">Outcome</label>
         <div className="flex gap-3">
           <button
             type="button"
@@ -52,7 +52,7 @@ export default function ResolveForm({ questionId }: Props) {
                 : 'border-border-dark text-text-secondary hover:border-success/40'
             }`}
           >
-            OUI — Réalisé
+            YES — Happened
           </button>
           <button
             type="button"
@@ -63,7 +63,7 @@ export default function ResolveForm({ questionId }: Props) {
                 : 'border-border-dark text-text-secondary hover:border-danger/40'
             }`}
           >
-            NON — Pas réalisé
+            NO — Did not happen
           </button>
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function ResolveForm({ questionId }: Props) {
         disabled={loading}
         className="px-6 py-2.5 rounded-lg bg-danger text-white font-semibold hover:bg-danger/90 disabled:opacity-50 transition-colors"
       >
-        {loading ? 'Résolution...' : 'Confirmer la résolution'}
+        {loading ? 'Resolving...' : 'Confirm resolution'}
       </button>
     </form>
   )

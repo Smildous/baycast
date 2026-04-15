@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   // Verify admin
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
-    return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
   const { data: profile } = await supabase
@@ -17,14 +17,14 @@ export async function POST(request: Request) {
     .single()
 
   if (!profile?.is_admin) {
-    return NextResponse.json({ error: 'Non autorisé' }, { status: 403 })
+    return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
   }
 
   const body = await request.json()
   const { questionId, outcome } = body as { questionId: string; outcome: 'yes' | 'no' }
 
   if (!questionId || !outcome) {
-    return NextResponse.json({ error: 'Paramètres manquants' }, { status: 400 })
+    return NextResponse.json({ error: 'Missing parameters' }, { status: 400 })
   }
 
   // Update question status
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       .upsert(scores, { onConflict: 'question_id,user_id' })
 
     if (scoreError) {
-      return NextResponse.json({ error: `Question résolue mais erreur scores: ${scoreError.message}` }, { status: 207 })
+      return NextResponse.json({ error: `Question resolved but score error: ${scoreError.message}` }, { status: 207 })
     }
   }
 

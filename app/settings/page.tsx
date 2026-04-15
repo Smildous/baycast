@@ -16,8 +16,8 @@ export default async function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-outfit font-bold mb-2">Paramètres</h1>
-      <p className="text-text-secondary mb-8">Gère ton profil et tes préférences.</p>
+      <h1 className="text-3xl font-outfit font-bold mb-2">Settings</h1>
+      <p className="text-text-secondary mb-8">Manage your profile and preferences.</p>
       <SettingsForm profile={profile} userEmail={user.email ?? ''} />
     </div>
   )

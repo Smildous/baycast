@@ -25,16 +25,16 @@ export default async function LeaderboardPage({ searchParams }: Props) {
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-outfit font-bold mb-2">Classement</h1>
-        <p className="text-text-secondary">Score Brier moyen — plus bas = meilleur forecaster.</p>
+        <h1 className="text-3xl font-outfit font-bold mb-2">Leaderboard</h1>
+        <p className="text-text-secondary">Average Brier score — lower is better.</p>
       </div>
 
       {/* Period filter */}
       <div className="flex gap-2 mb-8">
         {[
-          { label: 'Tout temps', value: 'all' },
-          { label: 'Ce mois', value: 'month' },
-          { label: 'Cette semaine', value: 'week' },
+          { label: 'All time', value: 'all' },
+          { label: 'This month', value: 'month' },
+          { label: 'This week', value: 'week' },
         ].map(({ label, value }) => (
           <a
             key={value}
@@ -57,16 +57,16 @@ export default async function LeaderboardPage({ searchParams }: Props) {
             <tr className="border-b border-border-dark text-text-secondary text-sm">
               <th className="text-left px-4 py-3 w-12">#</th>
               <th className="text-left px-4 py-3">Forecaster</th>
-              <th className="text-right px-4 py-3">Score Brier</th>
-              <th className="text-right px-4 py-3 hidden sm:table-cell">Prédictions</th>
-              <th className="text-right px-4 py-3 hidden md:table-cell">Résolues</th>
+              <th className="text-right px-4 py-3">Brier Score</th>
+              <th className="text-right px-4 py-3 hidden sm:table-cell">Predictions</th>
+              <th className="text-right px-4 py-3 hidden md:table-cell">Resolved</th>
             </tr>
           </thead>
           <tbody>
             {entries.length === 0 ? (
               <tr>
                 <td colSpan={5} className="text-center py-12 text-text-secondary">
-                  Aucune donnée disponible.
+                  No data available.
                 </td>
               </tr>
             ) : (
@@ -106,7 +106,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
                         <span className="font-medium">
                           {entry.display_name}
                           {isMe && (
-                            <span className="ml-2 text-xs text-accent-green">(toi)</span>
+                            <span className="ml-2 text-xs text-accent-green">(you)</span>
                           )}
                         </span>
                       </Link>
@@ -134,7 +134,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
 
       {error && (
         <div className="mt-4 p-3 rounded-lg bg-danger/10 border border-danger/30 text-danger text-sm">
-          Erreur : la vue leaderboard n&apos;existe peut-être pas encore. Vérifiez votre schéma SQL.
+          Error: the leaderboard view may not exist yet. Check your SQL schema.
         </div>
       )}
     </div>

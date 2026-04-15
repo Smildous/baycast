@@ -10,14 +10,14 @@ export default function Countdown({ closesAt, status }: Props) {
   if (status === 'resolved') {
     return (
       <span className="text-xs px-2 py-0.5 rounded-full bg-accent-blue/10 text-accent-blue border border-accent-blue/30">
-        Résolu
+        Resolved
       </span>
     )
   }
   if (status === 'closed') {
     return (
       <span className="text-xs px-2 py-0.5 rounded-full bg-border-dark text-text-secondary border border-border-dark">
-        Fermé
+        Closed
       </span>
     )
   }
@@ -27,7 +27,7 @@ export default function Countdown({ closesAt, status }: Props) {
   if (days === 0) {
     return (
       <span className="text-xs px-2 py-0.5 rounded-full bg-danger/10 text-danger border border-danger/30">
-        Ferme aujourd&apos;hui
+        Closes today
       </span>
     )
   }
@@ -41,7 +41,7 @@ export default function Countdown({ closesAt, status }: Props) {
 
   return (
     <span className={`text-xs px-2 py-0.5 rounded-full border font-mono ${color}`}>
-      {days}j restants
+      {days}d left
     </span>
   )
 }

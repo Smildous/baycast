@@ -29,7 +29,7 @@ export default function QuestionCard({ question: q }: Props) {
           </h3>
           {prob !== null && <ProbBar probability={prob} compact />}
           <div className="mt-2 text-text-secondary text-xs">
-            {forecasters > 0 ? `${forecasters} forecaster${forecasters > 1 ? 's' : ''}` : 'Sois le premier'}
+            {forecasters > 0 ? `${forecasters} forecaster${forecasters > 1 ? 's' : ''}` : 'Be the first'}
           </div>
         </div>
 

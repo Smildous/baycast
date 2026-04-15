@@ -103,21 +103,21 @@ export default function Nav() {
                     className="block px-4 py-2 text-sm text-text-primary hover:bg-white/5"
                     onClick={() => setMenuOpen(false)}
                   >
-                    Mon profil
+                    My profile
                   </Link>
                   <Link
                     href="/settings"
                     className="block px-4 py-2 text-sm text-text-primary hover:bg-white/5"
                     onClick={() => setMenuOpen(false)}
                   >
-                    Paramètres
+                    Settings
                   </Link>
                   <div className="border-t border-border-dark my-1" />
                   <button
                     onClick={handleSignOut}
                     className="w-full text-left px-4 py-2 text-sm text-danger hover:bg-white/5"
                   >
-                    Se déconnecter
+                    Sign out
                   </button>
                 </div>
               )}

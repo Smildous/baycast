@@ -6,11 +6,11 @@ export default function LoginPage() {
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-outfit font-bold mb-2">Connexion</h1>
+          <h1 className="text-3xl font-outfit font-bold mb-2">Log in</h1>
           <p className="text-text-secondary">
-            Pas encore de compte ?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/auth/signup" className="text-accent-green hover:underline">
-              Créer un compte
+              Sign up
             </Link>
           </p>
         </div>

@@ -29,7 +29,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
     <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-outfit font-bold mb-2">Questions</h1>
-        <p className="text-text-secondary">Parcours les questions ouvertes et soumets tes prédictions.</p>
+        <p className="text-text-secondary">Browse open questions and submit your predictions.</p>
       </div>
 
       {/* Category filters */}
@@ -42,7 +42,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
               : 'border-border-dark text-text-secondary hover:border-accent-green/50'
           }`}
         >
-          Toutes
+          All
         </a>
         {CATEGORIES.map((cat) => (
           <a
@@ -62,9 +62,9 @@ export default async function QuestionsPage({ searchParams }: Props) {
       {/* Status filter */}
       <div className="flex gap-2 mb-8">
         {[
-          { label: 'Ouvertes', value: undefined },
-          { label: 'Fermées', value: 'closed' },
-          { label: 'Résolues', value: 'resolved' },
+          { label: 'Open', value: undefined },
+          { label: 'Closed', value: 'closed' },
+          { label: 'Resolved', value: 'resolved' },
         ].map(({ label, value }) => (
           <a
             key={label}
@@ -82,7 +82,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
 
       {questions.length === 0 ? (
         <div className="text-center py-16 text-text-secondary border border-border-dark rounded-xl">
-          Aucune question dans cette catégorie.
+          No questions in this category.
         </div>
       ) : (
         <div className="space-y-3">
