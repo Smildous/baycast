@@ -26,11 +26,29 @@ export async function updateSession(request: NextRequest) {
   // Refresh session — do not remove this
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Protect admin routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
+  // Protect admin routes (both pages and API)
+  const isAdminRoute =
+    request.nextUrl.pathname.startsWith('/admin') ||
+    request.nextUrl.pathname.startsWith('/api/admin')
+
+  if (isAdminRoute) {
     if (!user) {
       const url = request.nextUrl.clone()
       url.pathname = '/auth/login'
+      return NextResponse.redirect(url)
+    }
+
+    // Verify is_admin on every request — a revoked admin must lose access immediately,
+    // not on the next page-level check.
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile?.is_admin) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
       return NextResponse.redirect(url)
     }
   }

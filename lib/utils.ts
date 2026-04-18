@@ -44,6 +44,20 @@ export function formatDate(iso: string): string {
   })
 }
 
+/**
+ * Closes any open questions whose closes_at is in the past.
+ * Called as a side effect when rendering question listings.
+ */
+export async function autoCloseExpiredQuestions(
+  supabase: Awaited<ReturnType<typeof import('@/lib/supabase/server').createClient>>
+) {
+  await supabase
+    .from('questions')
+    .update({ status: 'closed' })
+    .eq('status', 'open')
+    .lt('closes_at', new Date().toISOString())
+}
+
 export const CATEGORY_COLORS: Record<string, string> = {
   Politics: 'bg-red-900/40 text-red-300 border-red-800',
   Technology: 'bg-blue-900/40 text-blue-300 border-blue-800',

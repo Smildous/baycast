@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import type { Question, Category, QuestionType } from '@/lib/types'
+import type { Question, Category } from '@/lib/types'
 
 const CATEGORIES: Category[] = ['Politics', 'Technology', 'Economy', 'Science', 'Sports', 'Culture', 'Other']
 
@@ -17,7 +17,6 @@ export default function QuestionForm({ mode, question: q }: Props) {
   const [title, setTitle] = useState(q?.title ?? '')
   const [description, setDescription] = useState(q?.description ?? '')
   const [category, setCategory] = useState<Category>(q?.category ?? 'Other')
-  const [questionType] = useState<QuestionType>(q?.question_type ?? 'binary')
   const [resolutionSource, setResolutionSource] = useState(q?.resolution_source ?? '')
   const [opensAt, setOpensAt] = useState(q?.opens_at?.slice(0, 16) ?? '')
   const [closesAt, setClosesAt] = useState(q?.closes_at?.slice(0, 16) ?? '')
@@ -37,7 +36,7 @@ export default function QuestionForm({ mode, question: q }: Props) {
       title,
       description: description || null,
       category,
-      question_type: questionType,
+      question_type: 'binary' as const,
       options: {},
       resolution_source: resolutionSource || null,
       opens_at: opensAt,

@@ -4,36 +4,36 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import ForecastSlider from './ForecastSlider'
-import type { Forecast, QuestionType, QuestionOptions } from '@/lib/types'
+import type { Forecast } from '@/lib/types'
 import Link from 'next/link'
 
 interface Props {
   questionId: string
-  questionType: QuestionType
-  options: QuestionOptions
   existingForecast: Forecast | null
   isLoggedIn: boolean
 }
 
 export default function ForecastForm({
   questionId,
-  questionType,
-  options,
   existingForecast,
   isLoggedIn,
 }: Props) {
   const router = useRouter()
   const [probability, setProbability] = useState(
-    existingForecast?.prediction?.probability ?? 50
+    existingForecast?.prediction.probability ?? 50
   )
+  // Optimistic display: updated immediately on submit, rolled back on error
+  const [optimisticProbability, setOptimisticProbability] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
+  const displayedProbability = optimisticProbability ?? existingForecast?.prediction.probability
+
   if (!isLoggedIn) {
     return (
       <div className="text-center py-6">
-        <p className="text-text-secondary mb-4">Log in to submit a prediction.</p>
+        <p className="text-text-secondary mb-4">Log in to add your forecast to the collective estimate.</p>
         <Link
           href="/auth/login"
           className="px-6 py-2.5 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors"
@@ -48,32 +48,38 @@ export default function ForecastForm({
     e.preventDefault()
     setLoading(true)
     setError(null)
-    setSuccess(false)
+
+    // Optimistic update: show success immediately
+    const prevOptimistic = optimisticProbability
+    setOptimisticProbability(probability)
+    setSuccess(true)
 
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       setError('Session expired. Please log in again.')
+      setOptimisticProbability(prevOptimistic)
+      setSuccess(false)
       setLoading(false)
       return
     }
-
-    const prediction = { probability }
 
     const { error: upsertError } = await supabase.from('forecasts').upsert(
       {
         question_id: questionId,
         user_id: user.id,
-        prediction,
+        prediction: { probability },
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'question_id,user_id' }
     )
 
     if (upsertError) {
+      // Rollback
       setError(upsertError.message)
+      setOptimisticProbability(prevOptimistic)
+      setSuccess(false)
     } else {
-      setSuccess(true)
       router.refresh()
     }
     setLoading(false)
@@ -88,9 +94,9 @@ export default function ForecastForm({
           {error}
         </div>
       )}
-      {success && (
+      {success && !error && (
         <div className="p-3 rounded-lg bg-success/10 border border-success/30 text-success text-sm">
-          Prediction saved!
+          Forecast saved.
         </div>
       )}
 
@@ -99,14 +105,14 @@ export default function ForecastForm({
         disabled={loading}
         className="w-full py-3 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {loading ? 'Submitting...' : existingForecast ? 'Update' : 'Submit'}
+        {existingForecast ? 'Update forecast' : 'Submit forecast'}
       </button>
 
-      {existingForecast && (
+      {displayedProbability !== undefined && (
         <p className="text-center text-text-secondary text-sm">
-          Your current prediction:{' '}
+          Your current forecast:{' '}
           <span className="font-mono text-accent-green font-bold">
-            {existingForecast.prediction?.probability}%
+            {displayedProbability}%
           </span>
         </p>
       )}
