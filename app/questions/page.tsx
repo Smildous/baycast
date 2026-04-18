@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import QuestionCard from '@/components/QuestionCard'
 import type { Question, Category } from '@/lib/types'
+import { autoCloseExpiredQuestions } from '@/lib/utils'
 
 const CATEGORIES: Category[] = ['Politics', 'Technology', 'Economy', 'Science', 'Sports', 'Culture', 'Other']
 
@@ -10,6 +11,7 @@ interface Props {
 
 export default async function QuestionsPage({ searchParams }: Props) {
   const supabase = createClient()
+  await autoCloseExpiredQuestions(supabase)
 
   let query = supabase.from('questions').select('*').order('closes_at', { ascending: true })
 
@@ -29,7 +31,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
     <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-outfit font-bold mb-2">Questions</h1>
-        <p className="text-text-secondary">Browse open questions and submit your predictions.</p>
+        <p className="text-text-secondary">Every forecast you add sharpens the collective estimate.</p>
       </div>
 
       {/* Category filters */}

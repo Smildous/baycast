@@ -139,6 +139,37 @@ order by avg_brier_score asc;
 create index if not exists idx_questions_status on public.questions(status);
 create index if not exists idx_questions_category on public.questions(category);
 create index if not exists idx_questions_closes_at on public.questions(closes_at);
+create index if not exists idx_questions_created_by on public.questions(created_by);
 create index if not exists idx_forecasts_question_id on public.forecasts(question_id);
 create index if not exists idx_forecasts_user_id on public.forecasts(user_id);
+create index if not exists idx_forecasts_created_at on public.forecasts(created_at);
 create index if not exists idx_scores_user_id on public.scores(user_id);
+create index if not exists idx_scores_created_at on public.scores(created_at);
+create index if not exists idx_profiles_display_name on public.profiles(display_name);
+
+-- 7. Admin audit log
+create table if not exists public.admin_audit_log (
+  id          uuid        default gen_random_uuid() primary key,
+  action      text        not null,
+  admin_id    uuid        references public.profiles(id) on delete set null,
+  question_id uuid        references public.questions(id) on delete set null,
+  details     jsonb,
+  created_at  timestamptz default now()
+);
+
+alter table public.admin_audit_log enable row level security;
+
+create policy "Admins can view audit log"
+  on public.admin_audit_log for select
+  using (
+    exists (select 1 from public.profiles where id = auth.uid() and is_admin = true)
+  );
+
+create policy "Admins can insert audit log"
+  on public.admin_audit_log for insert
+  with check (
+    exists (select 1 from public.profiles where id = auth.uid() and is_admin = true)
+  );
+
+create index if not exists idx_audit_log_created_at on public.admin_audit_log(created_at desc);
+create index if not exists idx_audit_log_question_id on public.admin_audit_log(question_id);

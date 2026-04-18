@@ -1,5 +1,5 @@
 export type QuestionStatus = 'draft' | 'open' | 'closed' | 'resolved'
-export type QuestionType = 'binary' | 'multiple_choice' | 'range'
+export type QuestionType = 'binary'
 export type Category =
   | 'Politics'
   | 'Technology'
@@ -37,15 +37,8 @@ export interface Question {
 }
 
 export interface QuestionOptions {
-  // binary
   yes_label?: string
   no_label?: string
-  // multiple_choice
-  choices?: string[]
-  // range
-  min?: number
-  max?: number
-  unit?: string
 }
 
 export interface Forecast {
@@ -58,12 +51,7 @@ export interface Forecast {
 }
 
 export interface ForecastPrediction {
-  // binary: probability 0-100
-  probability?: number
-  // multiple_choice: { [choice]: probability }
-  probabilities?: Record<string, number>
-  // range
-  value?: number
+  probability: number
 }
 
 export interface Score {

@@ -11,14 +11,68 @@ export default async function LeaderboardPage({ searchParams }: Props) {
   const supabase = createClient()
   const period = searchParams.period ?? 'all'
 
-  // Query leaderboard view or fallback to manual aggregation
-  const { data, error } = await supabase
-    .from('leaderboard')
-    .select('*')
-    .order('avg_brier_score', { ascending: true })
-    .limit(50)
+  let entries: LeaderboardEntry[] = []
+  let error: { message: string } | null = null
 
-  const entries = (data ?? []) as LeaderboardEntry[]
+  if (period === 'all') {
+    // Use the pre-aggregated view for the all-time leaderboard
+    const { data, error: err } = await supabase
+      .from('leaderboard')
+      .select('*')
+      .order('avg_brier_score', { ascending: true })
+      .limit(50)
+    entries = (data ?? []) as LeaderboardEntry[]
+    error = err
+  } else {
+    // For time-filtered periods, query scores directly and aggregate in JS.
+    // The leaderboard view cannot be filtered by date after aggregation.
+    const cutoff = new Date()
+    if (period === 'week') cutoff.setDate(cutoff.getDate() - 7)
+    else cutoff.setMonth(cutoff.getMonth() - 1)
+
+    const { data: rawScores, error: err } = await supabase
+      .from('scores')
+      .select('user_id, brier_score, profiles(display_name, avatar_url)')
+      .gte('created_at', cutoff.toISOString())
+    error = err
+
+    if (rawScores) {
+      const map = new Map<string, {
+        display_name: string
+        avatar_url: string | null
+        total: number
+        count: number
+      }>()
+
+      for (const row of rawScores) {
+        const profile = row.profiles as { display_name: string; avatar_url: string | null }
+        const existing = map.get(row.user_id)
+        if (existing) {
+          existing.total += row.brier_score
+          existing.count += 1
+        } else {
+          map.set(row.user_id, {
+            display_name: profile.display_name,
+            avatar_url: profile.avatar_url,
+            total: row.brier_score,
+            count: 1,
+          })
+        }
+      }
+
+      entries = Array.from(map.entries())
+        .map(([user_id, { display_name, avatar_url, total, count }]) => ({
+          user_id,
+          display_name,
+          avatar_url,
+          avg_brier_score: total / count,
+          total_forecasts: count,
+          resolved_forecasts: count,
+        }))
+        .sort((a, b) => a.avg_brier_score - b.avg_brier_score)
+        .slice(0, 50)
+    }
+  }
 
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -26,7 +80,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
     <div className="max-w-4xl mx-auto px-4 py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-outfit font-bold mb-2">Leaderboard</h1>
-        <p className="text-text-secondary">Average Brier score — lower is better.</p>
+        <p className="text-text-secondary">Ranked by calibration. A Brier score near 0 means your predictions matched what actually happened.</p>
       </div>
 
       {/* Period filter */}

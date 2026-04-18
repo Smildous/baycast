@@ -5,7 +5,7 @@ import Countdown from '@/components/Countdown'
 import ProbBar from '@/components/ProbBar'
 import Sparkline from '@/components/Sparkline'
 import ForecastForm from '@/components/ForecastForm'
-import type { Question, Forecast } from '@/lib/types'
+import type { Question, Forecast, ForecastPrediction } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
 
 interface Props {
@@ -36,27 +36,39 @@ export default async function QuestionDetailPage({ params }: Props) {
     userForecast = data as Forecast | null
   }
 
-  // Get aggregate probability (avg of all binary forecasts)
-  const { data: allForecasts } = await supabase
+  // Get aggregate probability (avg of all forecasts), ordered for sparkline
+  const { data: allForecasts, error: forecastsError } = await supabase
     .from('forecasts')
     .select('prediction')
     .eq('question_id', params.id)
+    .order('created_at', { ascending: true })
 
   const forecasters = allForecasts?.length ?? 0
   const avgProb =
     forecasters > 0
       ? Math.round(
-          (allForecasts!.reduce((s, f) => s + ((f.prediction as any)?.probability ?? 50), 0) /
-            forecasters)
+          allForecasts!.reduce(
+            (s, f) => s + (f.prediction as ForecastPrediction).probability,
+            0
+          ) / forecasters
         )
       : null
 
-  // History for sparkline (last 20 forecasts ordered by time)
   const historyData =
-    allForecasts?.map((f) => (f.prediction as any)?.probability ?? 50) ?? []
+    allForecasts?.map((f) => (f.prediction as ForecastPrediction).probability) ?? []
 
   const isOpen = q.status === 'open'
   const isResolved = q.status === 'resolved'
+
+  if (forecastsError) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-10">
+        <div className="p-4 rounded-xl border border-danger/40 bg-danger/10 text-danger">
+          Failed to load forecast data. Please try refreshing the page.
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
@@ -139,12 +151,10 @@ export default async function QuestionDetailPage({ params }: Props) {
       {isOpen && (
         <div className="bg-bg-surface border border-border-dark rounded-xl p-6">
           <h2 className="text-xl font-outfit font-semibold mb-4">
-            {userForecast ? 'Update your prediction' : 'Submit a prediction'}
+            {userForecast ? 'Update your forecast' : 'Add your forecast'}
           </h2>
           <ForecastForm
             questionId={q.id}
-            questionType={q.question_type}
-            options={q.options}
             existingForecast={userForecast}
             isLoggedIn={!!user}
           />

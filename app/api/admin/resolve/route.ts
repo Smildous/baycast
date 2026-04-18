@@ -69,5 +69,15 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({ ok: true, scored: forecasts?.length ?? 0 })
+  const scored = forecasts?.length ?? 0
+
+  // Write to audit log — non-blocking, failure does not affect the response
+  await supabase.from('admin_audit_log').insert({
+    action: 'resolve_question',
+    admin_id: user.id,
+    question_id: questionId,
+    details: { outcome, scored },
+  })
+
+  return NextResponse.json({ ok: true, scored })
 }

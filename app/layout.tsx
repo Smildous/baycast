@@ -3,8 +3,8 @@ import './globals.css'
 import Nav from '@/components/Nav'
 
 export const metadata: Metadata = {
-  title: 'Baycast — Prediction Polling',
-  description: 'Forecast the future. Track your accuracy. Rise on the leaderboard.',
+  title: 'Baycast — Collective Forecasting',
+  description: 'When many people think carefully about the same question, the crowd tends to be right. Submit your forecasts, track your calibration, and contribute to collective intelligence.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
