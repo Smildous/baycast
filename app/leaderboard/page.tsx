@@ -45,7 +45,8 @@ export default async function LeaderboardPage({ searchParams }: Props) {
       }>()
 
       for (const row of rawScores) {
-        const profile = row.profiles as { display_name: string; avatar_url: string | null }
+        const profile = row.profiles as unknown as { display_name: string; avatar_url: string | null } | null
+        if (!profile) continue
         const existing = map.get(row.user_id)
         if (existing) {
           existing.total += row.brier_score

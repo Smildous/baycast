@@ -72,9 +72,9 @@ export default function CalibrationChart({ data }: Props) {
         <Tooltip
           contentStyle={TOOLTIP_STYLE}
           labelFormatter={(label) => `Predicted: ${label}%`}
-          formatter={(value: number | null, name: string) => {
-            if (value === null) return ['—', name]
-            return [`${value.toFixed(1)}%`, name]
+          formatter={(value, name) => {
+            if (value == null) return ['—', String(name)]
+            return [`${Number(value).toFixed(1)}%`, String(name)]
           }}
         />
         <Legend

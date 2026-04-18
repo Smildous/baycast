@@ -90,11 +90,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       : null
 
   // Compute calibration from resolved forecasts only
-  const resolvedForecasts = (resolvedRaw ?? []).filter(
-    (f) =>
-      (f.questions as ResolvedForecastRaw['questions'])?.status === 'resolved' &&
-      (f.questions as ResolvedForecastRaw['questions'])?.resolution != null
-  ) as ResolvedForecastRaw[]
+  const resolvedForecasts = (resolvedRaw as unknown as ResolvedForecastRaw[] ?? []).filter(
+    (f) => f.questions?.status === 'resolved' && f.questions?.resolution != null
+  )
 
   const calibrationPoints = computeCalibration(resolvedForecasts)
 
