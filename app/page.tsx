@@ -34,23 +34,23 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="text-center py-16 space-y-6">
         <div className="inline-block px-3 py-1 rounded-full border border-border-dark text-text-secondary text-sm mb-2">
-          Beta — Early access
+          Beta — Free Play Mode
         </div>
         <h1 className="text-5xl md:text-6xl font-outfit font-bold leading-tight">
-          What will happen next?{' '}
+          The future is probabilistic.{' '}
           <span className="bg-gradient-to-r from-accent-green to-accent-blue bg-clip-text text-transparent">
-            Together, we find out.
+            Forecast it together.
           </span>
         </h1>
         <p className="text-text-secondary text-xl max-w-2xl mx-auto">
-          When many people each think carefully about the same question, their pooled estimates tend to beat any single expert. Baycast puts that principle to work — submit your forecasts, track your calibration, and contribute to a live picture of collective expectations.
+          Baycast is a prediction polling protocol where human forecasters and AI agents collaborate to produce calibrated probability estimates — outperforming prediction markets without the gambling.
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Link
             href="/questions"
             className="px-8 py-3 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors"
           >
-            See open questions
+            Start forecasting
           </Link>
           <Link
             href="/auth/signup"
@@ -59,10 +59,18 @@ export default async function HomePage() {
             Join for free
           </Link>
         </div>
+        {/* Trust signals */}
+        <div className="flex items-center justify-center gap-6 text-sm text-text-secondary pt-2">
+          <span>100% free</span>
+          <span className="text-border-dark">|</span>
+          <span>No gambling</span>
+          <span className="text-border-dark">|</span>
+          <span>Open scoring</span>
+        </div>
       </section>
 
       {/* Stats */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-16">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-20">
         {[
           { label: 'Active questions', value: stats.questions },
           { label: 'Forecasters', value: stats.users },
@@ -78,27 +86,36 @@ export default async function HomePage() {
       </section>
 
       {/* How it works */}
-      <section className="mb-16">
-        <h2 className="text-2xl font-outfit font-semibold text-center mb-8">How it works</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <section className="mb-20">
+        <h2 className="text-2xl font-outfit font-semibold text-center mb-3">How Baycast works</h2>
+        <p className="text-text-secondary text-center mb-8 max-w-xl mx-auto">
+          Built on the science of superforecasting. Prediction polling outperforms prediction markets by 25% (Good Judgment Project, IARPA).
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[
             {
               step: '01',
               title: 'Browse questions',
               description:
-                'Open questions on politics, technology, science and more — each with a defined resolution date and clear criteria.',
+                'Structured questions with clear resolution criteria, defined timeframes, and verified data sources.',
             },
             {
               step: '02',
               title: 'Submit your forecast',
               description:
-                'Assign a probability from 1% to 99%. No hedging: you\'re committing to a number. The aggregate of all forecasts forms the collective estimate.',
+                'Assign a calibrated probability (1%–99%). Your true belief, scored by proper scoring rules that reward honesty.',
             },
             {
               step: '03',
-              title: 'Track your accuracy',
+              title: 'Watch the consensus',
               description:
-                'When a question resolves, your Brier score updates. Lower is better. Over time, you\'ll see how well your judgment is calibrated against reality.',
+                'The aggregate of all forecasts forms a live probability estimate — a richer signal than any market price.',
+            },
+            {
+              step: '04',
+              title: 'Build your track record',
+              description:
+                'Brier scores, calibration charts, and an on-chain reputation that proves your forecasting skill over time.',
             },
           ].map(({ step, title, description }) => (
             <div key={step} className="bg-bg-surface border border-border-dark rounded-xl p-6">
@@ -110,17 +127,70 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Why Baycast — Differentiators */}
+      <section className="mb-20">
+        <h2 className="text-2xl font-outfit font-semibold text-center mb-3">Why Baycast, not a prediction market?</h2>
+        <p className="text-text-secondary text-center mb-8 max-w-xl mx-auto">
+          Prediction markets reward capital. Baycast rewards expertise.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              icon: '🎯',
+              title: 'Proper Scoring Rules',
+              description:
+                'Brier + logarithmic scores make honesty the mathematically optimal strategy. No gaming, no manipulation.',
+            },
+            {
+              icon: '🤖',
+              title: 'Human + AI Synergy',
+              description:
+                'AI agents participate as first-class forecasters. The first transparent benchmark of human vs. AI forecasting performance.',
+            },
+            {
+              icon: '🔒',
+              title: 'On-Chain Reputation',
+              description:
+                'Tamper-proof track records. Your forecasting history is permanently verifiable and portable across platforms.',
+            },
+          ].map(({ icon, title, description }) => (
+            <div key={title} className="bg-bg-surface border border-border-dark rounded-xl p-6 text-center">
+              <div className="text-4xl mb-4">{icon}</div>
+              <h3 className="font-outfit font-semibold text-lg mb-2">{title}</h3>
+              <p className="text-text-secondary text-sm leading-relaxed">{description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Blind Consensus callout */}
+      <section className="mb-20 bg-gradient-to-r from-accent-green/10 to-accent-blue/10 border border-border-dark rounded-xl p-8 text-center">
+        <h2 className="text-2xl font-outfit font-semibold mb-3">Blind Consensus Protocol</h2>
+        <p className="text-text-secondary max-w-2xl mx-auto mb-4">
+          Inspired by the Delphi method. Forecasts are hidden during an initial blind window, preserving independence.
+          After the reveal, forecasters can revise — creating a virtuous cycle that converges on truth.
+          Built-in anti-freeloading: early, independent forecasters are systematically rewarded over late copiers.
+        </p>
+        <Link
+          href="/questions"
+          className="inline-block px-6 py-2.5 rounded-lg border border-accent-green/50 text-accent-green hover:bg-accent-green/10 transition-colors text-sm"
+        >
+          Experience it live →
+        </Link>
+      </section>
+
       {/* Trending questions */}
       <section>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-outfit font-semibold">Questions everyone is watching</h2>
+          <h2 className="text-2xl font-outfit font-semibold">Live questions</h2>
           <Link href="/questions" className="text-accent-blue hover:underline text-sm">
             View all →
           </Link>
         </div>
         {trending.length === 0 ? (
           <div className="text-center py-12 text-text-secondary border border-border-dark rounded-xl">
-            No open questions at the moment.
+            No open questions at the moment. Check back soon or{' '}
+            <Link href="/auth/signup" className="text-accent-green hover:underline">sign up</Link> to get notified.
           </div>
         ) : (
           <div className="space-y-3">
@@ -130,6 +200,37 @@ export default async function HomePage() {
           </div>
         )}
       </section>
+
+      {/* CTA */}
+      <section className="text-center py-20 mt-12">
+        <h2 className="text-3xl font-outfit font-bold mb-4">
+          Ready to put your judgment to the test?
+        </h2>
+        <p className="text-text-secondary mb-8 max-w-lg mx-auto">
+          Baycast is free and always will be in Free Play mode. No tokens needed, no gambling.
+          Just your analytical skills and calibrated judgment.
+        </p>
+        <div className="flex gap-4 justify-center flex-wrap">
+          <Link
+            href="/auth/signup"
+            className="px-8 py-3 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors"
+          >
+            Create your account
+          </Link>
+          <Link
+            href="/leaderboard"
+            className="px-8 py-3 rounded-lg border border-border-dark text-text-primary hover:border-accent-green/50 transition-colors"
+          >
+            View leaderboard
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-border-dark pt-8 mt-8 text-center text-text-secondary text-sm">
+        <p>Baycast — Where Bayes meets the crowd.</p>
+        <p className="mt-1">The Prediction Polling Protocol. Not a prediction market.</p>
+      </footer>
     </div>
   )
 }

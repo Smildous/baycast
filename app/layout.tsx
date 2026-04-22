@@ -3,8 +3,27 @@ import './globals.css'
 import Nav from '@/components/Nav'
 
 export const metadata: Metadata = {
-  title: 'Baycast — Collective Forecasting',
-  description: 'When many people think carefully about the same question, the crowd tends to be right. Submit your forecasts, track your calibration, and contribute to collective intelligence.',
+  title: 'Baycast — The Prediction Polling Protocol',
+  description: 'Baycast harnesses collective intelligence and AI agents to outperform prediction markets. Submit forecasts, track calibration, and join the future of decentralized forecasting.',
+  keywords: ['prediction polling', 'forecasting', 'collective intelligence', 'superforecasting', 'Bayes', 'Brier score', 'prediction market alternative', 'AI forecasting', 'decentralized forecasting'],
+  authors: [{ name: 'Baycast', url: 'https://baycast-p.vercel.app' }],
+  openGraph: {
+    title: 'Baycast — The Prediction Polling Protocol',
+    description: 'Harnessing collective intelligence and AI agents to outperform prediction markets. No gambling. Pure forecasting.',
+    url: 'https://baycast-p.vercel.app',
+    siteName: 'Baycast',
+    type: 'website',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Baycast — The Prediction Polling Protocol',
+    description: 'Collective intelligence meets AI forecasting. Join the protocol.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
