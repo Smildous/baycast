@@ -6,7 +6,7 @@ import ProbBar from '@/components/ProbBar'
 import Sparkline from '@/components/Sparkline'
 import ForecastForm from '@/components/ForecastForm'
 import type { Question, Forecast, ForecastPrediction } from '@/lib/types'
-import { formatDate } from '@/lib/utils'
+import { formatDate, questionPhase } from '@/lib/utils'
 
 interface Props {
   params: { id: string }
@@ -57,6 +57,9 @@ export default async function QuestionDetailPage({ params }: Props) {
   const historyData =
     allForecasts?.map((f) => (f.prediction as ForecastPrediction).probability) ?? []
 
+  // Determine question phase using Blind Consensus Protocol
+  const phase = questionPhase(q.status, q.blind_until, q.closes_at)
+  const isBlind = phase === 'blind'
   const isOpen = q.status === 'open'
   const isResolved = q.status === 'resolved'
 
@@ -77,6 +80,16 @@ export default async function QuestionDetailPage({ params }: Props) {
         <div className="flex items-center gap-3 mb-3">
           <CategoryBadge category={q.category} />
           <Countdown closesAt={q.closes_at} status={q.status} />
+          {isBlind && (
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-900/40 text-yellow-300 border border-yellow-800">
+              🔒 Blind Phase
+            </span>
+          )}
+          {!isBlind && isOpen && q.blind_until && (
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-900/40 text-blue-300 border border-blue-800">
+              📖 Revision Phase
+            </span>
+          )}
         </div>
         <h1 className="text-3xl font-outfit font-bold mb-3 leading-snug">{q.title}</h1>
         {q.description && (
@@ -97,16 +110,32 @@ export default async function QuestionDetailPage({ params }: Props) {
         </div>
       )}
 
-      {/* Stats row */}
+      {/* Blind phase notice — hide aggregate stats */}
+      {isBlind && (
+        <div className="mb-8 p-5 rounded-xl border border-yellow-800/50 bg-yellow-900/20">
+          <div className="text-yellow-300 font-semibold mb-1">
+            🔒 Blind Consensus Phase Active
+          </div>
+          <p className="text-text-secondary text-sm">
+            Forecasts are hidden during the blind phase to prevent anchoring bias.
+            Submit your independent prediction now — the aggregate and individual
+            forecasts will be revealed when this phase ends.
+          </p>
+        </div>
+      )}
+
+      {/* Stats row — only show aggregate after blind phase */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
           <div className="text-2xl font-mono font-bold text-accent-green">
-            {avgProb !== null ? `${avgProb}%` : '—'}
+            {isBlind ? '—' : avgProb !== null ? `${avgProb}%` : '—'}
           </div>
           <div className="text-text-secondary text-sm">Consensus</div>
         </div>
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
-          <div className="text-2xl font-mono font-bold text-text-primary">{forecasters}</div>
+          <div className="text-2xl font-mono font-bold text-text-primary">
+            {isBlind ? `${forecasters}` : forecasters}
+          </div>
           <div className="text-text-secondary text-sm">Forecasters</div>
         </div>
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
@@ -117,15 +146,15 @@ export default async function QuestionDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Probability bar */}
-      {avgProb !== null && (
+      {/* Probability bar — hidden during blind phase */}
+      {!isBlind && avgProb !== null && (
         <div className="mb-8">
           <ProbBar probability={avgProb} />
         </div>
       )}
 
-      {/* Sparkline */}
-      {historyData.length > 1 && (
+      {/* Sparkline — hidden during blind phase */}
+      {!isBlind && historyData.length > 1 && (
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 mb-8">
           <div className="text-sm text-text-secondary mb-3">Consensus over time</div>
           <Sparkline data={historyData} />
@@ -157,6 +186,7 @@ export default async function QuestionDetailPage({ params }: Props) {
             questionId={q.id}
             existingForecast={userForecast}
             isLoggedIn={!!user}
+            isBlind={isBlind}
           />
         </div>
       )}

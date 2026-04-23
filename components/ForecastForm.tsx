@@ -11,12 +11,14 @@ interface Props {
   questionId: string
   existingForecast: Forecast | null
   isLoggedIn: boolean
+  isBlind?: boolean
 }
 
 export default function ForecastForm({
   questionId,
   existingForecast,
   isLoggedIn,
+  isBlind = false,
 }: Props) {
   const router = useRouter()
   const [probability, setProbability] = useState(
@@ -87,6 +89,20 @@ export default function ForecastForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {isBlind && (
+        <div className="p-3 rounded-lg bg-yellow-900/20 border border-yellow-800/40 text-yellow-300 text-sm">
+          🔒 <strong>Blind phase active:</strong> Your forecast is private. Other forecasters
+          cannot see your prediction until the blind phase ends. Make your best independent
+          estimate — you can revise later.
+        </div>
+      )}
+      {!isBlind && existingForecast && (
+        <div className="p-3 rounded-lg bg-blue-900/20 border border-blue-800/40 text-blue-300 text-sm">
+          📖 <strong>Revision phase:</strong> All forecasts are now visible. Review the
+          aggregate and update your prediction if you wish.
+        </div>
+      )}
+
       <ForecastSlider value={probability} onChange={setProbability} disabled={loading} />
 
       {error && (

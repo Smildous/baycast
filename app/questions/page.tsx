@@ -1,9 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import QuestionCard from '@/components/QuestionCard'
-import type { Question, Category } from '@/lib/types'
+import type { Question } from '@/lib/types'
+import { CATEGORIES, normalizeCategory } from '@/lib/types'
 import { autoCloseExpiredQuestions } from '@/lib/utils'
-
-const CATEGORIES: Category[] = ['Politics', 'Technology', 'Economy', 'Science', 'Sports', 'Culture', 'Other']
 
 interface Props {
   searchParams: { category?: string; status?: string }
@@ -13,10 +12,16 @@ export default async function QuestionsPage({ searchParams }: Props) {
   const supabase = createClient()
   await autoCloseExpiredQuestions(supabase)
 
+  // Normalize the incoming category filter so lowercase/shorthand values
+  // (e.g. "tech", "economy") match the canonical capitalized form in the DB.
+  const normalizedCategory = searchParams.category
+    ? normalizeCategory(searchParams.category)
+    : undefined
+
   let query = supabase.from('questions').select('*').order('closes_at', { ascending: true })
 
-  if (searchParams.category) {
-    query = query.eq('category', searchParams.category)
+  if (normalizedCategory) {
+    query = query.eq('category', normalizedCategory)
   }
   if (searchParams.status) {
     query = query.eq('status', searchParams.status)
@@ -39,7 +44,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
         <a
           href="/questions"
           className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
-            !searchParams.category
+            !normalizedCategory
               ? 'border-accent-green text-accent-green bg-accent-green/10'
               : 'border-border-dark text-text-secondary hover:border-accent-green/50'
           }`}
@@ -51,7 +56,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
             key={cat}
             href={`/questions?category=${cat}`}
             className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
-              searchParams.category === cat
+              normalizedCategory === cat
                 ? 'border-accent-green text-accent-green bg-accent-green/10'
                 : 'border-border-dark text-text-secondary hover:border-accent-green/50'
             }`}

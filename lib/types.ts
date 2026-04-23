@@ -9,6 +9,26 @@ export type Category =
   | 'Culture'
   | 'Other'
 
+/** Canonical categories keyed by lowercase lookup */
+export const CATEGORY_ALIASES: Record<string, Category> = {
+  politics: 'Politics',
+  technology: 'Technology',
+  tech: 'Technology',
+  economy: 'Economy',
+  economics: 'Economy',
+  science: 'Science',
+  sports: 'Sports',
+  culture: 'Culture',
+  other: 'Other',
+}
+
+export const CATEGORIES: Category[] = ['Politics', 'Technology', 'Economy', 'Science', 'Sports', 'Culture', 'Other']
+
+/** Normalize any category string (lowercase, shorthand) to its canonical Category form */
+export function normalizeCategory(raw: string): Category {
+  return CATEGORY_ALIASES[raw.toLowerCase()] ?? 'Other'
+}
+
 export interface Profile {
   id: string
   display_name: string
@@ -27,6 +47,7 @@ export interface Question {
   resolution_source: string | null
   opens_at: string
   closes_at: string
+  blind_until: string | null
   resolved_at: string | null
   resolution: Record<string, unknown> | null
   status: QuestionStatus

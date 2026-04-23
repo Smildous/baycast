@@ -58,6 +58,34 @@ export async function autoCloseExpiredQuestions(
     .lt('closes_at', new Date().toISOString())
 }
 
+/**
+ * Determine the current phase of a question for the Blind Consensus Protocol.
+ *
+ * - 'blind'    → Phase A: now < blind_until (forecasts hidden)
+ * - 'open'     → Phase B: blind phase over, question still open for revision
+ * - 'closed'   → Question deadline passed, awaiting resolution
+ * - 'resolved' → Final outcome published
+ */
+export function questionPhase(
+  status: string,
+  blindUntil: string | null,
+  closesAt: string
+): 'blind' | 'open' | 'closed' | 'resolved' {
+  const now = Date.now()
+
+  if (status === 'resolved') return 'resolved'
+  if (status === 'closed') return 'closed'
+
+  // If blind_until is set and we're still before it → Phase A (blind)
+  if (blindUntil && now < new Date(blindUntil).getTime()) return 'blind'
+
+  // If we're past closes_at → closed
+  if (now >= new Date(closesAt).getTime()) return 'closed'
+
+  // Otherwise → Phase B (open with visibility)
+  return 'open'
+}
+
 export const CATEGORY_COLORS: Record<string, string> = {
   Politics: 'bg-red-900/40 text-red-300 border-red-800',
   Technology: 'bg-blue-900/40 text-blue-300 border-blue-800',

@@ -3,9 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import type { Question, Category } from '@/lib/types'
-
-const CATEGORIES: Category[] = ['Politics', 'Technology', 'Economy', 'Science', 'Sports', 'Culture', 'Other']
+import type { Question } from '@/lib/types'
+import { type Category, CATEGORIES } from '@/lib/types'
 
 interface Props {
   mode: 'create' | 'edit'
@@ -19,6 +18,7 @@ export default function QuestionForm({ mode, question: q }: Props) {
   const [category, setCategory] = useState<Category>(q?.category ?? 'Other')
   const [resolutionSource, setResolutionSource] = useState(q?.resolution_source ?? '')
   const [opensAt, setOpensAt] = useState(q?.opens_at?.slice(0, 16) ?? '')
+  const [blindUntil, setBlindUntil] = useState(q?.blind_until?.slice(0, 16) ?? '')
   const [closesAt, setClosesAt] = useState(q?.closes_at?.slice(0, 16) ?? '')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -41,6 +41,7 @@ export default function QuestionForm({ mode, question: q }: Props) {
       resolution_source: resolutionSource || null,
       opens_at: opensAt,
       closes_at: closesAt,
+      blind_until: blindUntil || null,
       status: 'open' as const,
       created_by: user.id,
     }
@@ -118,6 +119,21 @@ export default function QuestionForm({ mode, question: q }: Props) {
             className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors"
           />
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm text-text-secondary mb-1.5">Blind phase ends (optional)</label>
+        <input
+          type="datetime-local"
+          value={blindUntil}
+          onChange={(e) => setBlindUntil(e.target.value)}
+          className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-dark text-text-primary focus:outline-none focus:border-accent-green transition-colors"
+        />
+        <p className="text-xs text-text-secondary mt-1">
+          During the blind phase, individual forecasts are hidden from all users to prevent
+          anchoring bias. After this time, forecasts become visible for revision. Leave blank
+          to disable the blind phase.
+        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
