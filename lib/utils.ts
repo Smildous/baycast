@@ -8,6 +8,19 @@ export function brierScore(prediction: number, outcome: number): number {
 }
 
 /**
+ * Logarithmic score for a binary prediction (base 2).
+ * prediction: 0-1 probability, outcome: 1 (yes) or 0 (no)
+ * Higher is better; perfect = 0, worst = -∞
+ *
+ * Formula: log2(p) if outcome=1, log2(1-p) if outcome=0
+ * Probability is clamped to (0, 1) to avoid log(0).
+ */
+export function logScore(prediction: number, outcome: number): number {
+  const p = Math.max(1e-10, Math.min(1 - 1e-10, prediction))
+  return outcome === 1 ? Math.log2(p) : Math.log2(1 - p)
+}
+
+/**
  * Returns days remaining until a date, or 0 if past.
  */
 export function daysRemaining(closesAt: string): number {

@@ -80,6 +80,7 @@ export interface Score {
   question_id: string
   user_id: string
   brier_score: number
+  log_score: number | null
 }
 
 export interface LeaderboardEntry {
