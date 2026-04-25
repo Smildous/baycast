@@ -36,32 +36,51 @@ export default async function QuestionDetailPage({ params }: Props) {
     userForecast = data as Forecast | null
   }
 
-  // Get aggregate probability (avg of all forecasts), ordered for sparkline
-  const { data: allForecasts, error: forecastsError } = await supabase
-    .from('forecasts')
-    .select('prediction')
-    .eq('question_id', params.id)
-    .order('created_at', { ascending: true })
-
-  const forecasters = allForecasts?.length ?? 0
-  const avgProb =
-    forecasters > 0
-      ? Math.round(
-          allForecasts!.reduce(
-            (s, f) => s + (f.prediction as ForecastPrediction).probability,
-            0
-          ) / forecasters
-        )
-      : null
-
-  const historyData =
-    allForecasts?.map((f) => (f.prediction as ForecastPrediction).probability) ?? []
-
   // Determine question phase using Blind Consensus Protocol
   const phase = questionPhase(q.status, q.blind_until, q.closes_at)
   const isBlind = phase === 'blind'
   const isOpen = q.status === 'open'
   const isResolved = q.status === 'resolved'
+
+  // During blind phase, skip fetching other users' forecasts entirely.
+  // RLS policy also enforces this server-side, but we avoid the query for performance.
+  // We still fetch the count of forecasters (including the current user).
+  let allForecasts: { prediction: ForecastPrediction }[] | null = null
+  let forecasters = 0
+  let avgProb: number | null = null
+  let historyData: number[] = []
+  let forecastsError: string | null = null
+
+  if (!isBlind) {
+    // Fetch all forecasts for aggregate display (only when visible)
+    const { data, error } = await supabase
+      .from('forecasts')
+      .select('prediction')
+      .eq('question_id', params.id)
+      .order('created_at', { ascending: true })
+
+    forecastsError = error?.message ?? null
+    allForecasts = data as { prediction: ForecastPrediction }[] | null
+    forecasters = allForecasts?.length ?? 0
+    avgProb =
+      forecasters > 0
+        ? Math.round(
+            allForecasts!.reduce(
+              (s, f) => s + (f.prediction as ForecastPrediction).probability,
+              0
+            ) / forecasters
+          )
+        : null
+    historyData =
+      allForecasts?.map((f) => (f.prediction as ForecastPrediction).probability) ?? []
+  } else {
+    // During blind phase, only count forecasters (RLS ensures only own forecast is returned)
+    const { count } = await supabase
+      .from('forecasts')
+      .select('*', { count: 'exact', head: true })
+      .eq('question_id', params.id)
+    forecasters = count ?? 0
+  }
 
   if (forecastsError) {
     return (

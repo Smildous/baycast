@@ -51,6 +51,7 @@ create table if not exists public.questions (
   resolution_source text,
   opens_at timestamptz not null default now(),
   closes_at timestamptz not null,
+  blind_until timestamptz,
   resolved_at timestamptz,
   resolution jsonb,
   status text not null default 'open' check (status in ('draft', 'open', 'closed', 'resolved')),
@@ -88,8 +89,21 @@ create table if not exists public.forecasts (
 
 alter table public.forecasts enable row level security;
 
-create policy "Forecasts are viewable by everyone"
-  on public.forecasts for select using (true);
+-- Blind Consensus Protocol: during blind phase, users can only see their own forecasts.
+-- After blind phase (or if no blind phase), all forecasts are visible.
+create policy "Users can see forecasts outside blind phase or their own during blind phase"
+  on public.forecasts for select
+  using (
+    auth.uid() = user_id
+    or
+    not exists (
+      select 1 from public.questions q
+      where q.id = forecasts.question_id
+        and q.blind_until is not null
+        and q.blind_until > now()
+        and q.status = 'open'
+    )
+  );
 
 create policy "Authenticated users can insert forecasts"
   on public.forecasts for insert
@@ -139,6 +153,7 @@ order by avg_brier_score asc;
 create index if not exists idx_questions_status on public.questions(status);
 create index if not exists idx_questions_category on public.questions(category);
 create index if not exists idx_questions_closes_at on public.questions(closes_at);
+create index if not exists idx_questions_blind_until on public.questions(blind_until);
 create index if not exists idx_questions_created_by on public.questions(created_by);
 create index if not exists idx_forecasts_question_id on public.forecasts(question_id);
 create index if not exists idx_forecasts_user_id on public.forecasts(user_id);
