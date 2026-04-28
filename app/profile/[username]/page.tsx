@@ -89,6 +89,11 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       ? scoreList.reduce((s, sc) => s + sc.brier_score, 0) / scoreList.length
       : null
 
+  const avgLog =
+    scoreList.length > 0
+      ? scoreList.reduce((s, sc) => s + (sc.log_score ?? 0), 0) / scoreList.length
+      : null
+
   // Compute calibration from resolved forecasts only
   const resolvedForecasts = (resolvedRaw as unknown as ResolvedForecastRaw[] ?? []).filter(
     (f) => f.questions?.status === 'resolved' && f.questions?.resolution != null
@@ -128,7 +133,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               <div className="text-xl font-mono font-bold text-accent-green">
                 {avgBrier !== null ? avgBrier.toFixed(4) : '—'}
               </div>
-              <div className="text-text-secondary text-sm">Avg Brier score</div>
+              <div className="text-text-secondary text-sm">Avg Brier</div>
+            </div>
+            <div>
+              <div className="text-xl font-mono font-bold text-accent-blue">
+                {avgLog !== null ? avgLog.toFixed(3) : '—'}
+              </div>
+              <div className="text-text-secondary text-sm">Avg Log Score</div>
             </div>
             <div>
               <div className="text-xl font-mono font-bold text-text-primary">

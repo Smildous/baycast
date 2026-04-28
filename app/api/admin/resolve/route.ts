@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { logScore } from '@/lib/utils'
 
 export async function POST(request: Request) {
   const supabase = createClient()
@@ -53,10 +54,12 @@ export async function POST(request: Request) {
     const scores = forecasts.map((f) => {
       const p = ((f.prediction as Record<string, unknown>)?.probability as number ?? 50) / 100
       const brier = Math.pow(p - outcomeValue, 2)
+      const log = logScore(p, outcomeValue)
       return {
         question_id: questionId,
         user_id: f.user_id,
         brier_score: brier,
+        log_score: log,
       }
     })
 

@@ -119,6 +119,7 @@ create table if not exists public.scores (
   question_id uuid references public.questions(id) on delete cascade not null,
   user_id uuid references public.profiles(id) on delete cascade not null,
   brier_score double precision not null,
+  log_score double precision,
   created_at timestamptz default now(),
   unique(question_id, user_id)
 );
@@ -141,6 +142,7 @@ select
   p.display_name,
   p.avatar_url,
   avg(s.brier_score) as avg_brier_score,
+  avg(s.log_score) as avg_log_score,
   count(distinct f.question_id) as total_forecasts,
   count(distinct s.question_id) as resolved_forecasts
 from public.scores s

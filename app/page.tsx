@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import QuestionCard from '@/components/QuestionCard'
 import type { Question } from '@/lib/types'
-import { autoCloseExpiredQuestions } from '@/lib/utils'
+import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
 
 async function getStats() {
   const supabase = createClient()
@@ -23,7 +23,34 @@ async function getTrending(): Promise<Question[]> {
     .eq('status', 'open')
     .order('closes_at', { ascending: true })
     .limit(5)
-  return (data ?? []) as Question[]
+  const questions = (data ?? []) as Question[]
+
+  // Enrichir avec les probabilités agrégées
+  if (questions.length > 0) {
+    const ids = questions.map((q) => q.id)
+    const { data: forecasts } = await supabase
+      .from('forecasts')
+      .select('question_id, prediction')
+      .in('question_id', ids)
+
+    if (forecasts) {
+      const grouped = new Map<string, number[]>()
+      for (const row of forecasts) {
+        const probs = grouped.get(row.question_id) ?? []
+        probs.push((row.prediction as { probability: number }).probability)
+        grouped.set(row.question_id, probs)
+      }
+      for (const q of questions) {
+        const probs = grouped.get(q.id)
+        if (probs && probs.length > 0) {
+          q.aggregate_probability = aggregateProbabilities(probs)
+          q.forecasters_count = probs.length
+        }
+      }
+    }
+  }
+
+  return questions
 }
 
 export default async function HomePage() {

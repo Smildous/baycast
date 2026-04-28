@@ -32,7 +32,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
 
     const { data: rawScores, error: err } = await supabase
       .from('scores')
-      .select('user_id, brier_score, profiles(display_name, avatar_url)')
+      .select('user_id, brier_score, log_score, profiles(display_name, avatar_url)')
       .gte('created_at', cutoff.toISOString())
     error = err
 
@@ -41,6 +41,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
         display_name: string
         avatar_url: string | null
         total: number
+        logTotal: number
         count: number
       }>()
 
@@ -50,23 +51,26 @@ export default async function LeaderboardPage({ searchParams }: Props) {
         const existing = map.get(row.user_id)
         if (existing) {
           existing.total += row.brier_score
+          existing.logTotal += row.log_score ?? 0
           existing.count += 1
         } else {
           map.set(row.user_id, {
             display_name: profile.display_name,
             avatar_url: profile.avatar_url,
             total: row.brier_score,
+            logTotal: row.log_score ?? 0,
             count: 1,
           })
         }
       }
 
       entries = Array.from(map.entries())
-        .map(([user_id, { display_name, avatar_url, total, count }]) => ({
+        .map(([user_id, { display_name, avatar_url, total, logTotal, count }]) => ({
           user_id,
           display_name,
           avatar_url,
           avg_brier_score: total / count,
+          avg_log_score: logTotal / count,
           total_forecasts: count,
           resolved_forecasts: count,
         }))
@@ -112,15 +116,16 @@ export default async function LeaderboardPage({ searchParams }: Props) {
             <tr className="border-b border-border-dark text-text-secondary text-sm">
               <th className="text-left px-4 py-3 w-12">#</th>
               <th className="text-left px-4 py-3">Forecaster</th>
-              <th className="text-right px-4 py-3">Brier Score</th>
-              <th className="text-right px-4 py-3 hidden sm:table-cell">Predictions</th>
-              <th className="text-right px-4 py-3 hidden md:table-cell">Resolved</th>
+              <th className="text-right px-4 py-3">Brier</th>
+              <th className="text-right px-4 py-3 hidden sm:table-cell">Log Score</th>
+              <th className="text-right px-4 py-3 hidden md:table-cell">Predictions</th>
+              <th className="text-right px-4 py-3 hidden lg:table-cell">Resolved</th>
             </tr>
           </thead>
           <tbody>
             {entries.length === 0 ? (
               <tr>
-                <td colSpan={5} className="text-center py-12 text-text-secondary">
+                <td colSpan={6} className="text-center py-12 text-text-secondary">
                   No data available.
                 </td>
               </tr>
@@ -173,10 +178,15 @@ export default async function LeaderboardPage({ searchParams }: Props) {
                         {entry.avg_brier_score?.toFixed(4) ?? '—'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right text-text-secondary font-mono text-sm hidden sm:table-cell">
-                      {entry.total_forecasts}
+                    <td className="px-4 py-3 text-right font-mono text-sm hidden sm:table-cell">
+                      <span className={entry.avg_log_score != null && entry.avg_log_score > -1 ? 'text-accent-green' : 'text-text-secondary'}>
+                        {entry.avg_log_score?.toFixed(3) ?? '—'}
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-right text-text-secondary font-mono text-sm hidden md:table-cell">
+                      {entry.total_forecasts}
+                    </td>
+                    <td className="px-4 py-3 text-right text-text-secondary font-mono text-sm hidden lg:table-cell">
                       {entry.resolved_forecasts}
                     </td>
                   </tr>

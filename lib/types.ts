@@ -88,6 +88,7 @@ export interface LeaderboardEntry {
   display_name: string
   avatar_url: string | null
   avg_brier_score: number
+  avg_log_score: number | null
   total_forecasts: number
   resolved_forecasts: number
 }
