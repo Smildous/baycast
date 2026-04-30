@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Nav from '@/components/Nav'
+import OnboardingProvider from '@/app/components/OnboardingProvider'
 
 export const metadata: Metadata = {
   title: 'Baycast — The Prediction Polling Protocol',
@@ -30,8 +31,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body className="min-h-screen bg-bg-primary text-text-primary font-dm-sans">
-        <Nav />
-        <main className="pt-16">{children}</main>
+        <OnboardingProvider>
+          <Nav />
+          <main className="pt-16">{children}</main>
+        </OnboardingProvider>
       </body>
     </html>
   )
