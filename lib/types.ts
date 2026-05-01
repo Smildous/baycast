@@ -97,3 +97,31 @@ export interface ForecastHistory {
   created_at: string
   probability: number
 }
+
+/* ── Question Blocks v1 ── */
+
+export interface Block {
+  id: string
+  title: string
+  description: string | null
+  category: string
+  created_by: string | null
+  created_at: string
+  // aggregated fields
+  question_count?: number
+  top_scorer?: { display_name: string; avg_brier_score: number } | null
+}
+
+export interface BlockQuestion {
+  block_id: string
+  question_id: string
+  sort_order: number
+}
+
+export interface BlockLeaderboardEntry {
+  user_id: string
+  display_name: string
+  avatar_url: string | null
+  avg_brier_score: number
+  resolved_count: number
+}
