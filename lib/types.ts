@@ -35,6 +35,10 @@ export interface Profile {
   avatar_url: string | null
   bio: string | null
   is_admin: boolean
+  // Badge fields (added v1)
+  badge_tier?: BadgeTier
+  badge_ever_reached?: BadgeTier
+  resolved_forecast_count?: number
 }
 
 export interface Question {
@@ -87,6 +91,9 @@ export interface LeaderboardEntry {
   user_id: string
   display_name: string
   avatar_url: string | null
+  badge_tier?: BadgeTier
+  badge_ever_reached?: BadgeTier
+  resolved_forecast_count?: number
   avg_brier_score: number
   avg_log_score: number | null
   total_forecasts: number
@@ -96,6 +103,49 @@ export interface LeaderboardEntry {
 export interface ForecastHistory {
   created_at: string
   probability: number
+}
+
+/* ── Profile Badges v1 ── */
+
+export type BadgeTier = 'rookie' | 'forecaster' | 'expert' | 'oracle'
+
+export const BADGE_CONFIG: Record<BadgeTier, {
+  name: string
+  emoji: string
+  color: string
+  minResolved: number
+}> = {
+  rookie:     { name: 'Rookie',     emoji: '🌱', color: '#22c55e', minResolved: 0 },
+  forecaster: { name: 'Forecaster', emoji: '🌤️', color: '#3b82f6', minResolved: 5 },
+  expert:     { name: 'Expert',     emoji: '⭐', color: '#f59e0b', minResolved: 20 },
+  oracle:     { name: 'Oracle',     emoji: '🧙', color: '#a855f7', minResolved: 50 },
+}
+
+/** Ordered tiers from lowest to highest */
+export const BADGE_TIER_ORDER: BadgeTier[] = ['rookie', 'forecaster', 'expert', 'oracle']
+
+/**
+ * Calculate badge tier from resolved forecast count.
+ * Thresholds are inclusive on the lower bound: 5 → Forecaster, 20 → Expert, 50 → Oracle.
+ */
+export function calculateBadgeTier(resolvedCount: number): BadgeTier {
+  if (resolvedCount >= 50) return 'oracle'
+  if (resolvedCount >= 20) return 'expert'
+  if (resolvedCount >= 5) return 'forecaster'
+  return 'rookie'
+}
+
+/**
+ * Return the effective badge tier, which is the higher of current and ever-reached tiers.
+ * Badges are never downgraded.
+ */
+export function getDisplayBadge(
+  currentTier: BadgeTier,
+  everReached: BadgeTier
+): BadgeTier {
+  const currentIdx = BADGE_TIER_ORDER.indexOf(currentTier)
+  const everIdx = BADGE_TIER_ORDER.indexOf(everReached)
+  return BADGE_TIER_ORDER[Math.max(currentIdx, everIdx)]
 }
 
 /* ── Question Blocks v1 ── */
