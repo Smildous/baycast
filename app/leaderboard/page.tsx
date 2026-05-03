@@ -199,7 +199,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
 
       {error && (
         <div className="mt-4 p-3 rounded-lg bg-danger/10 border border-danger/30 text-danger text-sm">
-          Error: the leaderboard view may not exist yet. Check your SQL schema.
+          Error: {error.message ?? 'the leaderboard view may not exist yet'}. Run the SQL migration in <code className="bg-danger/20 px-1 rounded">supabase/migrations/</code> to create the required tables and views.
         </div>
       )}
     </div>
