@@ -2,86 +2,108 @@
 
 The Prediction Polling Protocol
 
-Collective intelligence, scored properly.
-
-[Live Prototype](https://baycast-p.vercel.app) · [How It Works](#how-it-works) · [Roadmap](#roadmap)
+[Live Prototype](https://baycast-p.vercel.app)
 
 ---
 
-## Why prediction markets are broken
+## A different kind of intelligence
 
-$3.5B traded on Polymarket in 2024. Massive demand for forecasting. But look at what actually happens:
+Somewhere between a tweet and a thesis, between a gut feeling and a peer-reviewed paper, lies the territory of probabilistic thinking. The ability to say "I think there is a 73% chance this happens" and mean it. Not hope it. Not guess it. Calculate it from evidence, update it with new information, and stand by it when the answer arrives.
 
-- Whales move prices with capital, not insight
-- Insider trading scandals (congressional stock trades on Polymarket, Romania blocking 300 betting sites)
-- Regulators cracking down across the US and EU
-- The signal drowns in speculation
+That territory is where Baycast lives.
 
-Markets reward money. Baycast rewards being right.
+The concept is ancient. The Oracle of Delphi collected independent judgments from priests before reaching consensus. The Delphi method, formalized at RAND Corporation in the 1950s, proved that isolated expert opinions, when aggregated, consistently outperform group discussions. Francis Galton noticed that the median guess of 800 villagers at a country fair came within 1% of the true weight of an ox. The crowd was wiser than any individual.
 
-## The science behind it
+This is the wisdom of crowds. Not the loud crowd. Not the majority. The calibrated crowd. The one that thinks independently, scores honestly, and gets better over time.
 
-In 2011, IARPA ran a tournament. 5,000 forecasters predicting geopolitics, economics, tech. The winner? The Good Judgment Project. Their secret: structured prediction polling with proper scoring rules. They outperformed prediction markets by 25% and intelligence analysts with classified data.
+Baycast is a machine for producing that crowd at scale.
 
-Not by a little. By a quarter.
+## Why markets failed us
 
-Baycast takes that methodology and makes it a platform.
+Prediction markets had their moment. Polymarket hit $3.5B in volume in 2024. Kalshi secured CFTC approval. The idea was elegant: let people bet on outcomes, and the price becomes a probability estimate. Efficient market hypothesis applied to everything.
 
-## How it works
+But something went wrong.
 
-1. A question goes live. Binary, clear resolution criteria, hard deadline.
-2. Blind phase. Everyone submits a probability (1% to 99%) without seeing what others think. No anchoring. No herding.
-3. Reveal phase. Forecasts are unblinded. One revision allowed. Early independent thinkers get a scoring bonus.
-4. Resolution. The outcome hits. Brier scores + logarithmic scores are calculated for every forecaster.
-5. The leaderboard ranks people by calibration. Not by luck. Not by volume. By how well their probabilities match reality over time.
+When money enters the picture, incentives corrupt the signal. Whales with deep pockets move prices based on capital, not conviction. Congressional staffers trade on classified intelligence before it becomes public. Market makers profit from the spread, not from being right. The "probability" you see on Polymarket reflects liquidity and sentiment, not the actual likelihood of an event.
 
-The math is ruthless: the optimal strategy is to report your true belief. Overconfidence gets punished. Underconfidence leaves points on the table. Honesty wins.
+Romania blocked 300 prediction market sites in a single sweep. The CFTC expanded investigations into insider trading on Kalshi. Google restricted ads for gambling-adjacent platforms. The regulatory walls are closing in.
 
-## What makes Baycast different
+The deeper problem is philosophical. Markets reward those with the most capital, not those with the best judgment. A retired intelligence analyst who spent 30 years studying Chinese politics has no edge over a crypto degen with $100K to deploy. The signal from genuine expertise gets priced out by financial noise.
 
-**Not a market.** No money at stake. No gambling. No positions to cover. You stake your reputation, not your wallet.
+Baycast removes money from the equation entirely. You stake your reputation, not your wallet. The only currency that matters is being right, consistently, over time.
 
-**Blind consensus.** Inspired by the Delphi method, refined over 50 years of research. Forecasters think independently before seeing the crowd. The result: less noise, more signal.
+## The science
 
-**AI agents as equals.** LLMs can forecast alongside humans through our open API. First transparent benchmark of human vs AI prediction performance. No black box. Every forecast is public with full reasoning.
+In 2011, the Intelligence Advanced Research Projects Activity (IARPA) launched a tournament. The goal: find the best method for predicting geopolitical events. Five thousand forecasters. Questions about elections, conflicts, economic indicators, technology breakthroughs.
 
-**Proper scoring.** Brier score measures how close your probability was to the outcome. Logarithmic score heavily rewards well-calibrated high-confidence calls. Both reward honesty mathematically.
+The winner was the Good Judgment Project, led by Philip Tetlock and Barbara Mellers at the University of Pennsylvania. Their approach: structured prediction polling with proper scoring rules, training in probabilistic thinking, and careful aggregation methods.
 
-**On-chain reputation.** Your track record becomes a portable, tamper-proof credential. Not a vanity metric. Proof that you can think clearly about uncertain futures.
+They outperformed prediction markets by 25%. They outperformed professional intelligence analysts with access to classified information.
 
-## Live features
+The key insight was deceptively simple. If you give people the right tools, the right feedback, and the right scoring system, the aggregate of many independent forecasts becomes astonishingly accurate. Not because individuals are geniuses. Because the errors cancel out and the signal survives.
 
-- Binary forecasting with 1-99% probability slider
-- Blind consensus protocol (blind + revision phases)
-- Dual scoring: Brier + logarithmic
-- Question blocks (themed question sets with block-level leaderboards)
-- Profile badges (Rookie, Forecaster, Expert, Oracle)
-- Category filtering (Politics, Technology, Economy, Science, Sports, AI, Crypto, Culture)
-- AI agent forecast API
-- Dark theme, responsive, mobile-ready
+The Brier score, developed in 1950 by Glenn Brier, measures the accuracy of probabilistic forecasts. A perfect forecast (100% on something that happens, 0% on something that does not) scores 0. A completely wrong forecast scores 2. Everything else falls in between. The logarithmic score, borrowed from information theory, adds an extra dimension: it heavily rewards well-calibrated high-confidence calls. If you say 95% and you are right, you score massively. If you say 95% and you are wrong, the penalty is severe.
 
-## Roadmap
+Together, these scoring rules create a mathematical environment where honesty is the only rational strategy. Overconfidence gets punished. Underconfidence leaves points on the table. The optimal play is to report your true belief, nothing more, nothing less.
 
-| Phase | When | What |
-|---|---|---|
-| Foundation | 2026 | MVP, community building, leaderboard, onboarding |
-| Testnet | 2027 H1 | Polygon testnet, smart contract audit, AI agent benchmarks |
-| Mainnet | 2027 H2 | BAY token, paid question blocks, NFT memberships |
-| AI Integration | 2027 H2 | Sponsored forecasting challenges, enterprise API, model leaderboard |
-| Scale | 2028+ | L2 scaling, DeFi oracle integrations, DAO governance |
+This is not a game. This is epistemology with a leaderboard.
+
+## How Baycast works
+
+A question goes live on the platform. Binary, with clear resolution criteria and a hard deadline. "Will GPT-5 be released before December 31, 2026?" The resolution criteria are specific: YES if OpenAI officially announces and makes GPT-5 available via API or product. No ambiguity. No weasel room.
+
+**The blind phase.** Every forecaster submits a probability estimate between 1% and 99%. Crucially, nobody can see what anyone else thinks. This is the innovation borrowed from the Delphi method and refined by decades of research on collective intelligence. When people see what others think before forming their own judgment, two biases destroy the signal. Anchoring bias: the first number you see becomes a reference point that distorts your estimate. Herding bias: you unconsciously shift toward the perceived consensus to avoid standing out.
+
+Baycast eliminates both. Your first estimate is yours alone.
+
+**The revision phase.** After the blind window closes, all forecasts are revealed. You see the aggregate. You see the distribution. And you get one chance to revise. This creates a powerful dynamic. The initial blind estimates form the purest possible measure of collective intelligence. The revisions let people incorporate new information. But the scoring system rewards early, independent thinkers. If you were right in the blind phase, your revision bonus is larger. If you only got it right after seeing the crowd, the reward is smaller. The system systematically favors genuine insight over late copying.
+
+**Resolution.** The deadline arrives. The outcome is determined against the published criteria. Every forecaster receives their Brier score and logarithmic score. Not just right or wrong. A continuous measure of how well your probability matched reality.
+
+**The leaderboard.** Rankings are based on cumulative Brier scores across all resolved questions. Time-period filters let you see who is sharp this month, this quarter, or all time. This is not a vanity leaderboard. This is a track record. A proof that someone can think clearly about uncertain futures, question after question, domain after domain.
+
+## AI agents as equals
+
+For the first time, AI systems participate in forecasting on the same terms as humans. Through Baycast's open API, language models can submit probability estimates, provide reasoning, and accumulate their own track record.
+
+This is not a gimmick. It is a genuine experiment in collective intelligence. When an LLM forecasts alongside a geopolitical analyst, a climate scientist, and a curious undergraduate, we get something unprecedented: a transparent, scored benchmark of human versus machine prediction performance.
+
+Every AI forecast is public. The reasoning is visible. The scores are comparable. No black box. No cherry-picked results. Just calibrated probabilities, tested against reality.
+
+Over time, this creates a new kind of knowledge. Which domains do humans dominate? Where do AI systems have an edge? How does human-AI collaboration compare to either alone? These are questions the field has debated for years. Baycast provides the data to answer them.
+
+## The vision
+
+The roadmap is ambitious but grounded.
+
+2026 is about foundation. Building the community. Proving the methodology. Making the platform fast, intuitive, and genuinely useful. Onboarding new forecasters. Seeding questions across domains. Establishing a culture of calibrated thinking.
+
+2027 H1 takes it on-chain. Polygon testnet. Smart contract audit. Forecasting records become immutable. Your track record, verifiable and portable across platforms. Not a Baycast score. A credential.
+
+2027 H2 introduces the BAY token and the full economic model. Question sponsors can fund forecasting on topics they care about. Forecasters earn tokens for performance. NFT memberships grant early access to premium question blocks and governance rights.
+
+The AI integration phase formalizes the human-AI benchmark. Sponsored forecasting challenges. Enterprise API for organizations that need calibrated probability estimates. A dedicated leaderboard ranking AI models by forecasting accuracy.
+
+Long term, Baycast becomes infrastructure for collective intelligence. DeFi oracle integrations bring forecasting data on-chain. DAO governance lets the community steer the platform. Layer 2 scaling handles millions of questions and forecasts.
+
+The endgame is a world where the best available probability estimate on any question is not hidden in a classified report, not distorted by a betting market, not lost in a Twitter thread, but publicly visible, transparently scored, and continuously improving.
 
 ## Tech stack
 
 - Next.js 14 + TypeScript + Tailwind CSS
-- Supabase (PostgreSQL, Auth, RLS policies, Realtime)
+- Supabase (PostgreSQL, Auth, Row-Level Security, Realtime)
 - Recharts for data visualization
 - Vercel for hosting
 
-## Try it
+## Join the experiment
 
 [baycast-p.vercel.app](https://baycast-p.vercel.app)
 
-Free. No token needed. No gambling. Just your judgment against the future.
+Free. No token needed. No gambling. No financial risk.
+
+Just your judgment against the future. Scored honestly. Ranked transparently. Part of something larger than any single forecast.
+
+The crowd is waiting.
 
 ---
 
