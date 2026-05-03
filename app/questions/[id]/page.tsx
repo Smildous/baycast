@@ -8,6 +8,18 @@ import ForecastForm from '@/components/ForecastForm'
 import type { Question, Forecast, ForecastPrediction } from '@/lib/types'
 import { formatDate, questionPhase } from '@/lib/utils'
 
+/**
+ * Ensures a URL is absolute (has a protocol).
+ * Handles relative paths (/questions/CoinGecko) and bare domains (coingecko.com).
+ */
+function normalizeUrl(raw: string): string {
+  const trimmed = raw.trim()
+  if (!trimmed) return trimmed
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(trimmed)) return trimmed
+  if (/^[\w-]+(\.[\w-]+)+/.test(trimmed)) return `https://${trimmed}`
+  return `https://${trimmed}`
+}
+
 interface Props {
   params: { id: string }
 }
@@ -181,19 +193,22 @@ export default async function QuestionDetailPage({ params }: Props) {
       )}
 
       {/* Source */}
-      {q.resolution_source && (
-        <div className="mb-8 text-sm text-text-secondary">
-          Resolution source:{' '}
-          <a
-            href={q.resolution_source}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent-blue hover:underline"
-          >
-            {q.resolution_source}
-          </a>
-        </div>
-      )}
+      {q.resolution_source && (() => {
+        const href = normalizeUrl(q.resolution_source)
+        return (
+          <div className="mb-8 text-sm text-text-secondary">
+            Resolution source:{' '}
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent-blue hover:underline break-all"
+            >
+              {href}
+            </a>
+          </div>
+        )
+      })()}
 
       {/* Forecast submission */}
       {isOpen && (
