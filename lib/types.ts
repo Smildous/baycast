@@ -175,3 +175,14 @@ export interface BlockLeaderboardEntry {
   avg_brier_score: number
   resolved_count: number
 }
+
+/** Result of scores + profiles inner join query (used in block pages) */
+export interface ScoreWithProfile {
+  user_id: string
+  question_id: string
+  brier_score: number
+  profiles: {
+    display_name: string
+    avatar_url?: string | null
+  }
+}

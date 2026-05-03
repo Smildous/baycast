@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import CategoryBadge from '@/components/CategoryBadge'
-import type { Block, BlockLeaderboardEntry, Question } from '@/lib/types'
+import type { Block, BlockLeaderboardEntry, Question, ScoreWithProfile } from '@/lib/types'
 
 interface Props {
   params: { id: string }
@@ -66,7 +66,7 @@ export default async function BlockDetailPage({ params }: Props) {
         resolvedSet: Set<string>
       }>()
 
-      for (const row of scoreRows as any[]) {
+      for (const row of scoreRows as unknown as ScoreWithProfile[]) {
         const existing = userScores.get(row.user_id)
         const entry = existing ?? {
           display_name: row.profiles?.display_name ?? 'Unknown',
@@ -74,8 +74,8 @@ export default async function BlockDetailPage({ params }: Props) {
           scores: [] as number[],
           resolvedSet: new Set<string>(),
         }
-        entry.scores.push(row.brier_score as number)
-        entry.resolvedSet.add(row.question_id as string)
+        entry.scores.push(row.brier_score)
+        entry.resolvedSet.add(row.question_id)
         userScores.set(row.user_id, entry)
       }
 
@@ -83,11 +83,11 @@ export default async function BlockDetailPage({ params }: Props) {
       const minForecasts = Math.ceil(resolvedIds.length * 0.5)
 
       const entries: BlockLeaderboardEntry[] = []
-      for (const [, entry] of Array.from(userScores.entries())) {
+      for (const [userId, entry] of Array.from(userScores.entries())) {
         if (entry.scores.length >= minForecasts) {
           const avg = entry.scores.reduce((a, b) => a + b, 0) / entry.scores.length
           entries.push({
-            user_id: '',
+            user_id: userId,
             display_name: entry.display_name,
             avatar_url: entry.avatar_url,
             avg_brier_score: avg,

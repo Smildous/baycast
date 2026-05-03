@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import BlockCard from '@/components/BlockCard'
-import type { Block } from '@/lib/types'
+import type { Block, BlockQuestion, ScoreWithProfile } from '@/lib/types'
 
 export default async function BlocksPage() {
   const supabase = createClient()
@@ -25,85 +25,108 @@ export default async function BlocksPage() {
     )
   }
 
-  // For each block, fetch question count and top scorer
-  const enriched: Block[] = await Promise.all(
-    blocks.map(async (block) => {
-      // Question count
-      const { count } = await supabase
-        .from('block_questions')
-        .select('question_id', { count: 'exact', head: true })
-        .eq('block_id', block.id)
+  // ── Batch fetch all data (avoids N+1) ──
 
-      // Top scorer: users ranked by avg Brier score for resolved questions in this block
-      // First get the question IDs in this block that are resolved
-      const { data: bq } = await supabase
-        .from('block_questions')
-        .select('question_id')
-        .eq('block_id', block.id)
+  const blockIds = blocks.map((b) => b.id)
 
-      const questionIds = (bq ?? []).map((r: { question_id: string }) => r.question_id)
+  // 1. All block_questions for these blocks
+  const { data: allBQ } = await supabase
+    .from('block_questions')
+    .select('block_id, question_id')
+    .in('block_id', blockIds)
 
-      let topScorer: { display_name: string; avg_brier_score: number } | null = null
+  const bqRows = (allBQ ?? []) as Pick<BlockQuestion, 'block_id' | 'question_id'>[]
 
-      if (questionIds.length > 0) {
-        // Get resolved question IDs
-        const { data: resolvedQs } = await supabase
-          .from('questions')
-          .select('id')
-          .in('id', questionIds)
-          .eq('status', 'resolved')
+  // Group question IDs by block_id
+  const questionsByBlock = new Map<string, string[]>()
+  const allQuestionIdsSet = new Set<string>()
+  for (const row of bqRows) {
+    const list = questionsByBlock.get(row.block_id) ?? []
+    list.push(row.question_id)
+    questionsByBlock.set(row.block_id, list)
+    allQuestionIdsSet.add(row.question_id)
+  }
+  const allQuestionIds = Array.from(allQuestionIdsSet)
 
-        const resolvedIds = (resolvedQs ?? []).map((r: { id: string }) => r.id)
+  // 2. All resolved questions among those IDs
+  let resolvedIds: string[] = []
+  if (allQuestionIds.length > 0) {
+    const { data: resolvedQs } = await supabase
+      .from('questions')
+      .select('id')
+      .in('id', allQuestionIds)
+      .eq('status', 'resolved')
+    resolvedIds = (resolvedQs ?? []).map((r) => r.id)
+  }
+  const resolvedSet = new Set(resolvedIds)
 
-        if (resolvedIds.length > 0) {
-          // Get scores for these resolved questions, join profiles
-          const { data: scoreRows } = await supabase
-            .from('scores')
-            .select('user_id, brier_score, profiles!inner(display_name)')
-            .in('question_id', resolvedIds)
+  // 3. All scores for resolved questions (joined with profiles)
+  let scoreRows: ScoreWithProfile[] = []
+  if (resolvedIds.length > 0) {
+    const { data } = await supabase
+      .from('scores')
+      .select('user_id, question_id, brier_score, profiles!inner(display_name)')
+      .in('question_id', resolvedIds)
+    scoreRows = (data ?? []) as unknown as ScoreWithProfile[]
+  }
 
-          if (scoreRows && scoreRows.length > 0) {
-            // Group by user and compute avg Brier
-            const userScores = new Map<string, { name: string; scores: number[] }>()
-            for (const row of scoreRows as any[]) {
-              const existing = userScores.get(row.user_id)
-              const entry = existing ?? {
-                name: (row.profiles?.display_name ?? 'Unknown') as string,
-                scores: [] as number[],
-              }
-              entry.scores.push(row.brier_score as number)
-              userScores.set(row.user_id, entry)
-            }
+  // Build index: question_id -> score entries for that question
+  const scoresByQuestion = new Map<string, ScoreWithProfile[]>()
+  for (const row of scoreRows) {
+    const list = scoresByQuestion.get(row.question_id) ?? []
+    list.push(row)
+    scoresByQuestion.set(row.question_id, list)
+  }
 
-            // Only include users who forecasted at least 50% of resolved questions
-            const minForecasts = Math.ceil(resolvedIds.length * 0.5)
-            let bestAvg = Infinity
-            let bestName = ''
+  // ── Enrich each block in-memory ──
 
-            for (const [, entry] of Array.from(userScores.entries())) {
-              if (entry.scores.length >= minForecasts) {
-                const avg = entry.scores.reduce((a, b) => a + b, 0) / entry.scores.length
-                if (avg < bestAvg) {
-                  bestAvg = avg
-                  bestName = entry.name
-                }
-              }
-            }
+  const enriched: Block[] = blocks.map((block) => {
+    const blockQuestionIds = questionsByBlock.get(block.id) ?? []
+    const questionCount = blockQuestionIds.length
+    const blockResolvedIds = blockQuestionIds.filter((id) => resolvedSet.has(id))
 
-            if (bestAvg < Infinity) {
-              topScorer = { display_name: bestName, avg_brier_score: bestAvg }
-            }
+    let topScorer: { display_name: string; avg_brier_score: number } | null = null
+
+    if (blockResolvedIds.length > 0) {
+      const userScores = new Map<string, { name: string; scores: number[] }>()
+      for (const qid of blockResolvedIds) {
+        const rows = scoresByQuestion.get(qid) ?? []
+        for (const row of rows) {
+          const existing = userScores.get(row.user_id)
+          const entry = existing ?? {
+            name: row.profiles.display_name,
+            scores: [] as number[],
+          }
+          entry.scores.push(row.brier_score)
+          userScores.set(row.user_id, entry)
+        }
+      }
+
+      const minForecasts = Math.ceil(blockResolvedIds.length * 0.5)
+      let bestAvg = Infinity
+      let bestName = ''
+
+      for (const [, entry] of Array.from(userScores.entries())) {
+        if (entry.scores.length >= minForecasts) {
+          const avg = entry.scores.reduce((a, b) => a + b, 0) / entry.scores.length
+          if (avg < bestAvg) {
+            bestAvg = avg
+            bestName = entry.name
           }
         }
       }
 
-      return {
-        ...block,
-        question_count: count ?? 0,
-        top_scorer: topScorer,
-      } as Block
-    })
-  )
+      if (bestAvg < Infinity) {
+        topScorer = { display_name: bestName, avg_brier_score: bestAvg }
+      }
+    }
+
+    return {
+      ...block,
+      question_count: questionCount,
+      top_scorer: topScorer,
+    } as Block
+  })
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
