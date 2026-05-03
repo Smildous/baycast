@@ -1,0 +1,33 @@
+name: Odin Push Review
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  odin-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    if: github.actor != 'github-actions[bot]'
+    
+    steps:
+      - name: Odin Push Review
+        run: |
+          echo "## Odin Auto-Review — Push on main"
+          echo ""
+          echo "**Commit:** ${{ github.sha }}"
+          echo "**Author:** ${{ github.actor }}"
+          echo "**Message:** ${{ github.event.head_commit.message }}"
+          echo ""
+          echo "✅ CI triggered. Odin will review in the next daily briefing."
+          echo ""
+          echo "### Quick Checks"
+          echo "- Build status: see CI workflow above"
+          echo "- Branch: main"
+          
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          if echo "$COMMIT_MSG" | grep -qE "^(feat|fix|docs|refactor|test|chore|style|perf)(\(.+\))?: .+"; then
+            echo "- Conventional commit: ✅"
+          else
+            echo "- Conventional commit: ⚠️ Non-standard format"
+          fi
