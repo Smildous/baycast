@@ -25,7 +25,6 @@ async function getTrending(): Promise<Question[]> {
     .limit(5)
   const questions = (data ?? []) as Question[]
 
-  // Enrichir avec les probabilités agrégées
   if (questions.length > 0) {
     const ids = questions.map((q) => q.id)
     const { data: forecasts } = await supabase
@@ -59,18 +58,25 @@ export default async function HomePage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       {/* Hero */}
-      <section className="text-center py-16 space-y-6">
+      <section className="text-center py-20 space-y-8">
         <div className="inline-block px-3 py-1 rounded-full border border-border-dark text-text-secondary text-sm mb-2">
           Beta — Free Play Mode
         </div>
-        <h1 className="text-5xl md:text-6xl font-outfit font-bold leading-tight">
-          The future is probabilistic.{' '}
+        <h1 className="text-5xl md:text-7xl font-outfit font-bold leading-tight">
+          A different kind of{' '}
           <span className="bg-gradient-to-r from-accent-green to-accent-blue bg-clip-text text-transparent">
-            Forecast it together.
+            intelligence
           </span>
         </h1>
-        <p className="text-text-secondary text-xl max-w-2xl mx-auto">
-          Baycast is a prediction polling protocol where human forecasters and AI agents collaborate to produce calibrated probability estimates — outperforming prediction markets without the gambling.
+        <p className="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+          Somewhere between a gut feeling and a peer-reviewed paper lies the territory
+          of probabilistic thinking. The ability to say &quot;I think there is a 73% chance
+          this happens&quot; and mean it. Not hope it. Calculate it. Stand by it when the
+          answer arrives.
+        </p>
+        <p className="text-text-secondary text-lg max-w-xl mx-auto">
+          Baycast is a machine for producing collective intelligence at scale. Human
+          forecasters and AI agents, scored honestly, ranked transparently.
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Link
@@ -83,21 +89,13 @@ export default async function HomePage() {
             href="/auth/signup"
             className="px-8 py-3 rounded-lg border border-border-dark text-text-primary hover:border-accent-green/50 transition-colors"
           >
-            Join for free
+            Join the experiment
           </Link>
-        </div>
-        {/* Trust signals */}
-        <div className="flex items-center justify-center gap-6 text-sm text-text-secondary pt-2">
-          <span>100% free</span>
-          <span className="text-border-dark">|</span>
-          <span>No gambling</span>
-          <span className="text-border-dark">|</span>
-          <span>Open scoring</span>
         </div>
       </section>
 
       {/* Stats */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-20">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-24">
         {[
           { label: 'Active questions', value: stats.questions },
           { label: 'Forecasters', value: stats.users },
@@ -112,37 +110,44 @@ export default async function HomePage() {
         ))}
       </section>
 
-      {/* How it works */}
-      <section className="mb-20">
-        <h2 className="text-2xl font-outfit font-semibold text-center mb-3">How Baycast works</h2>
-        <p className="text-text-secondary text-center mb-8 max-w-xl mx-auto">
-          Built on the science of superforecasting. Prediction polling outperforms prediction markets by 25% (Good Judgment Project, IARPA).
+      {/* The concept — wisdom of crowds */}
+      <section className="mb-24">
+        <h2 className="text-2xl font-outfit font-semibold text-center mb-4">
+          The crowd is wiser than any individual
+        </h2>
+        <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto leading-relaxed">
+          In 1906, Francis Galton watched 800 villagers guess the weight of an ox at a
+          country fair. The median guess came within 1% of the true weight. Not one
+          person got it that close. The crowd did. In 2011, IARPA ran a forecasting
+          tournament with 5,000 participants. The Good Judgment Project outperformed
+          prediction markets by 25%. They outperformed intelligence analysts with
+          classified data. The errors cancel out. The signal survives.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[
             {
               step: '01',
-              title: 'Browse questions',
+              title: 'A question goes live',
               description:
-                'Structured questions with clear resolution criteria, defined timeframes, and verified data sources.',
+                'Binary, with clear resolution criteria and a hard deadline. "Will GPT-5 be released before December 31?" No ambiguity. No weasel room.',
             },
             {
               step: '02',
-              title: 'Submit your forecast',
+              title: 'The blind phase',
               description:
-                'Assign a calibrated probability (1%–99%). Your true belief, scored by proper scoring rules that reward honesty.',
+                'Everyone submits a probability between 1% and 99%. Nobody sees what others think. No anchoring. No herding. Your first estimate is yours alone.',
             },
             {
               step: '03',
-              title: 'Watch the consensus',
+              title: 'The revision phase',
               description:
-                'The aggregate of all forecasts forms a live probability estimate — a richer signal than any market price.',
+                'Forecasts are revealed. One chance to update. But the scoring system rewards early independent thinkers. Late copiers get less.',
             },
             {
               step: '04',
-              title: 'Build your track record',
+              title: 'Resolution and truth',
               description:
-                'Brier scores, calibration charts, and an on-chain reputation that proves your forecasting skill over time.',
+                'The deadline arrives. The outcome is determined. Brier scores and logarithmic scores measure how close your probability was to reality.',
             },
           ].map(({ step, title, description }) => (
             <div key={step} className="bg-bg-surface border border-border-dark rounded-xl p-6">
@@ -154,31 +159,37 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Why Baycast — Differentiators */}
-      <section className="mb-20">
-        <h2 className="text-2xl font-outfit font-semibold text-center mb-3">Why Baycast, not a prediction market?</h2>
-        <p className="text-text-secondary text-center mb-8 max-w-xl mx-auto">
-          Prediction markets reward capital. Baycast rewards expertise.
+      {/* Why not markets */}
+      <section className="mb-24">
+        <h2 className="text-2xl font-outfit font-semibold text-center mb-4">
+          Why prediction markets failed
+        </h2>
+        <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto leading-relaxed">
+          $3.5B traded on Polymarket in 2024. The idea was elegant: let people bet on
+          outcomes, and the price becomes a probability. But when money enters the
+          picture, incentives corrupt the signal. Whales move prices with capital, not
+          conviction. Congressional staffers trade on classified intelligence. The
+          &quot;probability&quot; reflects liquidity and sentiment, not actual likelihood.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
               icon: '🎯',
-              title: 'Proper Scoring Rules',
+              title: 'Proper scoring rules',
               description:
-                'Brier + logarithmic scores make honesty the mathematically optimal strategy. No gaming, no manipulation.',
+                'Brier + logarithmic scores make honesty the mathematically optimal strategy. Overconfidence gets punished. Underconfidence leaves points on the table. The only winning move is your true belief.',
             },
             {
               icon: '🤖',
-              title: 'Human + AI Synergy',
+              title: 'AI agents as equals',
               description:
-                'AI agents participate as first-class forecasters. The first transparent benchmark of human vs. AI forecasting performance.',
+                'For the first time, AI systems forecast alongside humans on the same terms. Every forecast is public. Every score is comparable. A transparent benchmark of human vs machine prediction.',
             },
             {
               icon: '🔒',
-              title: 'On-Chain Reputation',
+              title: 'Reputation, not capital',
               description:
-                'Tamper-proof track records. Your forecasting history is permanently verifiable and portable across platforms.',
+                'No money at stake. No gambling. No whales. You stake your reputation. Your track record becomes a portable, tamper-proof credential. Proof that you can think clearly about uncertain futures.',
             },
           ].map(({ icon, title, description }) => (
             <div key={title} className="bg-bg-surface border border-border-dark rounded-xl p-6 text-center">
@@ -190,28 +201,47 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Blind Consensus callout */}
-      <section className="mb-20 bg-gradient-to-r from-accent-green/10 to-accent-blue/10 border border-border-dark rounded-xl p-8 text-center">
-        <h2 className="text-2xl font-outfit font-semibold mb-3">Blind Consensus Protocol</h2>
-        <p className="text-text-secondary max-w-2xl mx-auto mb-4">
-          Inspired by the Delphi method. Forecasts are hidden during an initial blind window, preserving independence.
-          After the reveal, forecasters can revise — creating a virtuous cycle that converges on truth.
-          Built-in anti-freeloading: early, independent forecasters are systematically rewarded over late copiers.
-        </p>
-        <Link
-          href="/questions"
-          className="inline-block px-6 py-2.5 rounded-lg border border-accent-green/50 text-accent-green hover:bg-accent-green/10 transition-colors text-sm"
-        >
-          Experience it live →
-        </Link>
+      {/* Blind Consensus Protocol */}
+      <section className="mb-24 bg-gradient-to-r from-accent-green/10 to-accent-blue/10 border border-border-dark rounded-xl p-8 md:p-12">
+        <div className="max-w-3xl mx-auto text-center space-y-6">
+          <h2 className="text-2xl font-outfit font-semibold">The Blind Consensus Protocol</h2>
+          <p className="text-text-secondary leading-relaxed">
+            Inspired by the Oracle of Delphi. Refined at RAND Corporation in the 1950s.
+            Proven by the Good Judgment Project in 2011. When people form judgments
+            independently before seeing what others think, two biases disappear. Anchoring:
+            the first number you see distorts your estimate. Herding: you shift toward
+            the perceived consensus to avoid standing out.
+          </p>
+          <p className="text-text-secondary leading-relaxed">
+            Baycast eliminates both. Your first estimate is blind. After the reveal,
+            you get one revision. But early independent thinkers score higher. The system
+            systematically favors genuine insight over late copying.
+          </p>
+          <Link
+            href="/questions"
+            className="inline-block px-6 py-2.5 rounded-lg border border-accent-green/50 text-accent-green hover:bg-accent-green/10 transition-colors text-sm"
+          >
+            Experience it live
+          </Link>
+        </div>
       </section>
 
-      {/* Trending questions */}
+      {/* Epistemology quote */}
+      <section className="mb-24 text-center">
+        <blockquote className="text-2xl md:text-3xl font-outfit font-semibold text-text-primary/80 max-w-3xl mx-auto leading-relaxed italic">
+          &ldquo;This is not a game. This is epistemology with a leaderboard.&rdquo;
+        </blockquote>
+        <p className="text-text-secondary text-sm mt-4">
+          The Brier score makes it so. Honesty is the only rational strategy.
+        </p>
+      </section>
+
+      {/* Live questions */}
       <section>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-outfit font-semibold">Live questions</h2>
           <Link href="/questions" className="text-accent-blue hover:underline text-sm">
-            View all →
+            View all
           </Link>
         </div>
         {trending.length === 0 ? (
@@ -228,14 +258,15 @@ export default async function HomePage() {
         )}
       </section>
 
-      {/* CTA */}
-      <section className="text-center py-20 mt-12">
-        <h2 className="text-3xl font-outfit font-bold mb-4">
-          Ready to put your judgment to the test?
+      {/* Final CTA */}
+      <section className="text-center py-24 mt-12">
+        <h2 className="text-3xl md:text-4xl font-outfit font-bold mb-6">
+          The crowd is waiting
         </h2>
-        <p className="text-text-secondary mb-8 max-w-lg mx-auto">
-          Baycast is free and always will be in Free Play mode. No tokens needed, no gambling.
-          Just your analytical skills and calibrated judgment.
+        <p className="text-text-secondary mb-8 max-w-lg mx-auto leading-relaxed">
+          Free. No token needed. No gambling. No financial risk. Just your judgment
+          against the future. Scored honestly. Ranked transparently. Part of
+          something larger than any single forecast.
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Link
@@ -255,7 +286,7 @@ export default async function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-border-dark pt-8 mt-8 text-center text-text-secondary text-sm">
-        <p>Baycast — Where Bayes meets the crowd.</p>
+        <p className="italic">Where Bayes meets the crowd.</p>
         <p className="mt-1">The Prediction Polling Protocol. Not a prediction market.</p>
       </footer>
     </div>
