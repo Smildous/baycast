@@ -47,7 +47,8 @@ export default async function QuestionsPage({ searchParams }: Props) {
   let query = supabase.from('questions').select('*').order('closes_at', { ascending: true })
 
   if (normalizedCategory) {
-    query = query.eq('category', normalizedCategory)
+    // Use ilike for case-insensitive matching — handles DB data with different casing
+    query = query.ilike('category', normalizedCategory)
   }
   if (searchParams.status) {
     query = query.eq('status', searchParams.status)
