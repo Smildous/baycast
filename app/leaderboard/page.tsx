@@ -2,6 +2,13 @@ import { createClient } from '@/lib/supabase/server'
 import type { LeaderboardEntry } from '@/lib/types'
 import Image from 'next/image'
 import Link from 'next/link'
+import { buildSEO } from '@/lib/seo'
+
+export const metadata = buildSEO({
+  title: 'Leaderboard',
+  description: 'Top forecasters ranked by Brier score. See who has the most accurate predictions on Baycast.',
+  path: '/leaderboard',
+})
 
 interface Props {
   searchParams: { period?: 'all' | 'month' | 'week' }

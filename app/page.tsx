@@ -3,9 +3,17 @@ import { createClient } from '@/lib/supabase/server'
 import QuestionCard from '@/components/QuestionCard'
 import type { Question } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
+import { buildSEO } from '@/lib/seo'
 
 // Ensure the landing page is always dynamically rendered so stats reflect the live DB
 export const dynamic = 'force-dynamic'
+
+export const metadata = buildSEO({
+  title: 'Baycast — Collective Intelligence Platform',
+  description:
+    'Join thousands of forecasters predicting real-world events. Scored accuracy, transparent consensus.',
+  path: '',
+})
 
 async function getStats() {
   const supabase = createClient()

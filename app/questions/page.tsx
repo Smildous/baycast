@@ -3,6 +3,13 @@ import QuestionCard from '@/components/QuestionCard'
 import type { Question } from '@/lib/types'
 import { CATEGORIES, normalizeCategory } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
+import { buildSEO } from '@/lib/seo'
+
+export const metadata = buildSEO({
+  title: 'Questions',
+  description: 'Browse open forecasting questions. Submit your probability estimates and get scored on accuracy.',
+  path: '/questions',
+})
 
 const PAGE_SIZE = 10
 
