@@ -211,11 +211,23 @@ export default function OnboardingModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      {/* Backdrop — clicks close the modal */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleSkip} />
 
       {/* Modal */}
       <div className="relative w-full max-w-md rounded-2xl bg-bg-surface border border-border-dark shadow-2xl p-8">
+        {/* Close / Skip button (X) — always visible */}
+        <button
+          onClick={handleSkip}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-text-secondary hover:text-text-primary hover:bg-white/10 transition-colors"
+          aria-label="Close onboarding"
+          title="Skip onboarding"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-2 mb-6">
           {([1, 2, 3] as OnboardingStep[]).map((step) => (

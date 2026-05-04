@@ -8,6 +8,7 @@ import {
   useCallback,
   type ReactNode,
 } from 'react'
+import { usePathname } from 'next/navigation'
 import OnboardingModal, {
   type OnboardingContextValue,
 } from './OnboardingModal'
@@ -32,19 +33,44 @@ export function useOnboarding() {
   return useContext(OnboardingContext)
 }
 
+/** Routes where the onboarding modal must NOT appear */
+const AUTH_ROUTE_PREFIX = '/auth'
+
+function isAuthRoute(pathname: string): boolean {
+  return pathname.startsWith(AUTH_ROUTE_PREFIX)
+}
+
 export default function OnboardingProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname()
   const [currentStep, setCurrentStep] = useState<OnboardingStep>(1)
   const [isOpen, setIsOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
+    // Never show onboarding on auth routes
+    if (isAuthRoute(pathname)) {
+      setIsOpen(false)
+      return
+    }
     if (!isOnboardingCompleted()) {
       const savedStep = getOnboardingStep()
       setCurrentStep(savedStep)
       setIsOpen(true)
     }
-  }, [])
+  }, [pathname])
+
+  // Lock body scroll when modal is open, restore on close
+  useEffect(() => {
+    if (!mounted) return
+    if (isOpen) {
+      const prev = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = prev
+      }
+    }
+  }, [isOpen, mounted])
 
   const nextStep = useCallback(() => {
     setCurrentStep((prev) => {
