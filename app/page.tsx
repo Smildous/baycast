@@ -4,6 +4,9 @@ import QuestionCard from '@/components/QuestionCard'
 import type { Question } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
 
+// Ensure the landing page is always dynamically rendered so stats reflect the live DB
+export const dynamic = 'force-dynamic'
+
 async function getStats() {
   const supabase = createClient()
   const [{ count: qCount }, { count: uCount }, { count: fCount }] = await Promise.all([
