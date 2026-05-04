@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import './globals.css'
 import Nav from '@/components/Nav'
 import OnboardingProvider from '@/app/components/OnboardingProvider'
@@ -33,7 +34,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-bg-primary text-text-primary font-dm-sans">
         <OnboardingProvider>
           <Nav />
-          <main className="pt-16">{children}</main>
+          <main className="pt-16 min-h-[calc(100vh-8rem)]">{children}</main>
+          <footer className="border-t border-border-dark py-8 mt-8">
+            <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-text-secondary">
+              <div className="flex items-center gap-2">
+                <span className="font-outfit font-bold bg-gradient-to-r from-accent-green to-accent-blue bg-clip-text text-transparent">
+                  BAYCAST
+                </span>
+                <span>© 2026</span>
+              </div>
+              <div className="flex items-center gap-6">
+                <Link href="/questions" className="hover:text-text-primary transition-colors">Questions</Link>
+                <Link href="/leaderboard" className="hover:text-text-primary transition-colors">Leaderboard</Link>
+                <Link href="/blocks" className="hover:text-text-primary transition-colors">Blocks</Link>
+                <Link href="/auth/signup" className="hover:text-text-primary transition-colors">Sign up</Link>
+              </div>
+              <div className="text-text-secondary/60">
+                Not a prediction market. Pure forecasting.
+              </div>
+            </div>
+          </footer>
         </OnboardingProvider>
       </body>
     </html>
