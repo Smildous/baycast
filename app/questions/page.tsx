@@ -4,8 +4,10 @@ import type { Question } from '@/lib/types'
 import { CATEGORIES, normalizeCategory } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
 
+const PAGE_SIZE = 10
+
 interface Props {
-  searchParams: { category?: string; status?: string }
+  searchParams: { category?: string; status?: string; page?: string }
 }
 
 // Récupère les prévisions agrégées pour un ensemble de questions
@@ -44,6 +46,9 @@ export default async function QuestionsPage({ searchParams }: Props) {
     ? normalizeCategory(searchParams.category)
     : undefined
 
+  // Pagination: parse page param, default to 1
+  const currentPage = Math.max(1, parseInt(searchParams.page ?? '1', 10) || 1)
+
   let query = supabase.from('questions').select('*').order('closes_at', { ascending: true })
 
   if (normalizedCategory) {
@@ -56,8 +61,13 @@ export default async function QuestionsPage({ searchParams }: Props) {
     query = query.eq('status', 'open')
   }
 
-  const { data } = await query
+  // Server-side pagination using .range()
+  const from = (currentPage - 1) * PAGE_SIZE
+  const to = from + PAGE_SIZE - 1
+  const { data, count } = await query.range(from, to)
   const questions = (data ?? []) as Question[]
+  const totalCount = count ?? 0
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
 
   // Récupère les probabilités agrégées et le nombre de prévisionnistes
   const ids = questions.map((q) => q.id)
@@ -143,11 +153,61 @@ export default async function QuestionsPage({ searchParams }: Props) {
           No questions in this category.
         </div>
       ) : (
-        <div className="space-y-3">
-          {enriched.map((q) => (
-            <QuestionCard key={q.id} question={q} />
-          ))}
-        </div>
+        <>
+          <div className="space-y-3">
+            {enriched.map((q) => (
+              <QuestionCard key={q.id} question={q} />
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <nav className="flex items-center justify-center gap-1 mt-8" aria-label="Pagination">
+              {/* Previous */}
+              {currentPage > 1 ? (
+                <a
+                  href={`/questions?page=${currentPage - 1}${normalizedCategory ? `&category=${encodeURIComponent(normalizedCategory)}` : ''}${searchParams.status ? `&status=${searchParams.status}` : ''}`}
+                  className="px-3 py-2 rounded-lg border border-border-dark text-sm text-text-secondary hover:border-accent-green/50 hover:text-white transition-colors"
+                >
+                  ← Prev
+                </a>
+              ) : (
+                <span className="px-3 py-2 rounded-lg border border-border-dark/50 text-sm text-text-secondary/40 cursor-not-allowed">
+                  ← Prev
+                </span>
+              )}
+
+              {/* Page numbers */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <a
+                  key={page}
+                  href={`/questions?page=${page}${normalizedCategory ? `&category=${encodeURIComponent(normalizedCategory)}` : ''}${searchParams.status ? `&status=${searchParams.status}` : ''}`}
+                  className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+                    currentPage === page
+                      ? 'border-accent-green text-accent-green bg-accent-green/10'
+                      : 'border-border-dark text-text-secondary hover:border-accent-green/50 hover:text-white'
+                  }`}
+                >
+                  {page}
+                </a>
+              ))}
+
+              {/* Next */}
+              {currentPage < totalPages ? (
+                <a
+                  href={`/questions?page=${currentPage + 1}${normalizedCategory ? `&category=${encodeURIComponent(normalizedCategory)}` : ''}${searchParams.status ? `&status=${searchParams.status}` : ''}`}
+                  className="px-3 py-2 rounded-lg border border-border-dark text-sm text-text-secondary hover:border-accent-green/50 hover:text-white transition-colors"
+                >
+                  Next →
+                </a>
+              ) : (
+                <span className="px-3 py-2 rounded-lg border border-border-dark/50 text-sm text-text-secondary/40 cursor-not-allowed">
+                  Next →
+                </span>
+              )}
+            </nav>
+          )}
+        </>
       )}
     </div>
   )
