@@ -68,25 +68,21 @@ export default async function QuestionsPage({ searchParams }: Props) {
   // Pagination: parse page param, default to 1
   const currentPage = Math.max(1, parseInt(searchParams.page ?? '1', 10) || 1)
 
-  let query = supabase.from('questions').select('*', { count: 'exact' }).order('closes_at', { ascending: true })
+  // Step 1: Get total count via separate head-only query (more reliable than
+  // requesting count alongside range, where the PostgREST header can be lost).
+  let countQuery = supabase.from('questions').select('*', { count: 'exact', head: true }).eq('status', searchParams.status || 'open')
+  if (normalizedCategory) countQuery = countQuery.eq('category', normalizedCategory)
+  const { count: totalCount } = await countQuery
 
-  if (normalizedCategory) {
-    // Use eq for exact matching — categories are already normalized via normalizeCategory
-    query = query.eq('category', normalizedCategory)
-  }
-  if (searchParams.status) {
-    query = query.eq('status', searchParams.status)
-  } else {
-    query = query.eq('status', 'open')
-  }
-
-  // Server-side pagination using .range()
+  // Step 2: Get paginated data
   const from = (currentPage - 1) * PAGE_SIZE
   const to = from + PAGE_SIZE - 1
-  const { data, count } = await query.range(from, to)
+  let dataQuery = supabase.from('questions').select('*').order('closes_at', { ascending: true })
+  if (normalizedCategory) dataQuery = dataQuery.eq('category', normalizedCategory)
+  dataQuery = dataQuery.eq('status', searchParams.status || 'open')
+  const { data } = await dataQuery.range(from, to)
   const questions = (data ?? []) as Question[]
-  const totalCount = count ?? 0
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
+  const totalPages = Math.ceil((totalCount ?? 0) / PAGE_SIZE)
 
   // Récupère les probabilités agrégées et le nombre de prévisionnistes
   const ids = questions.map((q) => q.id)

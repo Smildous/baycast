@@ -7,6 +7,9 @@ export type Category =
   | 'Science'
   | 'Sports'
   | 'Culture'
+  | 'AI'
+  | 'Crypto'
+  | 'Entertainment'
   | 'Other'
 
 /** Canonical categories keyed by lowercase lookup */
@@ -19,10 +22,14 @@ export const CATEGORY_ALIASES: Record<string, Category> = {
   science: 'Science',
   sports: 'Sports',
   culture: 'Culture',
+  ai: 'AI',
+  crypto: 'Crypto',
+  cryptocurrency: 'Crypto',
+  entertainment: 'Entertainment',
   other: 'Other',
 }
 
-export const CATEGORIES: Category[] = ['Politics', 'Technology', 'Economy', 'Science', 'Sports', 'Culture', 'Other']
+export const CATEGORIES: Category[] = ['Politics', 'Technology', 'Economy', 'Science', 'Sports', 'Culture', 'AI', 'Crypto', 'Entertainment', 'Other']
 
 /** Normalize any category string (lowercase, shorthand) to its canonical Category form */
 export function normalizeCategory(raw: string): Category {

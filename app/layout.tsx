@@ -5,6 +5,9 @@ import Nav from '@/components/Nav'
 import OnboardingProvider from '@/app/components/OnboardingProvider'
 
 export const metadata: Metadata = {
+  icons: {
+    icon: '/favicon.svg',
+  },
   title: 'Baycast — The Prediction Polling Protocol',
   description: 'Baycast harnesses collective intelligence and AI agents to outperform prediction markets. Submit forecasts, track calibration, and join the future of decentralized forecasting.',
   keywords: ['prediction polling', 'forecasting', 'collective intelligence', 'superforecasting', 'Bayes', 'Brier score', 'prediction market alternative', 'AI forecasting', 'decentralized forecasting'],
