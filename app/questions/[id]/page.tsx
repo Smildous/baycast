@@ -11,13 +11,14 @@ import { formatDate, questionPhase } from '@/lib/utils'
 /**
  * Ensures a URL is absolute (has a protocol).
  * Handles relative paths (/questions/CoinGecko) and bare domains (coingecko.com).
+ * Also lowercases bare domain-like inputs to avoid broken links (e.g. "CoinGecko" → "https://coingecko.com").
  */
 function normalizeUrl(raw: string): string {
   const trimmed = raw.trim()
   if (!trimmed) return trimmed
   if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(trimmed)) return trimmed
-  if (/^[\w-]+(\.[\w-]+)+/.test(trimmed)) return `https://${trimmed}`
-  return `https://${trimmed}`
+  // Bare domain or word: lowercase it and prepend https://
+  return `https://${trimmed.toLowerCase()}`
 }
 
 interface Props {
