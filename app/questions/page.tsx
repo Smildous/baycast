@@ -61,11 +61,11 @@ export default async function QuestionsPage({ searchParams }: Props) {
   // Pagination: parse page param, default to 1
   const currentPage = Math.max(1, parseInt(searchParams.page ?? '1', 10) || 1)
 
-  let query = supabase.from('questions').select('*').order('closes_at', { ascending: true })
+  let query = supabase.from('questions').select('*', { count: 'exact' }).order('closes_at', { ascending: true })
 
   if (normalizedCategory) {
-    // Use ilike for case-insensitive matching — handles DB data with different casing
-    query = query.ilike('category', normalizedCategory)
+    // Use eq since normalizeCategory() already converts to canonical PascalCase
+    query = query.eq('category', normalizedCategory)
   }
   if (searchParams.status) {
     query = query.eq('status', searchParams.status)
