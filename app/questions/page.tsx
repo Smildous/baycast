@@ -36,6 +36,18 @@ async function fetchAggregates(
   return result
 }
 
+/**
+ * Build a query string from an explicit set of params.
+ * Always starts from scratch — never appends to existing params,
+ * which prevents query param accumulation bugs.
+ */
+function buildQueryString(params: Record<string, string | undefined>): string {
+  const parts = Object.entries(params)
+    .filter(([, v]) => v !== undefined && v !== '')
+    .map(([k, v]) => `${k}=${encodeURIComponent(v!)}`)
+  return parts.length > 0 ? `?${parts.join('&')}` : ''
+}
+
 export default async function QuestionsPage({ searchParams }: Props) {
   const supabase = createClient()
   await autoCloseExpiredQuestions(supabase)
@@ -81,6 +93,46 @@ export default async function QuestionsPage({ searchParams }: Props) {
     }
   })
 
+  // Helper to build filter hrefs using explicit param map to prevent accumulation.
+  // Same-group filters replace; cross-group filters add.
+  const filterHref = (overrides: Record<string, string | undefined>) => {
+    const base: Record<string, string | undefined> = {}
+    if (normalizedCategory) base.category = normalizedCategory
+    if (searchParams.status) base.status = searchParams.status
+    for (const [k, v] of Object.entries(overrides)) {
+      if (v === undefined) {
+        delete base[k]
+      } else {
+        base[k] = v
+      }
+    }
+    return `/questions${buildQueryString(base)}`
+  }
+
+  // Helper to build pagination hrefs preserving filters
+  const pageHref = (page: number) => {
+    const base: Record<string, string | undefined> = {}
+    if (normalizedCategory) base.category = normalizedCategory
+    if (searchParams.status) base.status = searchParams.status
+    if (page > 1) base.page = String(page)
+    return `/questions${buildQueryString(base)}`
+  }
+
+  // Page numbers to display (show up to 5 pages around current)
+  const getPageNumbers = (): (number | '...')[] => {
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1)
+    }
+    const pages: (number | '...')[] = [1]
+    const start = Math.max(2, currentPage - 1)
+    const end = Math.min(totalPages - 1, currentPage + 1)
+    if (start > 2) pages.push('...')
+    for (let i = start; i <= end; i++) pages.push(i)
+    if (end < totalPages - 1) pages.push('...')
+    pages.push(totalPages)
+    return pages
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="mb-8">
@@ -91,7 +143,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
       {/* Category filters */}
       <div className="flex flex-wrap gap-2 mb-8">
         <a
-          href={searchParams.status ? `/questions?status=${searchParams.status}` : '/questions'}
+          href={filterHref({ category: undefined })}
           className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
             !normalizedCategory
               ? 'border-accent-green text-accent-green bg-accent-green/10'
@@ -100,23 +152,19 @@ export default async function QuestionsPage({ searchParams }: Props) {
         >
           All
         </a>
-        {CATEGORIES.map((cat) => {
-          const statusParam = searchParams.status ? `status=${searchParams.status}` : ''
-          const qs = `category=${encodeURIComponent(cat)}${statusParam ? `&${statusParam}` : ''}`
-          return (
-            <a
-              key={cat}
-              href={`/questions?${qs}`}
-              className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
-                normalizedCategory === cat
-                  ? 'border-accent-green text-accent-green bg-accent-green/10'
-                  : 'border-border-dark text-text-secondary hover:border-accent-green/50'
-              }`}
-            >
-              {cat}
-            </a>
-          )
-        })}
+        {CATEGORIES.map((cat) => (
+          <a
+            key={cat}
+            href={filterHref({ category: cat })}
+            className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
+              normalizedCategory === cat
+                ? 'border-accent-green text-accent-green bg-accent-green/10'
+                : 'border-border-dark text-text-secondary hover:border-accent-green/50'
+            }`}
+          >
+            {cat}
+          </a>
+        ))}
       </div>
 
       {/* Status filter */}
@@ -125,27 +173,19 @@ export default async function QuestionsPage({ searchParams }: Props) {
           { label: 'Open', value: undefined },
           { label: 'Closed', value: 'closed' },
           { label: 'Resolved', value: 'resolved' },
-        ].map(({ label, value }) => {
-          // Conserver le paramètre category dans les liens de statut
-          const catParam = normalizedCategory ? `category=${encodeURIComponent(normalizedCategory)}` : ''
-          const statusParam = value ? `status=${value}` : ''
-          const qs = [catParam, statusParam].filter(Boolean).join('&')
-          const href = `/questions${qs ? `?${qs}` : ''}`
-
-          return (
-            <a
-              key={label}
-              href={href}
-              className={`px-4 py-1.5 rounded-lg border text-sm transition-colors ${
-                (searchParams.status ?? undefined) === value
-                  ? 'border-accent-blue text-accent-blue bg-accent-blue/10'
-                  : 'border-border-dark text-text-secondary hover:border-accent-blue/30'
-              }`}
-            >
-              {label}
-            </a>
-          )
-        })}
+        ].map(({ label, value }) => (
+          <a
+            key={label}
+            href={filterHref({ status: value })}
+            className={`px-4 py-1.5 rounded-lg border text-sm transition-colors ${
+              (searchParams.status ?? undefined) === value
+                ? 'border-accent-blue text-accent-blue bg-accent-blue/10'
+                : 'border-border-dark text-text-secondary hover:border-accent-blue/30'
+            }`}
+          >
+            {label}
+          </a>
+        ))}
       </div>
 
       {enriched.length === 0 ? (
@@ -166,7 +206,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
               {/* Previous */}
               {currentPage > 1 ? (
                 <a
-                  href={`/questions?page=${currentPage - 1}${normalizedCategory ? `&category=${encodeURIComponent(normalizedCategory)}` : ''}${searchParams.status ? `&status=${searchParams.status}` : ''}`}
+                  href={pageHref(currentPage - 1)}
                   className="px-3 py-2 rounded-lg border border-border-dark text-sm text-text-secondary hover:border-accent-green/50 hover:text-white transition-colors"
                 >
                   ← Prev
@@ -178,24 +218,30 @@ export default async function QuestionsPage({ searchParams }: Props) {
               )}
 
               {/* Page numbers */}
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <a
-                  key={page}
-                  href={`/questions?page=${page}${normalizedCategory ? `&category=${encodeURIComponent(normalizedCategory)}` : ''}${searchParams.status ? `&status=${searchParams.status}` : ''}`}
-                  className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
-                    currentPage === page
-                      ? 'border-accent-green text-accent-green bg-accent-green/10'
-                      : 'border-border-dark text-text-secondary hover:border-accent-green/50 hover:text-white'
-                  }`}
-                >
-                  {page}
-                </a>
-              ))}
+              {getPageNumbers().map((page, idx) =>
+                page === '...' ? (
+                  <span key={`ellipsis-${idx}`} className="px-2 py-2 text-text-secondary text-sm">
+                    …
+                  </span>
+                ) : (
+                  <a
+                    key={page}
+                    href={pageHref(page)}
+                    className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+                      currentPage === page
+                        ? 'border-accent-green text-accent-green bg-accent-green/10'
+                        : 'border-border-dark text-text-secondary hover:border-accent-green/50 hover:text-white'
+                    }`}
+                  >
+                    {page}
+                  </a>
+                )
+              )}
 
               {/* Next */}
               {currentPage < totalPages ? (
                 <a
-                  href={`/questions?page=${currentPage + 1}${normalizedCategory ? `&category=${encodeURIComponent(normalizedCategory)}` : ''}${searchParams.status ? `&status=${searchParams.status}` : ''}`}
+                  href={pageHref(currentPage + 1)}
                   className="px-3 py-2 rounded-lg border border-border-dark text-sm text-text-secondary hover:border-accent-green/50 hover:text-white transition-colors"
                 >
                   Next →
