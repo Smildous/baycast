@@ -15,6 +15,11 @@ export default function LoginPage() {
           </p>
         </div>
         <AuthForm mode="login" />
+        <p className="text-center text-text-secondary text-sm mt-4">
+          <Link href="/auth/reset-password" className="text-accent-green hover:underline">
+            Forgot password?
+          </Link>
+        </p>
       </div>
     </div>
   )
