@@ -170,22 +170,28 @@ export default async function QuestionsPage({ searchParams }: Props) {
       {/* Status filter */}
       <div className="flex gap-2 mb-8">
         {[
-          { label: 'Open', value: undefined },
+          { label: 'Open', value: 'open' },
           { label: 'Closed', value: 'closed' },
           { label: 'Resolved', value: 'resolved' },
-        ].map(({ label, value }) => (
-          <a
-            key={label}
-            href={filterHref({ status: value })}
-            className={`px-4 py-1.5 rounded-lg border text-sm transition-colors ${
-              (searchParams.status ?? undefined) === value
-                ? 'border-accent-blue text-accent-blue bg-accent-blue/10'
-                : 'border-border-dark text-text-secondary hover:border-accent-blue/30'
-            }`}
-          >
-            {label}
-          </a>
-        ))}
+        ].map(({ label, value }) => {
+          // "Open" is active when status is explicitly 'open' or not set (default)
+          const isActive = label === 'Open'
+            ? (searchParams.status === undefined || searchParams.status === 'open')
+            : searchParams.status === value
+          return (
+            <a
+              key={label}
+              href={filterHref({ status: value })}
+              className={`px-4 py-1.5 rounded-lg border text-sm transition-colors ${
+                isActive
+                  ? 'border-accent-blue text-accent-blue bg-accent-blue/10'
+                  : 'border-border-dark text-text-secondary hover:border-accent-blue/30'
+              }`}
+            >
+              {label}
+            </a>
+          )
+        })}
       </div>
 
       {enriched.length === 0 ? (
