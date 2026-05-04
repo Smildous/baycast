@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -44,6 +44,10 @@ function computeCalibration(resolvedForecasts: ResolvedForecastRaw[]): Calibrati
 
 export default async function ProfilePage({ params, searchParams }: Props) {
   const supabase = createClient()
+
+  // Require authentication to view profiles
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase
     .from('profiles')
