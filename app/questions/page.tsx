@@ -64,7 +64,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
   let query = supabase.from('questions').select('*', { count: 'exact' }).order('closes_at', { ascending: true })
 
   if (normalizedCategory) {
-    // Use eq since normalizeCategory() already converts to canonical PascalCase
+    // Use eq for exact matching — categories are already normalized via normalizeCategory
     query = query.eq('category', normalizedCategory)
   }
   if (searchParams.status) {
