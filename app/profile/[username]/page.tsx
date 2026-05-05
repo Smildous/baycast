@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
+import EmptyState from '@/components/EmptyState'
 import type { Profile, Forecast, Score, ForecastPrediction } from '@/lib/types'
 import CalibrationChart, { type CalibrationPoint } from '@/components/CalibrationChart'
 import ProfileBadgeSection from '@/components/ProfileBadgeSection'
@@ -218,8 +219,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           <tbody>
             {forecastList.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-12 text-text-secondary">
-                  No forecasts yet.
+                <td colSpan={6} className="p-0">
+                  <EmptyState
+                    icon="📊"
+                    title="No forecasts yet"
+                    description="This forecaster hasn't made any predictions. Browse open questions to get started."
+                    cta={{ label: 'Browse Questions', href: '/questions' }}
+                  />
                 </td>
               </tr>
             ) : (
@@ -287,8 +293,14 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       {/* Mobile card list */}
       <div className="sm:hidden space-y-2">
         {forecastList.length === 0 ? (
-          <div className="text-center py-8 text-text-secondary border border-border-dark rounded-xl">
-            No forecasts yet.
+          <div className="bg-bg-surface border border-border-dark rounded-xl">
+            <EmptyState
+              icon="📊"
+              title="No forecasts yet"
+              description="This forecaster hasn't made any predictions. Browse open questions to get started."
+              cta={{ label: 'Browse Questions', href: '/questions' }}
+              className="py-12"
+            />
           </div>
         ) : (
           forecastList.map((f) => {
@@ -416,11 +428,12 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             </p>
           </>
         ) : (
-          <div className="text-center py-12 text-text-secondary border border-border-dark/50 rounded-lg">
-            Need at least 3 resolved forecasts to show calibration data.
-            <br />
-            Currently {resolvedForecasts.length} resolved.
-          </div>
+          <EmptyState
+            icon="📈"
+            title="Not enough data for calibration"
+            description={`Need at least 3 resolved forecasts to show calibration data. Currently ${resolvedForecasts.length} resolved.`}
+            className="py-12"
+          />
         )}
       </div>
 

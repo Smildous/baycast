@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import QuestionCard from '@/components/QuestionCard'
+import EmptyState from '@/components/EmptyState'
 import type { Question } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
 import { buildSEO } from '@/lib/seo'
@@ -256,9 +257,13 @@ export default async function HomePage() {
           </Link>
         </div>
         {trending.length === 0 ? (
-          <div className="text-center py-12 text-text-secondary border border-border-dark rounded-xl">
-            No open questions at the moment. Check back soon or{' '}
-            <Link href="/auth/signup" className="text-accent-green hover:underline">sign up</Link> to get notified.
+          <div className="bg-bg-surface border border-border-dark rounded-xl">
+            <EmptyState
+              icon="🔮"
+              title="No open questions at the moment"
+              description="Check back soon or sign up to get notified when new questions go live."
+              cta={{ label: 'Sign Up', href: '/auth/signup' }}
+            />
           </div>
         ) : (
           <div className="space-y-3">
