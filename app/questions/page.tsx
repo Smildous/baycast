@@ -11,6 +11,9 @@ export const metadata = buildSEO({
   path: '/questions',
 })
 
+// Ensure dynamic rendering so filters and counts reflect live DB state
+export const dynamic = 'force-dynamic'
+
 const PAGE_SIZE = 10
 
 interface Props {
@@ -68,18 +71,25 @@ export default async function QuestionsPage({ searchParams }: Props) {
   // Pagination: parse page param, default to 1
   const currentPage = Math.max(1, parseInt(searchParams.page ?? '1', 10) || 1)
 
-  // Step 1: Get total count via separate head-only query (more reliable than
-  // requesting count alongside range, where the PostgREST header can be lost).
-  let countQuery = supabase.from('questions').select('*', { count: 'exact', head: true }).eq('status', searchParams.status || 'open')
-  if (normalizedCategory) countQuery = countQuery.eq('category', normalizedCategory)
+  // Step 1: Get total count via separate count-only query.
+  // Use .ilike() for case-insensitive category matching — the DB category column
+  // is plain text (no CHECK constraint), so values may have inconsistent casing.
+  let countQuery = supabase
+    .from('questions')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', searchParams.status || 'open')
+  if (normalizedCategory) countQuery = countQuery.ilike('category', normalizedCategory)
   const { count: totalCount } = await countQuery
 
   // Step 2: Get paginated data
   const from = (currentPage - 1) * PAGE_SIZE
   const to = from + PAGE_SIZE - 1
-  let dataQuery = supabase.from('questions').select('*').order('closes_at', { ascending: true })
-  if (normalizedCategory) dataQuery = dataQuery.eq('category', normalizedCategory)
-  dataQuery = dataQuery.eq('status', searchParams.status || 'open')
+  let dataQuery = supabase
+    .from('questions')
+    .select('*')
+    .order('closes_at', { ascending: true })
+    .eq('status', searchParams.status || 'open')
+  if (normalizedCategory) dataQuery = dataQuery.ilike('category', normalizedCategory)
   const { data } = await dataQuery.range(from, to)
   const questions = (data ?? []) as Question[]
   const totalPages = Math.ceil((totalCount ?? 0) / PAGE_SIZE)
