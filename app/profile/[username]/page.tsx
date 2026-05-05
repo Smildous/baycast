@@ -4,16 +4,24 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { Profile, Forecast, Score, ForecastPrediction } from '@/lib/types'
 import CalibrationChart, { type CalibrationPoint } from '@/components/CalibrationChart'
+import ProfileBadgeSection from '@/components/ProfileBadgeSection'
+import ProfileTabsClient from '@/components/ProfileTabsClient'
 
 const PAGE_SIZE = 20
 
 interface Props {
   params: { username: string }
-  searchParams: { page?: string }
+  searchParams: { page?: string; tab?: string }
 }
 
 type ForecastWithQuestion = Forecast & {
-  questions: { title: string; status: string; category: string } | null
+  questions: {
+    title: string
+    status: string
+    category: string
+    aggregate_probability?: number
+    resolution?: { outcome: string; value: number } | null
+  } | null
 }
 
 type ResolvedForecastRaw = {
@@ -25,8 +33,8 @@ function computeCalibration(resolvedForecasts: ResolvedForecastRaw[]): Calibrati
   const buckets = Array.from({ length: 10 }, () => ({ total: 0, yes: 0 }))
 
   for (const f of resolvedForecasts) {
-    const prob = f.prediction.probability          // 1–99
-    const value = f.questions?.resolution?.value   // 0 or 1
+    const prob = f.prediction.probability
+    const value = f.questions?.resolution?.value
     if (value === undefined || value === null) continue
     const idx = Math.min(Math.floor(prob / 10), 9)
     buckets[idx].total++
@@ -41,6 +49,12 @@ function computeCalibration(resolvedForecasts: ResolvedForecastRaw[]): Calibrati
     }))
     .filter((p): p is CalibrationPoint => p.actual !== null)
 }
+
+const TABS = [
+  { key: 'overview', label: 'Overview' },
+  { key: 'forecasts', label: 'Forecasts' },
+  { key: 'accuracy', label: 'Accuracy' },
+]
 
 export default async function ProfilePage({ params, searchParams }: Props) {
   const supabase = createClient()
@@ -73,7 +87,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       .eq('user_id', p.id),
     supabase
       .from('forecasts')
-      .select('*, questions(title, status, category)', { count: 'exact' })
+      .select('*, questions(title, status, category, aggregate_probability, resolution)', { count: 'exact' })
       .eq('user_id', p.id)
       .order('updated_at', { ascending: false })
       .range(offset, offset + PAGE_SIZE - 1),
@@ -87,6 +101,12 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const scoreList = (scores ?? []) as Score[]
   const forecastList = (forecasts ?? []) as ForecastWithQuestion[]
   const totalPages = Math.ceil((forecastsTotal ?? 0) / PAGE_SIZE)
+
+  // Build a score lookup map by question_id
+  const scoreMap = new Map<string, Score>()
+  for (const sc of scoreList) {
+    scoreMap.set(sc.question_id, sc)
+  }
 
   const avgBrier =
     scoreList.length > 0
@@ -105,9 +125,320 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
   const calibrationPoints = computeCalibration(resolvedForecasts)
 
+  // Compute accuracy %: forecasts on the correct side of 50%
+  const pendingCount = (forecastsTotal ?? 0) - scoreList.length
+  let correctSideCount = 0
+  for (const f of resolvedForecasts) {
+    const prob = f.prediction.probability
+    const value = f.questions?.resolution?.value
+    if (value === undefined || value === null) continue
+    // Correct side: prob > 50 and value === 1, or prob < 50 and value === 0
+    if ((prob > 50 && value === 1) || (prob < 50 && value === 0)) {
+      correctSideCount++
+    }
+    // At exactly 50%, it's neither correct nor wrong — skip
+  }
+  const accuracyPct = resolvedForecasts.length > 0
+    ? Math.round((correctSideCount / resolvedForecasts.length) * 100)
+    : null
+
+  const activeTab = searchParams.tab ?? 'overview'
+
+  // ─── Tab content: Overview ───
+  const overviewContent = (
+    <div className="space-y-6">
+      {/* Badge section */}
+      <ProfileBadgeSection profile={p} />
+
+      {/* Summary stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
+          <div className="text-2xl font-mono font-bold text-accent-green">
+            {avgBrier !== null ? avgBrier.toFixed(4) : '—'}
+          </div>
+          <div className="text-text-secondary text-sm mt-1">Avg Brier Score</div>
+        </div>
+        <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
+          <div className="text-2xl font-mono font-bold text-accent-blue">
+            {avgLog !== null ? avgLog.toFixed(3) : '—'}
+          </div>
+          <div className="text-text-secondary text-sm mt-1">Avg Log Score</div>
+        </div>
+        <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
+          <div className="text-2xl font-mono font-bold text-text-primary">
+            {forecastsTotal ?? 0}
+          </div>
+          <div className="text-text-secondary text-sm mt-1">Total Forecasts</div>
+        </div>
+        <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
+          <div className="text-2xl font-mono font-bold text-text-primary">
+            {scoreList.length}
+          </div>
+          <div className="text-text-secondary text-sm mt-1">Resolved</div>
+        </div>
+      </div>
+
+      {/* Quick accuracy summary */}
+      {accuracyPct !== null && (
+        <div className="bg-bg-surface border border-border-dark rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-text-secondary text-sm">Directional accuracy (correct side of 50%)</span>
+            <span className={`text-lg font-mono font-bold ${accuracyPct >= 50 ? 'text-accent-green' : 'text-danger'}`}>
+              {accuracyPct}%
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
+  // ─── Tab content: Forecasts ───
+  const forecastsContent = (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-outfit font-semibold">Forecast history</h2>
+        {(forecastsTotal ?? 0) > 0 && (
+          <span className="text-text-secondary text-sm">{forecastsTotal} total</span>
+        )}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden sm:block bg-bg-surface border border-border-dark rounded-xl overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-border-dark text-text-secondary text-sm">
+              <th className="text-left px-4 py-3">Question</th>
+              <th className="text-right px-4 py-3 w-24">Your Prob</th>
+              <th className="text-right px-4 py-3 w-28">Aggregate</th>
+              <th className="text-right px-4 py-3 w-24">Outcome</th>
+              <th className="text-right px-4 py-3 w-24">Brier</th>
+              <th className="text-right px-4 py-3 w-28">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {forecastList.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center py-12 text-text-secondary">
+                  No forecasts yet.
+                </td>
+              </tr>
+            ) : (
+              forecastList.map((f) => {
+                const score = scoreMap.get(f.question_id)
+                const resolutionValue = f.questions?.resolution?.value
+                const isResolved = f.questions?.status === 'resolved'
+                const outcomeLabel = isResolved
+                  ? resolutionValue === 1
+                    ? 'Yes'
+                    : resolutionValue === 0
+                      ? 'No'
+                      : '—'
+                  : null
+
+                return (
+                  <tr
+                    key={f.id}
+                    className="border-b border-border-dark/50 hover:bg-white/[0.02] transition-colors"
+                  >
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/questions/${f.question_id}`}
+                        className="hover:text-accent-blue transition-colors"
+                      >
+                        <div className="text-xs text-text-secondary mb-0.5">{f.questions?.category}</div>
+                        <div className="font-medium truncate max-w-xs">{f.questions?.title}</div>
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono font-bold text-accent-green">
+                      {f.prediction.probability}%
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono text-sm text-text-secondary">
+                      {f.questions?.aggregate_probability != null
+                        ? `${Math.round(f.questions.aggregate_probability)}%`
+                        : '—'}
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      {outcomeLabel ? (
+                        <span className={`font-medium ${outcomeLabel === 'Yes' ? 'text-accent-green' : 'text-danger'}`}>
+                          {outcomeLabel}
+                        </span>
+                      ) : (
+                        <span className="text-text-secondary capitalize text-xs">{f.questions?.status ?? 'open'}</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono text-sm">
+                      {score ? score.brier_score.toFixed(4) : '—'}
+                    </td>
+                    <td className="px-4 py-3 text-right text-text-secondary text-xs">
+                      {new Date(f.updated_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </td>
+                  </tr>
+                )
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile card list */}
+      <div className="sm:hidden space-y-2">
+        {forecastList.length === 0 ? (
+          <div className="text-center py-8 text-text-secondary border border-border-dark rounded-xl">
+            No forecasts yet.
+          </div>
+        ) : (
+          forecastList.map((f) => {
+            const score = scoreMap.get(f.question_id)
+            const resolutionValue = f.questions?.resolution?.value
+            const isResolved = f.questions?.status === 'resolved'
+            const outcomeLabel = isResolved
+              ? resolutionValue === 1
+                ? 'Yes'
+                : resolutionValue === 0
+                  ? 'No'
+                  : '—'
+              : null
+
+            return (
+              <Link
+                key={f.id}
+                href={`/questions/${f.question_id}`}
+                className="block bg-bg-surface border border-border-dark rounded-lg p-4 hover:border-accent-blue/40 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm text-text-secondary mb-1">{f.questions?.category}</div>
+                    <div className="font-medium truncate">{f.questions?.title}</div>
+                    <div className="flex items-center gap-3 mt-2 text-xs text-text-secondary">
+                      <span>Aggregate: {f.questions?.aggregate_probability != null ? `${Math.round(f.questions.aggregate_probability)}%` : '—'}</span>
+                      {score && <span>Brier: {score.brier_score.toFixed(4)}</span>}
+                      <span>{new Date(f.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <div className="text-xl font-mono font-bold text-accent-green">
+                      {f.prediction.probability}%
+                    </div>
+                    {outcomeLabel ? (
+                      <div className={`text-xs font-medium mt-0.5 ${outcomeLabel === 'Yes' ? 'text-accent-green' : 'text-danger'}`}>
+                        {outcomeLabel}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-text-secondary capitalize mt-0.5">{f.questions?.status ?? 'open'}</div>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            )
+          })
+        )}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <span className="text-text-secondary text-sm">
+            Page {page} of {totalPages}
+          </span>
+          <div className="flex gap-2">
+            {page > 1 && (
+              <Link
+                href={`/profile/${params.username}?tab=forecasts&page=${page - 1}`}
+                className="px-4 py-2 rounded-lg border border-border-dark text-text-secondary hover:text-text-primary hover:border-accent-green/40 text-sm transition-colors"
+              >
+                ← Previous
+              </Link>
+            )}
+            {page < totalPages && (
+              <Link
+                href={`/profile/${params.username}?tab=forecasts&page=${page + 1}`}
+                className="px-4 py-2 rounded-lg border border-border-dark text-text-secondary hover:text-text-primary hover:border-accent-green/40 text-sm transition-colors"
+              >
+                Next →
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
+  // ─── Tab content: Accuracy ───
+  const accuracyContent = (
+    <div className="space-y-6">
+      {/* Key stats row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
+          <div className="text-2xl font-mono font-bold text-accent-green">
+            {avgBrier !== null ? avgBrier.toFixed(4) : '—'}
+          </div>
+          <div className="text-text-secondary text-sm mt-1">Avg Brier Score</div>
+          <div className="text-text-secondary text-xs mt-0.5">Lower is better</div>
+        </div>
+        <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
+          <div className={`text-2xl font-mono font-bold ${accuracyPct !== null && accuracyPct >= 50 ? 'text-accent-green' : accuracyPct !== null ? 'text-danger' : 'text-text-primary'}`}>
+            {accuracyPct !== null ? `${accuracyPct}%` : '—'}
+          </div>
+          <div className="text-text-secondary text-sm mt-1">Directional Accuracy</div>
+          <div className="text-text-secondary text-xs mt-0.5">Correct side of 50%</div>
+        </div>
+        <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
+          <div className="text-2xl font-mono font-bold text-accent-blue">
+            {scoreList.length}
+          </div>
+          <div className="text-text-secondary text-sm mt-1">Resolved</div>
+        </div>
+        <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
+          <div className="text-2xl font-mono font-bold text-text-primary">
+            {pendingCount}
+          </div>
+          <div className="text-text-secondary text-sm mt-1">Pending</div>
+        </div>
+      </div>
+
+      {/* Calibration chart */}
+      <div className="bg-bg-surface border border-border-dark rounded-xl p-6">
+        <div className="mb-4">
+          <h2 className="text-lg font-outfit font-semibold mb-1">Calibration Curve</h2>
+          <p className="text-text-secondary text-sm">
+            A well-calibrated forecaster&apos;s dots follow the dashed diagonal — things predicted at 70% should happen ~70% of the time.
+          </p>
+        </div>
+        {calibrationPoints.length >= 3 ? (
+          <>
+            <CalibrationChart data={calibrationPoints} />
+            <p className="text-text-secondary text-xs mt-2 text-right">
+              Based on {resolvedForecasts.length} resolved forecast{resolvedForecasts.length !== 1 ? 's' : ''}
+            </p>
+          </>
+        ) : (
+          <div className="text-center py-12 text-text-secondary border border-border-dark/50 rounded-lg">
+            Need at least 3 resolved forecasts to show calibration data.
+            <br />
+            Currently {resolvedForecasts.length} resolved.
+          </div>
+        )}
+      </div>
+
+      {/* Brier score explanation */}
+      <div className="bg-bg-surface border border-border-dark rounded-xl p-4">
+        <h3 className="text-sm font-outfit font-semibold mb-2">How scores work</h3>
+        <div className="text-text-secondary text-sm space-y-1">
+          <p><strong className="text-text-primary">Brier Score:</strong> Measures how close your probability was to the outcome. Ranges from 0 (perfect) to 1 (worst). A random guess scores ~0.25.</p>
+          <p><strong className="text-text-primary">Directional Accuracy:</strong> Percentage of resolved forecasts where you were on the correct side of 50%. Predicting 60% on a &quot;Yes&quot; outcome counts as correct.</p>
+          <p><strong className="text-text-primary">Calibration:</strong> Compares your predicted probabilities against actual outcomes across confidence levels. Perfect calibration means predictions match reality.</p>
+        </div>
+      </div>
+    </div>
+  )
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      {/* Profile header */}
+      {/* Profile header (always visible) */}
       <div className="bg-bg-surface border border-border-dark rounded-xl p-6 mb-8 flex gap-6 items-start">
         {p.avatar_url ? (
           <Image
@@ -149,7 +480,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               <div className="text-xl font-mono font-bold text-text-primary">
                 {forecastsTotal ?? 0}
               </div>
-              <div className="text-text-secondary text-sm">Total forecasts</div>
+              <div className="text-text-secondary text-sm">Forecasts</div>
             </div>
             <div>
               <div className="text-xl font-mono font-bold text-text-primary">
@@ -161,85 +492,14 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         </div>
       </div>
 
-      {/* Calibration curve */}
-      {calibrationPoints.length >= 3 && (
-        <div className="bg-bg-surface border border-border-dark rounded-xl p-6 mb-8">
-          <div className="mb-4">
-            <h2 className="text-lg font-outfit font-semibold mb-1">Calibration</h2>
-            <p className="text-text-secondary text-sm">
-              A well-calibrated forecaster&apos;s dots follow the dashed diagonal — things predicted at 70% should happen ~70% of the time.
-            </p>
-          </div>
-          <CalibrationChart data={calibrationPoints} />
-          <p className="text-text-secondary text-xs mt-2 text-right">
-            Based on {resolvedForecasts.length} resolved forecast{resolvedForecasts.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-      )}
-
-      {/* Forecast history */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-outfit font-semibold">Forecast history</h2>
-        {(forecastsTotal ?? 0) > 0 && (
-          <span className="text-text-secondary text-sm">{forecastsTotal} total</span>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        {forecastList.length === 0 ? (
-          <div className="text-center py-8 text-text-secondary border border-border-dark rounded-xl">
-            No forecasts yet.
-          </div>
-        ) : (
-          forecastList.map((f) => (
-            <Link
-              key={f.id}
-              href={`/questions/${f.question_id}`}
-              className="block bg-bg-surface border border-border-dark rounded-lg p-4 hover:border-accent-blue/40 transition-colors"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm text-text-secondary mb-1">{f.questions?.category}</div>
-                  <div className="font-medium truncate">{f.questions?.title}</div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="text-xl font-mono font-bold text-accent-green">
-                    {f.prediction.probability}%
-                  </div>
-                  <div className="text-xs text-text-secondary capitalize">{f.questions?.status}</div>
-                </div>
-              </div>
-            </Link>
-          ))
-        )}
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-6">
-          <span className="text-text-secondary text-sm">
-            Page {page} of {totalPages}
-          </span>
-          <div className="flex gap-2">
-            {page > 1 && (
-              <Link
-                href={`/profile/${params.username}?page=${page - 1}`}
-                className="px-4 py-2 rounded-lg border border-border-dark text-text-secondary hover:text-text-primary hover:border-accent-green/40 text-sm transition-colors"
-              >
-                ← Previous
-              </Link>
-            )}
-            {page < totalPages && (
-              <Link
-                href={`/profile/${params.username}?page=${page + 1}`}
-                className="px-4 py-2 rounded-lg border border-border-dark text-text-secondary hover:text-text-primary hover:border-accent-green/40 text-sm transition-colors"
-              >
-                Next →
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Tabbed content */}
+      <ProfileTabsClient tabs={TABS} defaultTab={activeTab}>
+        {{
+          overview: overviewContent,
+          forecasts: forecastsContent,
+          accuracy: accuracyContent,
+        }}
+      </ProfileTabsClient>
     </div>
   )
 }
