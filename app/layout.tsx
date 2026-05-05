@@ -3,6 +3,7 @@ import Link from 'next/link'
 import './globals.css'
 import Nav from '@/components/Nav'
 import OnboardingProvider from '@/app/components/OnboardingProvider'
+import { Analytics } from '@vercel/analytics/react'
 
 export const metadata: Metadata = {
   icons: {
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </footer>
         </OnboardingProvider>
+        <Analytics />
       </body>
     </html>
   )
