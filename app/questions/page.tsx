@@ -74,12 +74,18 @@ export default async function QuestionsPage({ searchParams }: Props) {
   // Step 1: Get total count via separate count-only query.
   // Use .in() with all known category variants so filtering works even when
   // DB data hasn't been normalized (migration_005 not yet run).
-  const categoryVariants = normalizedCategory ? getCategoryVariants(normalizedCategory) : undefined
+  // Build category filter using .or() with ilike for maximum resilience.
+  // This handles case mismatches, whitespace, and non-normalized DB values
+  // that .in() with exact variants might miss.
+  const catLower = normalizedCategory?.toLowerCase()
+  const catFilter = catLower
+    ? `category.ilike.%${catLower}%`
+    : undefined
   let countQuery = supabase
     .from('questions')
     .select('id', { count: 'exact', head: true })
     .eq('status', searchParams.status || 'open')
-  if (categoryVariants) countQuery = countQuery.in('category', categoryVariants)
+  if (catFilter) countQuery = countQuery.or(catFilter)
   const { count: totalCount } = await countQuery
 
   // Step 2: Get paginated data
@@ -90,7 +96,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
     .select('*')
     .order('closes_at', { ascending: true })
     .eq('status', searchParams.status || 'open')
-  if (categoryVariants) dataQuery = dataQuery.in('category', categoryVariants)
+  if (catFilter) dataQuery = dataQuery.or(catFilter)
   const { data } = await dataQuery.range(from, to)
   const questions = (data ?? []) as Question[]
   const totalPages = Math.ceil((totalCount ?? 0) / PAGE_SIZE)
