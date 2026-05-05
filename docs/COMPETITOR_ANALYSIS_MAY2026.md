@@ -1,8 +1,68 @@
 # Competitor Analysis — May 2026
 
 **Prepared for: Baycast Growth Team**  
-**Date: May 2, 2026**  
+**Date: May 2, 2026 (Updated May 5, 2026)**  
 **Scope: Polymarket, Metaculus, Manifold**
+
+---
+
+## May 5 Update — Fresh Intelligence
+
+### Breaking: Hyperliquid Enters Prediction Markets
+- **Hyperliquid**, the crypto-native perp exchange, has declared war on Polymarket and Kalshi, targeting the $24B prediction market space (dlnews, Bloomberg, TipRanks, May 5).
+- Arthur Hayes (BitMEX founder) says Hyperliquid's HYPE token "could be its prediction market weapon."
+- **Implication:** More competitors = more regulatory scrutiny. Each new entrant adds pressure for federal oversight. This accelerates the regulatory squeeze on real-money platforms — which is Baycast's opportunity.
+- **Baycast angle:** Position against the "arms race" of crypto prediction platforms. None of them solve the herding or insider trading problems.
+
+### WSJ/CNBC Expose: Most Prediction Market Traders Lose
+- **WSJ (May 5):** "Why Almost Everyone Loses—Except a Few Sharks—on Prediction Markets" — mainstream negative coverage highlighting retail losses.
+- **CNBC (May 5):** "Most prediction market traders don't make a profit—Gen Z and millennials are turning to them anyway" — frames Gen Z adoption despite losses.
+- **Implication:** The "prediction market = easy money" narrative is collapsing in mainstream media. This is the perfect moment for Baycast's "no money, no losses" positioning.
+- **Baycast angle:** Every headline about retail losses is a Baycast marketing opportunity. "Prediction markets reward trading. Baycast rewards judgment."
+
+### DOJ + CFTC First-of-Its-Kind Insider Trading Case
+- **Dentons (Apr 27) / Bloomberg Law (May 1):** DOJ and CFTC brought the first-ever prediction market "insider trading" prosecution. Stefan Muehlbauer (US Army sergeant) case is expanding risk for all market participants.
+- **Davis Wright Tremaine (May 5):** Law firms are now publishing guidance on "getting ahead of insider trading in prediction markets."
+- **Implication:** The "safe zone" for prediction market traders is gone. Enforcement is no longer theoretical — people are being prosecuted.
+- **Baycast angle:** BCP is immune to insider trading by design (no real-time aggregate visible, no money to profit from). This is increasingly a unique selling proposition, not just a technical detail.
+
+### Trump Admin Seeks to Preempt State Regulation
+- **Broadband Breakfast (May 5):** Trump administration seeks federal preemption of state regulation of prediction markets.
+- **Context:** Texas AG Dan Patrick is trying to close the "gambling loophole," Nevada is fighting Kalshi/Crypto.com in the 9th Circuit, and a federal judge blocked Arizona AG from prosecuting Kalshi.
+- **Implication:** Regulatory landscape is in chaos. Federal preemption would be a win for platforms like Kalshi/Polymarket, but the political backlash from states could trigger even stricter federal rules. Either way, uncertainty = bad for real-money platforms.
+- **Baycast angle:** Zero regulatory exposure. No money = no gambling classification = irrelevant to all these battles.
+
+### Industry Trying to Rebrand Away from "Casino"
+- **CoinDesk (May 2-3):** "Prediction markets are ditching the 'casino' label to become a regular part of how people track the news."
+- **Implication:** The industry itself acknowledges the gambling frame is toxic. Rebranding is defensive.
+- **Baycast angle:** Baycast was never a casino. Don't rebrand — build differently from day one.
+
+### Bridgewater x Metaculus: Institutional Validation
+- **Bridgewater Associates** ran a 2026 forecasting competition with Metaculus, attracting 7,000+ international competitors. University of Florida students won first place.
+- **Implication:** The world's largest hedge fund is investing in scored, non-monetary forecasting. This validates Baycast's model and signals enterprise demand for proper scoring rule platforms.
+- **Baycast angle:** "If Bridgewater trusts scored forecasting over prediction markets, why don't you?"
+
+### Metaculus FutureEval & ACX Contest
+- **Metaculus launched FutureEval** to track AI forecasting accuracy (Yahoo Finance).
+- **ACX/Metaculus Prediction Contest 2026** active (Astral Codex Ten / Slate Star Codex community).
+- **Implication:** Metaculus is doubling down on its position as the benchmark for forecasting quality. Their enterprise/B2B pivot is accelerating.
+- **Baycast angle:** Metaculus's enterprise pivot creates an opening for community-focused platforms. If they deprioritize individual forecasters, Baycast can absorb them.
+
+### Polymarket Ban Evasion
+- **TradingView (May 5):** Dutch users still accessing Polymarket despite Netherlands ban. Similar patterns in Romania (300+ sites blocked).
+- **Implication:** Bans don't work — they drive users to VPNs and unregulated alternatives. This strengthens the case for non-gambling platforms that don't need bans.
+
+### Summary of New Developments
+
+| Development | Impact on Baycast | Urgency |
+|---|---|---|
+| Hyperliquid enters space | More regulatory pressure → Baycast opportunity | 🟡 Monitor |
+| WSJ/CNBC retail loss coverage | Perfect newsjacking moment | 🟢 Act now |
+| DOJ/CFTC insider trading case | Validates BCP's immunity to manipulation | 🟢 Key differentiator |
+| Trump federal preemption | Regulatory chaos = bad for competitors | 🟡 Monitor |
+| Industry "ditching casino" rebrand | Validates Baycast's non-gambling framing | 🟢 Messaging alignment |
+| Bridgewater x Metaculus | Institutional validation of scored forecasting | 🟢 Competitor intelligence |
+| Polymarket ban evasion | Bans don't work, non-gambling is the answer | 🟡 Narrative support |
 
 ---
 
