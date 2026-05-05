@@ -212,3 +212,53 @@ export interface ScoreWithProfile {
     avatar_url?: string | null
   }
 }
+
+/* ── Notifications (AQ-007) ── */
+
+export type NotificationType =
+  | 'question_closing_soon'
+  | 'question_resolved'
+  | 'new_block'
+  | 'forecast_revised'
+  | 'weekly_digest'
+
+export interface Notification {
+  id: string
+  user_id: string
+  type: NotificationType
+  title: string
+  body: string
+  link: string | null
+  question_id: string | null
+  block_id: string | null
+  metadata: Record<string, unknown>
+  read: boolean
+  created_at: string
+}
+
+export interface NotificationPreferences {
+  user_id: string
+  question_closing_soon: boolean
+  question_resolved: boolean
+  new_block: boolean
+  forecast_revised: boolean
+  weekly_digest: boolean
+  updated_at: string
+}
+
+export interface NotificationPrefsUpdate {
+  question_closing_soon?: boolean
+  question_resolved?: boolean
+  new_block?: boolean
+  forecast_revised?: boolean
+  weekly_digest?: boolean
+}
+
+/** Emoji + color map for notification types (matches SPEC_NOTIFICATIONS.md §7.5) */
+export const NOTIFICATION_TYPE_CONFIG: Record<NotificationType, { emoji: string; color: string }> = {
+  question_closing_soon: { emoji: '📌', color: '#f97316' },
+  question_resolved:    { emoji: '✅', color: '#22c55e' },
+  new_block:            { emoji: '📦', color: '#3b82f6' },
+  forecast_revised:     { emoji: '🔄', color: '#a855f7' },
+  weekly_digest:        { emoji: '📊', color: '#f59e0b' },
+}
