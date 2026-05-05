@@ -13,6 +13,16 @@ const nextConfig = {
         destination: '/blocks',
         permanent: true,
       },
+      {
+        source: '/question/:id',
+        destination: '/questions/:id',
+        permanent: true,
+      },
+      {
+        source: '/leaderboard/:id',
+        destination: '/leaderboard',
+        permanent: true,
+      },
     ]
   },
 }
