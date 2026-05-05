@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import QuestionCard from '@/components/QuestionCard'
 import type { Question } from '@/lib/types'
-import { CATEGORIES, normalizeCategory } from '@/lib/types'
+import { CATEGORIES, normalizeCategory, getCategoryVariants } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
 import { buildSEO } from '@/lib/seo'
 
@@ -72,13 +72,14 @@ export default async function QuestionsPage({ searchParams }: Props) {
   const currentPage = Math.max(1, parseInt(searchParams.page ?? '1', 10) || 1)
 
   // Step 1: Get total count via separate count-only query.
-  // Use .ilike() for case-insensitive category matching — the DB category column
-  // is plain text (no CHECK constraint), so values may have inconsistent casing.
+  // Use .in() with all known category variants so filtering works even when
+  // DB data hasn't been normalized (migration_005 not yet run).
+  const categoryVariants = normalizedCategory ? getCategoryVariants(normalizedCategory) : undefined
   let countQuery = supabase
     .from('questions')
     .select('id', { count: 'exact', head: true })
     .eq('status', searchParams.status || 'open')
-  if (normalizedCategory) countQuery = countQuery.ilike('category', normalizedCategory)
+  if (categoryVariants) countQuery = countQuery.in('category', categoryVariants)
   const { count: totalCount } = await countQuery
 
   // Step 2: Get paginated data
@@ -89,7 +90,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
     .select('*')
     .order('closes_at', { ascending: true })
     .eq('status', searchParams.status || 'open')
-  if (normalizedCategory) dataQuery = dataQuery.ilike('category', normalizedCategory)
+  if (categoryVariants) dataQuery = dataQuery.in('category', categoryVariants)
   const { data } = await dataQuery.range(from, to)
   const questions = (data ?? []) as Question[]
   const totalPages = Math.ceil((totalCount ?? 0) / PAGE_SIZE)

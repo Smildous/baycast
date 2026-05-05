@@ -36,6 +36,25 @@ export function normalizeCategory(raw: string): Category {
   return CATEGORY_ALIASES[raw.toLowerCase()] ?? 'Other'
 }
 
+/**
+ * Reverse map: canonical Category → all possible DB values (lowercase aliases + canonical).
+ * Used for resilient category filtering when DB data may not be normalized.
+ * e.g. 'Technology' → ['technology', 'tech', 'Technology', 'Tech']
+ */
+export function getCategoryVariants(canonical: Category): string[] {
+  const variants = new Set<string>()
+  variants.add(canonical)
+  variants.add(canonical.toLowerCase())
+  for (const [alias, target] of Object.entries(CATEGORY_ALIASES)) {
+    if (target === canonical) {
+      variants.add(alias)
+      // Capitalize first letter variant (common in DB)
+      variants.add(alias.charAt(0).toUpperCase() + alias.slice(1))
+    }
+  }
+  return Array.from(variants)
+}
+
 export interface Profile {
   id: string
   display_name: string
