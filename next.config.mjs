@@ -6,6 +6,15 @@ const nextConfig = {
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/questions-blocks',
+        destination: '/blocks',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig
