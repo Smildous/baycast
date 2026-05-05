@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import BlockCard from '@/components/BlockCard'
+import EmptyState from '@/components/EmptyState'
 import type { Block, BlockQuestion, ScoreWithProfile } from '@/lib/types'
 
 export default async function BlocksPage() {
@@ -18,8 +19,13 @@ export default async function BlocksPage() {
           <h1 className="text-3xl font-outfit font-bold mb-2">Question Blocks</h1>
           <p className="text-text-secondary">Compete on themed groups of related questions.</p>
         </div>
-        <div className="text-center py-16 text-text-secondary border border-border-dark rounded-xl">
-          No blocks available yet.
+        <div className="bg-bg-surface border border-border-dark rounded-xl">
+          <EmptyState
+            icon="🧩"
+            title="No blocks available yet"
+            description="Question blocks are themed groups of related questions. Check back soon or browse individual questions in the meantime."
+            cta={{ label: 'Browse Questions', href: '/questions' }}
+          />
         </div>
       </div>
     )

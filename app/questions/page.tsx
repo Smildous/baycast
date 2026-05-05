@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import QuestionCard from '@/components/QuestionCard'
+import EmptyState from '@/components/EmptyState'
 import type { Question } from '@/lib/types'
 import { CATEGORIES, normalizeCategory, getCategoryVariants } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
@@ -209,8 +210,22 @@ export default async function QuestionsPage({ searchParams }: Props) {
       </div>
 
       {enriched.length === 0 ? (
-        <div className="text-center py-16 text-text-secondary border border-border-dark rounded-xl">
-          No questions in this category.
+        <div className="bg-bg-surface border border-border-dark rounded-xl">
+          {normalizedCategory ? (
+            <EmptyState
+              icon="🎯"
+              title={`No ${normalizedCategory} questions found`}
+              description="Try browsing all questions or check back later for new predictions in this category."
+              cta={{ label: 'View All Questions', href: filterHref({ category: undefined }) }}
+            />
+          ) : (
+            <EmptyState
+              icon="🔍"
+              title="No questions match your filters"
+              description="Try changing the status filter or check back later."
+              cta={{ label: 'Show Open Questions', href: filterHref({ status: 'open' }) }}
+            />
+          )}
         </div>
       ) : (
         <>

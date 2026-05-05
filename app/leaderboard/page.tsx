@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { LeaderboardEntry } from '@/lib/types'
 import Image from 'next/image'
 import Link from 'next/link'
+import EmptyState from '@/components/EmptyState'
 import { buildSEO } from '@/lib/seo'
 
 export const metadata = buildSEO({
@@ -117,27 +118,30 @@ export default async function LeaderboardPage({ searchParams }: Props) {
       </div>
 
       {/* Table */}
-      <div className="bg-bg-surface border border-border-dark rounded-xl overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-border-dark text-text-secondary text-sm">
-              <th className="text-left px-4 py-3 w-12">#</th>
-              <th className="text-left px-4 py-3">Forecaster</th>
-              <th className="text-right px-4 py-3">Brier</th>
-              <th className="text-right px-4 py-3 hidden sm:table-cell">Log Score</th>
-              <th className="text-right px-4 py-3 hidden md:table-cell">Predictions</th>
-              <th className="text-right px-4 py-3 hidden lg:table-cell">Resolved</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="text-center py-12 text-text-secondary">
-                  No data available.
-                </td>
+      {entries.length === 0 ? (
+        <div className="bg-bg-surface border border-border-dark rounded-xl">
+          <EmptyState
+            icon="🏆"
+            title="No forecasters on the leaderboard yet"
+            description="The leaderboard populates as questions get resolved. Make some predictions and wait for results!"
+            cta={{ label: 'Browse Questions', href: '/questions' }}
+          />
+        </div>
+      ) : (
+        <div className="bg-bg-surface border border-border-dark rounded-xl overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border-dark text-text-secondary text-sm">
+                <th className="text-left px-4 py-3 w-12">#</th>
+                <th className="text-left px-4 py-3">Forecaster</th>
+                <th className="text-right px-4 py-3">Brier</th>
+                <th className="text-right px-4 py-3 hidden sm:table-cell">Log Score</th>
+                <th className="text-right px-4 py-3 hidden md:table-cell">Predictions</th>
+                <th className="text-right px-4 py-3 hidden lg:table-cell">Resolved</th>
               </tr>
-            ) : (
-              entries.map((entry, i) => {
+            </thead>
+            <tbody>
+              {entries.map((entry, i) => {
                 const isMe = user?.id === entry.user_id
                 const rank = i + 1
                 const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : null
@@ -198,11 +202,11 @@ export default async function LeaderboardPage({ searchParams }: Props) {
                     </td>
                   </tr>
                 )
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {error && (
         <div className="mt-4 p-3 rounded-lg bg-danger/10 border border-danger/30 text-danger text-sm">
