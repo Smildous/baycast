@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import Image from 'next/image'
+import NotificationBell from './NotificationBell'
 
 interface NavProfile {
   display_name: string
@@ -100,6 +101,9 @@ export default function NavClient({ user, profile }: Props) {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
+          {/* Notification bell — authenticated users only */}
+          {user && <NotificationBell />}
+
           {/* Hamburger button — mobile only */}
           <button
             onClick={() => setMobileDrawerOpen(true)}
