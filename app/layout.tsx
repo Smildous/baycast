@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'Baycast', url: 'https://baycast-p.vercel.app' }],
   openGraph: {
     title: 'Baycast — The Prediction Polling Protocol',
-    description: 'Harnessing collective intelligence and AI agents to outperform prediction markets. No gambling. Pure forecasting.',
+    description: 'Baycast — Collective intelligence through prediction polling. Forecast outcomes on politics, tech, sports and more.',
     url: 'https://baycast-p.vercel.app',
     siteName: 'Baycast',
     type: 'website',
