@@ -130,7 +130,7 @@ export default async function HomePage() {
             {
               icon: '🏆',
               title: 'Get scored & ranked',
-              description: 'Brier scores measure accuracy. Clibrate over time. Climb the leaderboard.',
+              description: 'Brier scores measure accuracy. Calibrate over time. Climb the leaderboard.',
             },
           ].map((step) => (
             <div key={step.title} className="bg-bg-surface border border-border-dark rounded-xl p-6 text-center">
