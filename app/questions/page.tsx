@@ -1,6 +1,8 @@
+import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import QuestionCard from '@/components/QuestionCard'
 import EmptyState from '@/components/EmptyState'
+import WelcomeBanner from '@/components/WelcomeBanner'
 import type { Question } from '@/lib/types'
 import { CATEGORIES, normalizeCategory, getCategoryVariants } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
@@ -156,6 +158,11 @@ export default async function QuestionsPage({ searchParams }: Props) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
+      {/* Welcome banner for new users */}
+      <Suspense fallback={null}>
+        <WelcomeBanner />
+      </Suspense>
+
       <div className="mb-8">
         <h1 className="text-3xl font-outfit font-bold mb-2">Questions</h1>
         <p className="text-text-secondary">Every forecast you add sharpens the collective estimate.</p>

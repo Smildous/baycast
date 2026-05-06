@@ -209,10 +209,20 @@ export default function OnboardingModal({
     onComplete()
   }
 
+  // AQ-064: Backdrop click — only dismiss if clicking directly on the overlay
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      handleSkip()
+    }
+  }
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Backdrop — clicks close the modal */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleSkip} />
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      onClick={handleBackdropClick}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       {/* Modal */}
       <div className="relative w-full max-w-md rounded-2xl bg-bg-surface border border-border-dark shadow-2xl p-8">

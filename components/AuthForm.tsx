@@ -26,16 +26,19 @@ export default function AuthForm({ mode }: Props) {
     const supabase = createClient()
 
     if (mode === 'signup') {
+      // Set flag so the welcome banner shows after email confirmation
+      localStorage.setItem('baycast_just_signed_up', 'true')
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: { display_name: displayName },
-          emailRedirectTo: `${location.origin}/auth/callback`,
+          emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent('/questions?welcome=true')}`,
         },
       })
       if (error) {
         setError(error.message)
+        localStorage.removeItem('baycast_just_signed_up')
       } else {
         setInfo('Check your email to confirm your account.')
       }
