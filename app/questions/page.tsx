@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
-import QuestionCard from '@/components/QuestionCard'
-import EmptyState from '@/components/EmptyState'
+import QuestionsList from '@/components/QuestionsList'
 import WelcomeBanner from '@/components/WelcomeBanner'
 import type { Question } from '@/lib/types'
 import { CATEGORIES, normalizeCategory, getCategoryVariants } from '@/lib/types'
@@ -222,86 +221,60 @@ export default async function QuestionsPage({ searchParams }: Props) {
         })}
       </div>
 
-      {enriched.length === 0 ? (
-        <div className="bg-bg-surface border border-border-dark rounded-xl">
-          {normalizedCategory ? (
-            <EmptyState
-              icon="🎯"
-              title={`No ${normalizedCategory} questions found`}
-              description="Try browsing all questions or check back later for new predictions in this category."
-              cta={{ label: 'View All Questions', href: filterHref({ category: undefined }) }}
-            />
+      <QuestionsList questions={enriched} />
+
+      {/* Pagination */}
+      {enriched.length > 0 && totalPages > 1 && (
+        <nav className="flex items-center justify-center gap-1 mt-8" aria-label="Pagination">
+          {/* Previous */}
+          {currentPage > 1 ? (
+            <a
+              href={pageHref(currentPage - 1)}
+              className="px-3 py-2 rounded-lg border border-border-dark text-sm text-text-secondary hover:border-accent-green/50 hover:text-white transition-colors"
+            >
+              ← Prev
+            </a>
           ) : (
-            <EmptyState
-              icon="🔍"
-              title="No questions match your filters"
-              description="Try changing the status filter or check back later."
-              cta={{ label: 'Show Open Questions', href: filterHref({ status: 'open' }) }}
-            />
+            <span className="px-3 py-2 rounded-lg border border-border-dark/50 text-sm text-text-secondary/40 cursor-not-allowed">
+              ← Prev
+            </span>
           )}
-        </div>
-      ) : (
-        <>
-          <div className="space-y-3">
-            {enriched.map((q) => (
-              <QuestionCard key={q.id} question={q} />
-            ))}
-          </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <nav className="flex items-center justify-center gap-1 mt-8" aria-label="Pagination">
-              {/* Previous */}
-              {currentPage > 1 ? (
-                <a
-                  href={pageHref(currentPage - 1)}
-                  className="px-3 py-2 rounded-lg border border-border-dark text-sm text-text-secondary hover:border-accent-green/50 hover:text-white transition-colors"
-                >
-                  ← Prev
-                </a>
-              ) : (
-                <span className="px-3 py-2 rounded-lg border border-border-dark/50 text-sm text-text-secondary/40 cursor-not-allowed">
-                  ← Prev
-                </span>
-              )}
-
-              {/* Page numbers */}
-              {getPageNumbers().map((page, idx) =>
-                page === '...' ? (
-                  <span key={`ellipsis-${idx}`} className="px-2 py-2 text-text-secondary text-sm">
-                    …
-                  </span>
-                ) : (
-                  <a
-                    key={page}
-                    href={pageHref(page)}
-                    className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
-                      currentPage === page
-                        ? 'border-accent-green text-accent-green bg-accent-green/10'
-                        : 'border-border-dark text-text-secondary hover:border-accent-green/50 hover:text-white'
-                    }`}
-                  >
-                    {page}
-                  </a>
-                )
-              )}
-
-              {/* Next */}
-              {currentPage < totalPages ? (
-                <a
-                  href={pageHref(currentPage + 1)}
-                  className="px-3 py-2 rounded-lg border border-border-dark text-sm text-text-secondary hover:border-accent-green/50 hover:text-white transition-colors"
-                >
-                  Next →
-                </a>
-              ) : (
-                <span className="px-3 py-2 rounded-lg border border-border-dark/50 text-sm text-text-secondary/40 cursor-not-allowed">
-                  Next →
-                </span>
-              )}
-            </nav>
+          {/* Page numbers */}
+          {getPageNumbers().map((page, idx) =>
+            page === '...' ? (
+              <span key={`ellipsis-${idx}`} className="px-2 py-2 text-text-secondary text-sm">
+                …
+              </span>
+            ) : (
+              <a
+                key={page}
+                href={pageHref(page)}
+                className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+                  currentPage === page
+                    ? 'border-accent-green text-accent-green bg-accent-green/10'
+                    : 'border-border-dark text-text-secondary hover:border-accent-green/50 hover:text-white'
+                }`}
+              >
+                {page}
+              </a>
+            )
           )}
-        </>
+
+          {/* Next */}
+          {currentPage < totalPages ? (
+            <a
+              href={pageHref(currentPage + 1)}
+              className="px-3 py-2 rounded-lg border border-border-dark text-sm text-text-secondary hover:border-accent-green/50 hover:text-white transition-colors"
+            >
+              Next →
+            </a>
+          ) : (
+            <span className="px-3 py-2 rounded-lg border border-border-dark/50 text-sm text-text-secondary/40 cursor-not-allowed">
+              Next →
+            </span>
+          )}
+        </nav>
       )}
     </div>
   )
