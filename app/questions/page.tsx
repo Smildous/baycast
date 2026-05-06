@@ -80,14 +80,21 @@ export default async function QuestionsPage({ searchParams }: Props) {
   // This handles case mismatches, whitespace, and non-normalized DB values
   // that .in() with exact variants might miss.
   const catLower = normalizedCategory?.toLowerCase()
-  const catFilter = catLower
-    ? `category.ilike.%${catLower}%`
+  const statusFilter = searchParams.status || 'open'
+  // Build combined filter: status AND category (if provided).
+  // Supabase .or() replaces other filters, so we must include
+  // the status condition inside the .or() expression.
+  const combinedFilter = catLower
+    ? `status.eq.${statusFilter},category.ilike.%${catLower}%`
     : undefined
   let countQuery = supabase
     .from('questions')
     .select('id', { count: 'exact', head: true })
-    .eq('status', searchParams.status || 'open')
-  if (catFilter) countQuery = countQuery.or(catFilter)
+  if (combinedFilter) {
+    countQuery = countQuery.or(combinedFilter)
+  } else {
+    countQuery = countQuery.eq('status', statusFilter)
+  }
   const { count: totalCount } = await countQuery
 
   // Step 2: Get paginated data
@@ -97,8 +104,11 @@ export default async function QuestionsPage({ searchParams }: Props) {
     .from('questions')
     .select('*')
     .order('closes_at', { ascending: true })
-    .eq('status', searchParams.status || 'open')
-  if (catFilter) dataQuery = dataQuery.or(catFilter)
+  if (combinedFilter) {
+    dataQuery = dataQuery.or(combinedFilter)
+  } else {
+    dataQuery = dataQuery.eq('status', statusFilter)
+  }
   const { data } = await dataQuery.range(from, to)
   const questions = (data ?? []) as Question[]
   const totalPages = Math.ceil((totalCount ?? 0) / PAGE_SIZE)
