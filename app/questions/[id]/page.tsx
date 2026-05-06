@@ -1,12 +1,52 @@
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import CategoryBadge from '@/components/CategoryBadge'
 import Countdown from '@/components/Countdown'
 import ProbBar from '@/components/ProbBar'
 import Sparkline from '@/components/Sparkline'
 import ForecastForm from '@/components/ForecastForm'
+import ShareButtons from '@/components/ShareButtons'
 import type { Question, Forecast, ForecastPrediction } from '@/lib/types'
 import { formatDate, questionPhase } from '@/lib/utils'
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://baycast-p.vercel.app'
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const supabase = createClient()
+  const { data: question } = await supabase
+    .from('questions')
+    .select('id, title, description')
+    .eq('id', params.id)
+    .single()
+
+  if (!question) {
+    return { title: 'Question Not Found — Baycast' }
+  }
+
+  const q = question as Pick<Question, 'id' | 'title' | 'description'>
+  const url = `${BASE_URL}/questions/${q.id}`
+  const description = q.description
+    ? `${q.description}. Cast your forecast!`
+    : 'Cast your forecast on Baycast!'
+
+  return {
+    title: `${q.title} — Baycast Prediction Poll`,
+    description,
+    openGraph: {
+      title: `${q.title} — Baycast Prediction Poll`,
+      description,
+      url,
+      siteName: 'Baycast',
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${q.title} — Baycast Prediction Poll`,
+      description,
+    },
+  }
+}
 
 /**
  * Ensures a URL is absolute (has a protocol).
@@ -123,7 +163,12 @@ export default async function QuestionDetailPage({ params }: Props) {
             </span>
           )}
         </div>
-        <h1 className="text-3xl font-outfit font-bold mb-3 leading-snug">{q.title}</h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-3xl font-outfit font-bold mb-3 leading-snug">{q.title}</h1>
+          <div className="shrink-0 mt-1">
+            <ShareButtons title={q.title} url={`${BASE_URL}/questions/${q.id}`} />
+          </div>
+        </div>
         {q.description && (
           <p className="text-text-secondary leading-relaxed">{q.description}</p>
         )}
