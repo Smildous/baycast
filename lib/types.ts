@@ -12,21 +12,51 @@ export type Category =
   | 'Entertainment'
   | 'Other'
 
-/** Canonical categories keyed by lowercase lookup */
+/**
+ * Canonical categories keyed by lowercase lookup.
+ * Includes all known DB variants from migration_005_normalize_categories.sql
+ * so categories display correctly even when the migration hasn't been run.
+ */
 export const CATEGORY_ALIASES: Record<string, Category> = {
+  // Politics
   politics: 'Politics',
+  geopolitics: 'Politics',
+  geopolitic: 'Politics',
+  // Technology
   technology: 'Technology',
   tech: 'Technology',
+  // Economy
   economy: 'Economy',
   economics: 'Economy',
+  // Science
   science: 'Science',
+  // Sports
   sports: 'Sports',
+  sport: 'Sports',
+  // Culture
   culture: 'Culture',
+  cultures: 'Culture',
+  arts: 'Culture',
+  // AI
   ai: 'AI',
+  'artificial intelligence': 'AI',
+  artificialintelligence: 'AI',
+  // Crypto
   crypto: 'Crypto',
   cryptocurrency: 'Crypto',
+  cryptocurrencies: 'Crypto',
+  defi: 'Crypto',
+  // Entertainment
   entertainment: 'Entertainment',
+  entertainments: 'Entertainment',
+  movies: 'Entertainment',
+  music: 'Entertainment',
+  // Other
   other: 'Other',
+  others: 'Other',
+  misc: 'Other',
+  miscellaneous: 'Other',
+  general: 'Other',
 }
 
 export const CATEGORIES: Category[] = ['Politics', 'Technology', 'Economy', 'Science', 'Sports', 'Culture', 'AI', 'Crypto', 'Entertainment', 'Other']

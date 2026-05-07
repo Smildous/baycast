@@ -1,5 +1,5 @@
 import type { Category } from '@/lib/types'
-import { normalizeCategory } from '@/lib/types'
+import { normalizeCategory } from '@/lib/categoryMap'
 import { CATEGORY_COLORS } from '@/lib/utils'
 
 interface Props {

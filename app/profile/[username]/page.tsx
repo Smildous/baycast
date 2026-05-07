@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import EmptyState from '@/components/EmptyState'
 import type { Profile, Forecast, Score, ForecastPrediction } from '@/lib/types'
+import { normalizeCategory } from '@/lib/categoryMap'
 import CalibrationChart, { type CalibrationPoint } from '@/components/CalibrationChart'
 import ProfileBadgeSection from '@/components/ProfileBadgeSection'
 import ProfileTabsClient from '@/components/ProfileTabsClient'
@@ -251,7 +252,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                         href={`/questions/${f.question_id}`}
                         className="hover:text-accent-blue transition-colors"
                       >
-                        <div className="text-xs text-text-secondary mb-0.5">{f.questions?.category}</div>
+                        <div className="text-xs text-text-secondary mb-0.5">{normalizeCategory(f.questions?.category ?? 'Other')}</div>
                         <div className="font-medium truncate max-w-xs">{f.questions?.title}</div>
                       </Link>
                     </td>
@@ -323,7 +324,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm text-text-secondary mb-1">{f.questions?.category}</div>
+                    <div className="text-sm text-text-secondary mb-1">{normalizeCategory(f.questions?.category ?? 'Other')}</div>
                     <div className="font-medium truncate">{f.questions?.title}</div>
                     <div className="flex items-center gap-3 mt-2 text-xs text-text-secondary">
                       <span>Aggregate: {f.questions?.aggregate_probability != null ? `${Math.round(f.questions.aggregate_probability)}%` : '—'}</span>

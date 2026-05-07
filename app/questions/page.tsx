@@ -79,21 +79,15 @@ export default async function QuestionsPage({ searchParams }: Props) {
   // Build category filter using .or() with ilike for maximum resilience.
   // This handles case mismatches, whitespace, and non-normalized DB values
   // that .in() with exact variants might miss.
-  const catLower = normalizedCategory?.toLowerCase()
   const statusFilter = searchParams.status || 'open'
-  // Build combined filter: status AND category (if provided).
-  // Supabase .or() replaces other filters, so we must include
-  // the status condition inside the .or() expression.
-  const combinedFilter = catLower
-    ? `status.eq.${statusFilter},category.ilike.%${catLower}%`
-    : undefined
+  // Build category variants for resilient filtering (handles non-normalized DB values)
+  const categoryVariants = normalizedCategory ? getCategoryVariants(normalizedCategory) : []
   let countQuery = supabase
     .from('questions')
     .select('id', { count: 'exact', head: true })
-  if (combinedFilter) {
-    countQuery = countQuery.or(combinedFilter)
-  } else {
-    countQuery = countQuery.eq('status', statusFilter)
+    .eq('status', statusFilter)
+  if (categoryVariants.length > 0) {
+    countQuery = countQuery.in('category', categoryVariants)
   }
   const { count: totalCount } = await countQuery
 
@@ -104,10 +98,9 @@ export default async function QuestionsPage({ searchParams }: Props) {
     .from('questions')
     .select('*')
     .order('closes_at', { ascending: true })
-  if (combinedFilter) {
-    dataQuery = dataQuery.or(combinedFilter)
-  } else {
-    dataQuery = dataQuery.eq('status', statusFilter)
+    .eq('status', statusFilter)
+  if (categoryVariants.length > 0) {
+    dataQuery = dataQuery.in('category', categoryVariants)
   }
   const { data } = await dataQuery.range(from, to)
   const questions = (data ?? []) as Question[]

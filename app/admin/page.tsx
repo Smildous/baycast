@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import type { Question } from '@/lib/types'
+import { normalizeCategory } from '@/lib/categoryMap'
 import { formatDate } from '@/lib/utils'
 
 const PAGE_SIZE = 20
@@ -86,7 +87,7 @@ export default async function AdminPage({ searchParams }: Props) {
                   <span className="font-medium line-clamp-2">{q.title}</span>
                   {/* Inline metadata visible on mobile only */}
                   <div className="flex items-center gap-2 mt-1 sm:hidden">
-                    <span className="text-text-secondary text-xs">{q.category}</span>
+                    <span className="text-text-secondary text-xs">{normalizeCategory(q.category)}</span>
                     <span className="text-text-secondary text-xs">·</span>
                     <span className={`px-1.5 py-0.5 rounded text-xs border ${
                       q.status === 'open'
@@ -103,7 +104,7 @@ export default async function AdminPage({ searchParams }: Props) {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-text-secondary text-sm hidden sm:table-cell">
-                  {q.category}
+                  {normalizeCategory(q.category)}
                 </td>
                 <td className="px-4 py-3 hidden md:table-cell">
                   <span className={`px-2 py-0.5 rounded text-xs border ${
