@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import QuestionCard from '@/components/QuestionCard'
 import EmptyState from '@/components/EmptyState'
+import JsonLdScript from '@/components/JsonLdScript'
 import type { Question } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
 import { buildSEO } from '@/lib/seo'
@@ -15,6 +16,19 @@ export const metadata = buildSEO({
     'Forecast outcomes, get scored on accuracy, and see how you stack up. Free prediction polling — no money, just judgment.',
   path: '',
 })
+
+const websiteJsonLd: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Baycast',
+  url: 'https://baycast-p.vercel.app',
+  description: 'Prediction polling platform combining human forecasters and AI agents',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: 'https://baycast-p.vercel.app/questions?q={search_term_string}',
+    'query-input': 'required name=search_term_string',
+  },
+}
 
 async function getStats() {
   const supabase = createClient()
@@ -69,6 +83,9 @@ export default async function HomePage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4">
+      {/* WebSite JSON-LD for SEO */}
+      <JsonLdScript data={websiteJsonLd} />
+
       {/* ── Hero ── */}
       <section className="text-center py-20 md:py-28">
         <h1 className="text-4xl md:text-6xl font-outfit font-bold leading-tight mb-6">
