@@ -145,8 +145,32 @@ export default async function QuestionDetailPage({ params }: Props) {
     )
   }
 
+  // JSON-LD structured data for SEO (schema.org Question)
+  const jsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Question',
+    name: q.title,
+    text: q.description || undefined,
+    dateCreated: q.opens_at,
+    dateModified: q.resolved_at || q.closes_at,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: isResolved && q.resolution
+        ? `Resolved: ${JSON.stringify(q.resolution)}`
+        : avgProb !== null
+          ? `Consensus probability: ${avgProb}%`
+          : 'No forecasts yet',
+    },
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-3">
