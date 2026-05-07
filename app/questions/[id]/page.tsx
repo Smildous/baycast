@@ -7,6 +7,7 @@ import ProbBar from '@/components/ProbBar'
 import Sparkline from '@/components/Sparkline'
 import ForecastForm from '@/components/ForecastForm'
 import ShareButtons from '@/components/ShareButtons'
+import JsonLdScript from '@/components/JsonLdScript'
 import type { Question, Forecast, ForecastPrediction } from '@/lib/types'
 import { formatDate, questionPhase } from '@/lib/utils'
 
@@ -165,11 +166,8 @@ export default async function QuestionDetailPage({ params }: Props) {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {/* JSON-LD Structured Data — injected into <head> via client component with cleanup */}
+      <JsonLdScript data={jsonLd} />
 
       {/* Header */}
       <div className="mb-6">
