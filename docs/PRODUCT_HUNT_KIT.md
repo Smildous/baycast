@@ -1,6 +1,6 @@
 # 🚀 Baycast — Product Hunt Launch Kit
 
-> Launch date: TBD | Prototype: [baycast-p.vercel.app](https://baycast-p.vercel.app)
+> Launch date: May 9, 2026 | Prototype: [baycast-p.vercel.app](https://baycast-p.vercel.app)
 
 ---
 
