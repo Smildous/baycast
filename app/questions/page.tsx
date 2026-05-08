@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import QuestionsList from '@/components/QuestionsList'
 import WelcomeBanner from '@/components/WelcomeBanner'
 import type { Question } from '@/lib/types'
-import { CATEGORIES, normalizeCategory } from '@/lib/types'
+import { CATEGORIES, normalizeCategory, getCategoryVariants } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
 import { buildSEO } from '@/lib/seo'
 
@@ -75,18 +75,29 @@ export default async function QuestionsPage({ searchParams }: Props) {
 
   const statusFilter = searchParams.status || 'open'
 
-  // Fetch ALL questions with given status — category filtering done client-side.
-  // This is resilient to non-normalized DB category values that break .in()/.ilike() queries.
-  // TODO: move back to DB-side filtering once migration_005 is confirmed run on all rows.
-  const { data: allData } = await supabase
+  // Build query with DB-side category filtering using .or() + .ilike()
+  // to match ANY variant of the category that may exist in the DB.
+  // This works without migration_005 being run (AQ-100).
+  let query = supabase
     .from('questions')
     .select('*')
     .order('closes_at', { ascending: true })
     .eq('status', statusFilter)
 
+  if (normalizedCategory) {
+    const variants = getCategoryVariants(normalizedCategory)
+    // Build .or() filter: category.ilike.Variant1,category.ilike.Variant2,...
+    // ilike provides case-insensitive matching without needing wildcards
+    const orClauses = variants.map(v => `category.ilike.${v}`).join(',')
+    query = query.or(orClauses)
+  }
+
+  const { data: allData } = await query
+
   const allQuestions = (allData ?? []) as Question[]
 
-  // Client-side category filtering using normalizeCategory — maps any DB value to canonical form
+  // Secondary client-side category filter as safety net for any
+  // DB values not covered by the known variants (belt + suspenders).
   const filtered = normalizedCategory
     ? allQuestions.filter(q => normalizeCategory(q.category) === normalizedCategory)
     : allQuestions
