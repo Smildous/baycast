@@ -121,6 +121,11 @@ export default async function QuestionsPage({ searchParams }: Props) {
     }
   })
 
+  // Only show category buttons that have at least 1 question (AQ-105)
+  const categoriesWithQuestions = CATEGORIES.filter((cat) =>
+    allQuestions.some((q) => normalizeCategory(q.category) === cat)
+  )
+
   // Helper to build filter hrefs using explicit param map to prevent accumulation.
   // Same-group filters replace; cross-group filters add.
   const filterHref = (overrides: Record<string, string | undefined>) => {
@@ -185,7 +190,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
         >
           All
         </a>
-        {CATEGORIES.map((cat) => (
+        {categoriesWithQuestions.map((cat) => (
           <a
             key={cat}
             href={filterHref({ category: cat })}

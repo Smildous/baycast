@@ -173,7 +173,7 @@ export default async function QuestionDetailPage({ params }: Props) {
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-3">
           <CategoryBadge category={q.category} />
-          <Countdown closesAt={q.closes_at} status={q.status} />
+          {q.closes_at && <Countdown closesAt={q.closes_at} status={q.status} />}
           {isBlind && (
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-900/40 text-yellow-300 border border-yellow-800">
               🔒 Blind Phase
@@ -191,9 +191,9 @@ export default async function QuestionDetailPage({ params }: Props) {
             <ShareButtons title={q.title} url={`${BASE_URL}/questions/${q.id}`} />
           </div>
         </div>
-        {q.description && (
-          <p className="text-text-secondary leading-relaxed">{q.description}</p>
-        )}
+        <p className="text-text-secondary leading-relaxed">
+          {q.description || 'No description provided for this question.'}
+        </p>
       </div>
 
       {/* Resolution (if resolved) */}
@@ -229,7 +229,11 @@ export default async function QuestionDetailPage({ params }: Props) {
           <div className="text-2xl font-mono font-bold text-accent-green">
             {isBlind ? '—' : avgProb !== null ? `${avgProb}%` : '—'}
           </div>
-          <div className="text-text-secondary text-sm">Consensus</div>
+          <div className="text-text-secondary text-sm">
+            {!isBlind && forecasters === 0
+              ? 'No forecasts yet — be the first!'
+              : 'Consensus'}
+          </div>
         </div>
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
           <div className="text-2xl font-mono font-bold text-text-primary">
@@ -239,7 +243,7 @@ export default async function QuestionDetailPage({ params }: Props) {
         </div>
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
           <div className="text-2xl font-mono font-bold text-text-primary">
-            {formatDate(q.closes_at)}
+            {q.closes_at ? formatDate(q.closes_at) : 'TBD'}
           </div>
           <div className="text-text-secondary text-sm">Closes</div>
         </div>
@@ -262,21 +266,41 @@ export default async function QuestionDetailPage({ params }: Props) {
 
       {/* Source */}
       {q.resolution_source && (() => {
-        const href = normalizeUrl(q.resolution_source)
+        const raw = q.resolution_source.trim()
+        // Validate URL: must start with http(s):// and contain no spaces
+        const isValidUrl = /^https?:\/\/\S+$/.test(raw)
+        if (isValidUrl) {
+          const href = normalizeUrl(raw)
+          return (
+            <div className="mb-8 text-sm text-text-secondary">
+              Resolution source:{' '}
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent-blue hover:underline break-all"
+              >
+                {href}
+              </a>
+            </div>
+          )
+        }
+        // Invalid URL — display as plain text
         return (
           <div className="mb-8 text-sm text-text-secondary">
             Resolution source:{' '}
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent-blue hover:underline break-all"
-            >
-              {href}
-            </a>
+            <span className="text-text-primary">{raw || 'Not specified'}</span>
           </div>
         )
       })()}
+
+      {/* Show fallback if resolution_source is null */}
+      {!q.resolution_source && (
+        <div className="mb-8 text-sm text-text-secondary">
+          Resolution source:{' '}
+          <span className="text-text-primary">Not specified</span>
+        </div>
+      )}
 
       {/* Forecast submission */}
       {isOpen && (
