@@ -1,6 +1,10 @@
 import { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 
+// Prevent Vercel from caching a static sitemap at build time
+// (build-time Supabase queries may fail, resulting in static-only sitemap)
+export const dynamic = 'force-dynamic'
+
 const BASE_URL = 'https://baycast-p.vercel.app'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import QuestionsList from '@/components/QuestionsList'
 import WelcomeBanner from '@/components/WelcomeBanner'
 import type { Question } from '@/lib/types'
-import { CATEGORIES, normalizeCategory, getCategoryVariants } from '@/lib/types'
+import { CATEGORIES, normalizeCategory } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
 import { buildSEO } from '@/lib/seo'
 
@@ -65,7 +65,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
   await autoCloseExpiredQuestions(supabase)
 
   // Normalize the incoming category filter so lowercase/shorthand values
-  // (e.g. "tech", "economy") match the canonical capitalized form in the DB.
+  // (e.g. "tech", "economy") match the canonical capitalized form.
   const normalizedCategory = searchParams.category
     ? normalizeCategory(searchParams.category)
     : undefined
@@ -73,38 +73,30 @@ export default async function QuestionsPage({ searchParams }: Props) {
   // Pagination: parse page param, default to 1
   const currentPage = Math.max(1, parseInt(searchParams.page ?? '1', 10) || 1)
 
-  // Step 1: Get total count via separate count-only query.
-  // Use .in() with all known category variants so filtering works even when
-  // DB data hasn't been normalized (migration_005 not yet run).
-  // Build category filter using .or() with ilike for maximum resilience.
-  // This handles case mismatches, whitespace, and non-normalized DB values
-  // that .in() with exact variants might miss.
   const statusFilter = searchParams.status || 'open'
-  // Build category variants for resilient filtering (handles non-normalized DB values)
-  const categoryVariants = normalizedCategory ? getCategoryVariants(normalizedCategory) : []
-  let countQuery = supabase
-    .from('questions')
-    .select('id', { count: 'exact', head: true })
-    .eq('status', statusFilter)
-  if (categoryVariants.length > 0) {
-    countQuery = countQuery.in('category', categoryVariants)
-  }
-  const { count: totalCount } = await countQuery
 
-  // Step 2: Get paginated data
-  const from = (currentPage - 1) * PAGE_SIZE
-  const to = from + PAGE_SIZE - 1
-  let dataQuery = supabase
+  // Fetch ALL questions with given status — category filtering done client-side.
+  // This is resilient to non-normalized DB category values that break .in()/.ilike() queries.
+  // TODO: move back to DB-side filtering once migration_005 is confirmed run on all rows.
+  const { data: allData } = await supabase
     .from('questions')
     .select('*')
     .order('closes_at', { ascending: true })
     .eq('status', statusFilter)
-  if (categoryVariants.length > 0) {
-    dataQuery = dataQuery.in('category', categoryVariants)
-  }
-  const { data } = await dataQuery.range(from, to)
-  const questions = (data ?? []) as Question[]
-  const totalPages = Math.ceil((totalCount ?? 0) / PAGE_SIZE)
+
+  const allQuestions = (allData ?? []) as Question[]
+
+  // Client-side category filtering using normalizeCategory — maps any DB value to canonical form
+  const filtered = normalizedCategory
+    ? allQuestions.filter(q => normalizeCategory(q.category) === normalizedCategory)
+    : allQuestions
+
+  // Client-side pagination
+  const totalCount = filtered.length
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
+  const from = (currentPage - 1) * PAGE_SIZE
+  const to = from + PAGE_SIZE - 1
+  const questions = filtered.slice(from, to + 1)
 
   // Récupère les probabilités agrégées et le nombre de prévisionnistes
   const ids = questions.map((q) => q.id)
