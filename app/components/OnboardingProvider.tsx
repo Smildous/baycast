@@ -35,7 +35,7 @@ export function useOnboarding() {
 }
 
 /** Routes where the onboarding modal must NOT appear */
-const AUTH_ROUTE_PREFIX='***'
+const AUTH_ROUTE_PREFIX='/auth'
 
 function isAuthRoute(pathname: string): boolean {
   return pathname.startsWith(AUTH_ROUTE_PREFIX)
