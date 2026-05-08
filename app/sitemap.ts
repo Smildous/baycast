@@ -23,10 +23,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = createClient()
     const { data: questions } = await supabase
       .from('questions')
-      .select('id, updated_at')
-      .eq('status', 'open') // Removed draft/closed from sitemap
+      .select('id, updated_at, status')
+      .in('status', ['open', 'closed', 'resolved']) // All published (non-draft) questions
       .order('updated_at', { ascending: false })
-      .limit(100)
+      .limit(500)
 
     if (questions && questions.length > 0) {
       const questionPages: MetadataRoute.Sitemap = questions.map((q) => ({
