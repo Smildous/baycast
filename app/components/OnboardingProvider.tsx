@@ -35,7 +35,10 @@ export function useOnboarding() {
 }
 
 /** Routes where the onboarding modal must NOT appear */
-const AUTH_ROUTE_PREFIX='/auth'
+const AUTH_ROUTE_PREFIX='***';
+
+/** Routes where onboarding modal must NOT appear (blocks critical UI like category filters) */
+const NO_ONBOARDING_ROUTES = ['/questions'] as const;
 
 function isAuthRoute(pathname: string): boolean {
   return pathname.startsWith(AUTH_ROUTE_PREFIX)
@@ -80,10 +83,15 @@ export default function OnboardingProvider({ children }: { children: ReactNode }
     setIsOpen(true)
   }, [])
 
+  // AQ-130: Check if current route should skip onboarding (blocks critical UI like category filters)
+  const isNoOnboardingRoute = NO_ONBOARDING_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
+  )
+
   useEffect(() => {
     setMounted(true)
-    // Never show onboarding on auth routes
-    if (isAuthRoute(pathname)) {
+    // Never show onboarding on auth routes or /questions (AQ-130: blocks category filters)
+    if (isAuthRoute(pathname) || isNoOnboardingRoute) {
       setIsOpen(false)
       return
     }
@@ -102,7 +110,7 @@ export default function OnboardingProvider({ children }: { children: ReactNode }
         delayTimerRef.current = null
       }
     }
-  }, [pathname])
+  }, [pathname, isNoOnboardingRoute])
 
   // AQ-064: Allow dismissal via Escape key
   useEffect(() => {
