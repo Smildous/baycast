@@ -32,6 +32,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4">
+      <title>Reset Password — Baycast | Prediction Polling Platform</title>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-outfit font-bold mb-2">Reset your password</h1>

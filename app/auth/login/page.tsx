@@ -1,5 +1,10 @@
 import AuthForm from '@/components/AuthForm'
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Log In — Baycast | Prediction Polling Platform',
+}
 
 export default function LoginPage() {
   return (
