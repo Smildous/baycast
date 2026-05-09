@@ -163,9 +163,9 @@ export default function NavClient({ user, profile }: Props) {
           ) : (
             <Link
               href="/auth/signup"
-              className="hidden md:inline-flex px-4 py-2 rounded-lg bg-accent-green text-white text-sm font-semibold hover:bg-accent-green/90 transition-colors"
+              className="hidden md:inline-flex px-5 py-2.5 rounded-lg bg-gradient-to-r from-accent-green to-emerald-600 text-white text-sm font-bold hover:from-accent-green hover:to-emerald-500 transition-all shadow-md shadow-accent-green/15 hover:shadow-accent-green/30"
             >
-              Get Started
+              Get Started Free
             </Link>
           )}
         </div>
@@ -239,9 +239,9 @@ export default function NavClient({ user, profile }: Props) {
             <Link
               href="/auth/signup"
               onClick={closeMobileDrawer}
-              className="block w-full text-center px-4 py-3 rounded-lg bg-accent-green text-white text-sm font-semibold hover:bg-accent-green/90 transition-colors"
+              className="block w-full text-center px-4 py-3 rounded-lg bg-gradient-to-r from-accent-green to-emerald-600 text-white text-sm font-bold hover:from-accent-green hover:to-emerald-500 transition-all"
             >
-              Get Started
+              Get Started Free
             </Link>
           </div>
         )}
