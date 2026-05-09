@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 
 // Prevent Vercel from caching a static sitemap at build time
 // (build-time Supabase queries may fail, resulting in static-only sitemap)
@@ -19,14 +19,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // Dynamic question pages from Supabase
+  // Use direct Supabase client (no cookies/SSR) — sitemap routes lack cookie context
+  // which causes the server createClient() to throw silently.
   try {
-    const supabase = createClient()
-    const { data: questions } = await supabase
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.warn('Sitemap: Missing Supabase env vars, serving static sitemap only.')
+      return staticPages
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey)
+    const { data: questions, error } = await supabase
       .from('questions')
       .select('id, updated_at, status')
       .in('status', ['open', 'closed', 'resolved']) // All published (non-draft) questions
       .order('updated_at', { ascending: false })
       .limit(500)
+
+    if (error) {
+      console.warn('Sitemap: Supabase query failed:', error.message, '— serving static sitemap only.')
+      return staticPages
+    }
 
     if (questions && questions.length > 0) {
       const questionPages: MetadataRoute.Sitemap = questions.map((q) => ({
@@ -38,9 +53,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
       return [...staticPages, ...questionPages]
     }
-  } catch {
+  } catch (err) {
     // Supabase unreachable (e.g. DNS issues on VPS) — return static sitemap only
-    console.warn('Sitemap: Could not fetch questions from Supabase, serving static sitemap only.')
+    console.warn('Sitemap: Could not fetch questions from Supabase, serving static sitemap only.', err)
   }
 
   return staticPages
