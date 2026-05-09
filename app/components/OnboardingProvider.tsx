@@ -51,6 +51,35 @@ export default function OnboardingProvider({ children }: { children: ReactNode }
   const [mounted, setMounted] = useState(false)
   const delayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const nextStep = useCallback(() => {
+    setCurrentStep((prev) => {
+      const next = (prev + 1) as OnboardingStep
+      setOnboardingStep(next)
+      return next
+    })
+  }, [])
+
+  const completeOnboarding = useCallback(() => {
+    setOnboardingCompleted(true)
+    setOnboardingStep(3)
+    setIsOpen(false)
+    if (delayTimerRef.current) {
+      clearTimeout(delayTimerRef.current)
+      delayTimerRef.current = null
+    }
+  }, [])
+
+  const skipOnboarding = useCallback(() => {
+    completeOnboarding()
+  }, [completeOnboarding])
+
+  const showOnboarding = useCallback(() => {
+    setOnboardingCompleted(false)
+    setCurrentStep(1)
+    setOnboardingStep(1)
+    setIsOpen(true)
+  }, [])
+
   useEffect(() => {
     setMounted(true)
     // Never show onboarding on auth routes
@@ -87,7 +116,7 @@ export default function OnboardingProvider({ children }: { children: ReactNode }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, mounted])
+  }, [isOpen, mounted, completeOnboarding])
 
   // Lock body scroll when modal is open, restore on close
   useEffect(() => {
@@ -100,35 +129,6 @@ export default function OnboardingProvider({ children }: { children: ReactNode }
       }
     }
   }, [isOpen, mounted])
-
-  const nextStep = useCallback(() => {
-    setCurrentStep((prev) => {
-      const next = (prev + 1) as OnboardingStep
-      setOnboardingStep(next)
-      return next
-    })
-  }, [])
-
-  const completeOnboarding = useCallback(() => {
-    setOnboardingCompleted(true)
-    setOnboardingStep(3)
-    setIsOpen(false)
-    if (delayTimerRef.current) {
-      clearTimeout(delayTimerRef.current)
-      delayTimerRef.current = null
-    }
-  }, [])
-
-  const skipOnboarding = useCallback(() => {
-    completeOnboarding()
-  }, [completeOnboarding])
-
-  const showOnboarding = useCallback(() => {
-    setOnboardingCompleted(false)
-    setCurrentStep(1)
-    setOnboardingStep(1)
-    setIsOpen(true)
-  }, [])
 
   if (!mounted) {
     return <>{children}</>
