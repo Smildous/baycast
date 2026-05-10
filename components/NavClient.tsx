@@ -117,6 +117,16 @@ export default function NavClient({ user, profile }: Props) {
             </svg>
           </button>
 
+          {/* Mobile: compact CTA for non-authenticated users */}
+          {!user && (
+            <Link
+              href="/auth/signup"
+              className="md:hidden px-3 py-1.5 rounded-lg bg-gradient-to-r from-accent-green to-emerald-600 text-white text-xs font-bold hover:from-accent-green hover:to-emerald-500 transition-all"
+            >
+              Sign Up
+            </Link>
+          )}
+
           {/* Desktop: user menu or CTA */}
           {user ? (
             <div className="relative hidden md:block">
