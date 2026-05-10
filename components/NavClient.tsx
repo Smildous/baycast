@@ -23,6 +23,7 @@ const NAV_LINKS = [
   { href: '/questions', label: 'Questions' },
   { href: '/blocks', label: 'Blocks' },
   { href: '/leaderboard', label: 'Leaderboard' },
+  { href: '/how-it-works', label: 'How It Works' },
 ]
 
 export default function NavClient({ user, profile }: Props) {
