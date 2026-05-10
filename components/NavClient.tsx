@@ -24,6 +24,7 @@ const NAV_LINKS = [
   { href: '/blocks', label: 'Blocks' },
   { href: '/leaderboard', label: 'Leaderboard' },
   { href: '/how-it-works', label: 'How It Works' },
+  { href: '/compare', label: 'Compare' },
 ]
 
 export default function NavClient({ user, profile }: Props) {
