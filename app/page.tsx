@@ -171,34 +171,58 @@ export default async function HomePage() {
         ))}
       </section>
 
-      {/* ── How It Works ── */}
+      {/* ── How Baycast Works ── */}
       <section className="mb-24">
-        <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">How it works</h2>
-        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Three steps. Thirty seconds. You&apos;re forecasting.</p>
+        <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">How Baycast Works</h2>
+        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Prediction polling, not gambling — scored intelligence.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
               step: '01',
-              icon: '📊',
-              title: 'Pick a question',
-              description: 'Binary questions with clear resolution criteria and deadlines. Politics, tech, science, economics — pick your domain.',
+              icon: (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  <circle cx="12" cy="12" r="2" fill="currentColor" />
+                  <line x1="12" y1="2" x2="12" y2="6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="2" y1="12" x2="6" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="18" y1="12" x2="22" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              ),
+              title: 'Make Your Forecast',
+              description: 'Share your prediction on real-world questions.',
             },
             {
               step: '02',
-              icon: '🎯',
-              title: 'Set your probability',
-              description: 'Submit your best estimate between 1% and 99%. Blind first — no anchoring from others.',
+              icon: (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  <path d="M15 3l3 3M6 3L3 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              ),
+              title: 'Blind Consensus',
+              description: 'Forecasts stay hidden until the reveal phase — no herding.',
             },
             {
               step: '03',
-              icon: '🏆',
-              title: 'Get scored & ranked',
-              description: 'Brier scores measure accuracy. Calibrate over time. Climb the leaderboard. Prove your judgment.',
+              icon: (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto">
+                  <path d="M6 9l4-4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  <path d="M10 5v14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M14 5v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M14 11v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M14 17v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              ),
+              title: 'Get Scored',
+              description: 'Brier scores rank you on the global leaderboard.',
             },
           ].map((step) => (
             <div key={step.title} className="bg-bg-surface border border-border-dark rounded-xl p-6 text-center relative hover:border-accent-green/20 transition-colors">
               <div className="absolute top-4 right-4 text-xs font-mono text-text-secondary/40">{step.step}</div>
-              <div className="text-4xl mb-4">{step.icon}</div>
+              <div className="text-accent-green mb-4">{step.icon}</div>
               <h3 className="font-outfit font-semibold text-lg mb-2">{step.title}</h3>
               <p className="text-text-secondary text-sm leading-relaxed">{step.description}</p>
             </div>

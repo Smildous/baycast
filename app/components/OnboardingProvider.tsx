@@ -126,6 +126,21 @@ export default function OnboardingProvider({ children }: { children: ReactNode }
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, mounted, completeOnboarding])
 
+  // AQ-130: Dismiss modal on user scroll — makes onboarding non-blocking
+  useEffect(() => {
+    if (!mounted || !isOpen) return
+
+    let scrollDismissed = false
+    function handleScroll() {
+      if (scrollDismissed) return
+      scrollDismissed = true
+      completeOnboarding()
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true, once: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [isOpen, mounted, completeOnboarding])
+
   // Lock body scroll when modal is open, restore on close
   useEffect(() => {
     if (!mounted) return
