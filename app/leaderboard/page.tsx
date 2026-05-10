@@ -6,9 +6,10 @@ import EmptyState from '@/components/EmptyState'
 import { buildSEO } from '@/lib/seo'
 
 export const metadata = buildSEO({
-  title: 'Leaderboard',
+  title: 'Forecaster Leaderboard',
   description: 'Top forecasters ranked by Brier score. See who has the most accurate predictions on Baycast.',
   path: '/leaderboard',
+  ogImage: '/opengraph-image',
 })
 
 interface Props {

@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = createClient()
   const { data: question } = await supabase
     .from('questions')
-    .select('id, title, description')
+    .select('id, title, description, category, status')
     .eq('id', params.id)
     .single()
 
@@ -25,26 +25,55 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Question Not Found — Baycast' }
   }
 
-  const q = question as Pick<Question, 'id' | 'title' | 'description'>
+  const q = question as Pick<Question, 'id' | 'title' | 'description' | 'category' | 'status'>
   const url = `${BASE_URL}/questions/${q.id}`
-  const description = q.description
-    ? `${q.description}. Cast your forecast!`
-    : 'Cast your forecast on Baycast!'
+
+  // Fetch forecast count for OG description
+  const { count: forecastCount } = await supabase
+    .from('forecasts')
+    .select('*', { count: 'exact', head: true })
+    .eq('question_id', q.id)
+
+  const fcCount = forecastCount ?? 0
+
+  // Fetch aggregate probability for OG title
+  const { data: forecasts } = await supabase
+    .from('forecasts')
+    .select('prediction')
+    .eq('question_id', q.id)
+
+  const avgProb =
+    forecasts && forecasts.length > 0
+      ? Math.round(
+          forecasts.reduce(
+            (sum: number, f: { prediction: { probability: number } }) =>
+              sum + f.prediction.probability,
+            0
+          ) / forecasts.length
+        )
+      : null
+
+  const probLabel = avgProb !== null ? ` — ${avgProb}% Yes` : ''
+  const title = `${q.title}${probLabel} — Baycast`
+  const description = `${q.category} · ${q.status.charAt(0).toUpperCase() + q.status.slice(1)} · ${fcCount} forecaster${fcCount !== 1 ? 's' : ''}${q.description ? `. ${q.description}` : ''}`
+  const ogImageUrl = `/questions/${q.id}/opengraph-image`
 
   return {
-    title: `${q.title} — Baycast Prediction Poll`,
+    title,
     description,
     openGraph: {
-      title: `${q.title} — Baycast Prediction Poll`,
+      title,
       description,
       url,
       siteName: 'Baycast',
       type: 'article',
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: q.title }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${q.title} — Baycast Prediction Poll`,
+      title,
       description,
+      images: [ogImageUrl],
     },
   }
 }

@@ -8,9 +8,10 @@ import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
 import { buildSEO } from '@/lib/seo'
 
 export const metadata = buildSEO({
-  title: 'Questions',
+  title: 'Browse Prediction Questions',
   description: 'Browse open forecasting questions. Submit your probability estimates and get scored on accuracy.',
   path: '/questions',
+  ogImage: '/opengraph-image',
 })
 
 // Ensure dynamic rendering so filters and counts reflect live DB state

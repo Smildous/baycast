@@ -5,10 +5,11 @@ import { buildSEO } from '@/lib/seo'
 export const dynamic = 'force-dynamic'
 
 export const metadata = buildSEO({
-  title: 'How It Works — The Blind Consensus Protocol',
+  title: 'How Blind Consensus Protocol Works',
   description:
     'Learn how Baycast\'s Blind Consensus Protocol eliminates herding bias in prediction polling. Phase A (Blind), Phase B (Reveal), and Resolution explained.',
   path: '/how-it-works',
+  ogImage: '/opengraph-image',
 })
 
 /* ── FAQ JSON-LD Schema ── */

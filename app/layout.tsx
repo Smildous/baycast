@@ -7,6 +7,7 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import { Analytics } from '@vercel/analytics/react'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://baycast-p.vercel.app'),
   icons: {
     icon: '/favicon.svg',
   },
@@ -21,11 +22,13 @@ export const metadata: Metadata = {
     siteName: 'Baycast',
     type: 'website',
     locale: 'en_US',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Baycast — The Prediction Polling Protocol' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Baycast — The Prediction Polling Protocol',
     description: 'Collective intelligence meets AI forecasting. Join the protocol.',
+    images: ['/opengraph-image'],
   },
   robots: {
     index: true,
