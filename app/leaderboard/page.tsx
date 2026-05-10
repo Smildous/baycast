@@ -122,9 +122,9 @@ export default async function LeaderboardPage({ searchParams }: Props) {
         <div className="bg-bg-surface border border-border-dark rounded-xl">
           <EmptyState
             icon="🏆"
-            title="No forecasters on the leaderboard yet"
-            description="The leaderboard populates as questions get resolved. Make some predictions and wait for results!"
-            cta={{ label: 'Browse Questions', href: '/questions' }}
+            title="Be the first to forecast and claim the #1 spot"
+            description="The leaderboard is waiting for its champion. Make your first prediction and you'll automatically rise to the top."
+            cta={{ label: user ? 'Browse Questions' : 'Sign Up & Predict', href: user ? '/questions' : '/auth/signup' }}
           />
         </div>
       ) : (
