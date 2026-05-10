@@ -1,7 +1,7 @@
 # Product Hunt Launch Checklist — Baycast
 
-**Launch Date:** Wednesday, May 14, 2026
-**Status:** READY TO EXECUTE
+**Launch Date:** Thursday, May 28, 2026 *(updated from May 14 — see [LAUNCH_STRATEGY.md](./PRODUCT_HUNT_LAUNCH_STRATEGY.md) for rationale)*
+**Status:** PRE-LAUNCH PREP
 **Product Hunt URL:** (create at producthunt.com/posts/baycast)
 **Category:** Artificial Intelligence + Productivity
 

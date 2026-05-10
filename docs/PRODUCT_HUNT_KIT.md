@@ -1,6 +1,10 @@
 # 🚀 Baycast — Product Hunt Launch Kit
 
-> Launch date: May 9, 2026 | Prototype: [baycast-p.vercel.app](https://baycast-p.vercel.app)
+> Launch date: **Thursday, May 28, 2026** (12:01 AM PST) | Prototype: [baycast-p.vercel.app](https://baycast-p.vercel.app)
+>
+> 📋 **Strategy & Timeline:** See [PRODUCT_HUNT_LAUNCH_STRATEGY.md](./PRODUCT_HUNT_LAUNCH_STRATEGY.md) for the full 2-week launch plan, day-of engagement playbook, and post-launch follow-up.
+>
+> ✅ **Launch Checklist:** See [PRODUCT_HUNT_LAUNCH.md](./PRODUCT_HUNT_LAUNCH.md) for the detailed asset specs and checklists.
 
 ---
 
