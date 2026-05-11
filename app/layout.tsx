@@ -58,6 +58,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <Link href="/blocks" className="hover:text-text-primary transition-colors">Blocks</Link>
                   <Link href="/auth/signup" className="hover:text-text-primary transition-colors">Sign up</Link>
                 </div>
+                <div className="flex items-center gap-4">
+                  <Link
+                    href="/auth/signup"
+                    className="px-4 py-2 rounded-lg bg-accent-green text-white font-semibold text-sm hover:bg-accent-green/90 transition-colors shadow-sm shadow-accent-green/20"
+                  >
+                    Join Baycast — Start Forecasting
+                  </Link>
+                </div>
                 <div className="text-text-secondary/60">
                   Not a prediction market. Pure forecasting.
                 </div>
