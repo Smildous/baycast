@@ -274,7 +274,7 @@ export default function ComparePage() {
           How Baycast stacks up against the major prediction platforms — across accuracy, accessibility, and trust.
         </p>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto -mx-4 px-4">
           <table className="w-full bg-bg-surface border border-border-dark rounded-xl overflow-hidden text-sm min-w-[800px]">
             <thead>
               <tr className="border-b border-border-dark bg-bg-primary">

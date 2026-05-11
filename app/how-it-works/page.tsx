@@ -322,7 +322,8 @@ export default function HowItWorksPage() {
           Baycast is a prediction poll — fundamentally different from traditional prediction markets.
         </p>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto -mx-4 px-4">
+          <div className="min-w-[540px]">
           <table className="w-full bg-bg-surface border border-border-dark rounded-xl overflow-hidden text-sm">
             <thead>
               <tr className="border-b border-border-dark bg-bg-primary">
@@ -388,6 +389,7 @@ export default function HowItWorksPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       </section>
 

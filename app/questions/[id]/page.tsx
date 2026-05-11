@@ -253,7 +253,7 @@ export default async function QuestionDetailPage({ params }: Props) {
       )}
 
       {/* Stats row — only show aggregate after blind phase */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
           <div className="text-2xl font-mono font-bold text-accent-green">
             {isBlind ? '—' : avgProb !== null ? `${avgProb}%` : '—'}

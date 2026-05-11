@@ -123,7 +123,7 @@ export default function NavClient({ user, profile }: Props) {
           {!user && (
             <Link
               href="/auth/signup"
-              className="md:hidden px-3 py-1.5 rounded-lg bg-gradient-to-r from-accent-green to-emerald-600 text-white text-xs font-bold hover:from-accent-green hover:to-emerald-500 transition-all"
+              className="md:hidden px-4 py-2 rounded-lg bg-gradient-to-r from-accent-green to-emerald-600 text-white text-sm font-bold hover:from-accent-green hover:to-emerald-500 transition-all"
             >
               Sign Up
             </Link>

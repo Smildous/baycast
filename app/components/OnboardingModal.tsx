@@ -509,7 +509,7 @@ export default function OnboardingModal({
         {/* Close / Skip button (X) — always visible */}
         <button
           onClick={handleSkip}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-text-secondary hover:text-text-primary hover:bg-white/10 transition-colors z-10"
+          className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full text-text-secondary hover:text-text-primary hover:bg-white/10 transition-colors z-10"
           aria-label="Close onboarding"
           title="Skip onboarding"
         >
