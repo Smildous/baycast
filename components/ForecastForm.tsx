@@ -68,13 +68,21 @@ export default function ForecastForm({
   if (!isLoggedIn) {
     return (
       <div className="text-center py-6">
-        <p className="text-text-secondary mb-4">Log in to add your forecast to the collective estimate.</p>
-        <Link
-          href="/auth/login"
-          className="px-6 py-2.5 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors"
-        >
-          Log in
-        </Link>
+        <p className="text-text-secondary mb-4">Sign up to submit your forecast and join the collective estimate.</p>
+        <div className="flex items-center justify-center gap-3">
+          <Link
+            href="/auth/signup"
+            className="px-6 py-2.5 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors"
+          >
+            Sign up to forecast
+          </Link>
+          <Link
+            href="/auth/login"
+            className="px-4 py-2.5 rounded-lg border border-border-dark text-text-secondary hover:text-text-primary transition-colors text-sm"
+          >
+            Log in
+          </Link>
+        </div>
       </div>
     )
   }
