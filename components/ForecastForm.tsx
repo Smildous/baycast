@@ -65,24 +65,125 @@ export default function ForecastForm({
 
   const displayedProbability = optimisticProbability ?? existingForecast?.prediction.probability
 
+  // --- Signed-out CTA: interactive slider + signup modal ---
+  const [guestProbability, setGuestProbability] = useState(50)
+  const [showSignupModal, setShowSignupModal] = useState(false)
+  const [sliderReleased, setSliderReleased] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+
+  function handleGuestSliderChange(v: number) {
+    setGuestProbability(v)
+    setIsDragging(true)
+  }
+
+  function handleSliderPointerUp() {
+    if (isDragging) {
+      setIsDragging(false)
+      setSliderReleased(true)
+      setShowSignupModal(true)
+    }
+  }
+
+  function handleGuestSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setSliderReleased(true)
+    setShowSignupModal(true)
+  }
+
   if (!isLoggedIn) {
     return (
-      <div className="text-center py-6">
-        <p className="text-text-secondary mb-4">Sign up to submit your forecast and join the collective estimate.</p>
-        <div className="flex items-center justify-center gap-3">
-          <Link
-            href="/auth/signup"
-            className="px-6 py-2.5 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors"
+      <div className="space-y-6">
+        {/* Interactive trial slider — same component as authenticated users */}
+        <form onSubmit={handleGuestSubmit} className="space-y-6">
+          <p className="text-text-secondary text-sm">Try it out — slide to set your probability:</p>
+          <div onMouseUp={handleSliderPointerUp} onTouchEnd={handleSliderPointerUp}>
+            <ForecastSlider
+              value={guestProbability}
+              onChange={handleGuestSliderChange}
+              disabled={false}
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full py-3 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors"
           >
-            Sign up to forecast
-          </Link>
-          <Link
-            href="/auth/login"
-            className="px-4 py-2.5 rounded-lg border border-border-dark text-text-secondary hover:text-text-primary transition-colors text-sm"
-          >
-            Log in
-          </Link>
+            Submit forecast
+          </button>
+          {sliderReleased && (
+            <p className="text-center text-text-secondary text-sm">
+              Your pick:{' '}
+              <span className="font-mono text-accent-green font-bold">{guestProbability}%</span>
+            </p>
+          )}
+        </form>
+
+        {/* Signup CTA links */}
+        <div className="text-center pt-2 border-t border-border-dark">
+          <p className="text-text-secondary mb-4">Sign up to submit your forecast and join the collective estimate.</p>
+          <div className="flex items-center justify-center gap-3">
+            <Link
+              href="/auth/signup"
+              className="px-6 py-2.5 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors"
+            >
+              Sign up to forecast
+            </Link>
+            <Link
+              href="/auth/login"
+              className="px-4 py-2.5 rounded-lg border border-border-dark text-text-secondary hover:text-text-primary transition-colors text-sm"
+            >
+              Log in
+            </Link>
+          </div>
         </div>
+
+        {/* Signup modal overlay */}
+        {showSignupModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowSignupModal(false)}
+            />
+            {/* Modal */}
+            <div className="relative bg-bg-surface border border-border-dark rounded-2xl p-8 max-w-md w-full shadow-2xl">
+              <button
+                type="button"
+                onClick={() => setShowSignupModal(false)}
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-text-secondary hover:text-text-primary hover:bg-white/10 transition-colors"
+                aria-label="Close modal"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+
+              <div className="text-center mb-6">
+                <div className="text-4xl mb-3">🎯</div>
+                <h3 className="text-xl font-outfit font-bold text-text-primary mb-2">
+                  Sign up to submit your forecast!
+                </h3>
+                <p className="text-text-secondary text-sm">
+                  You set your prediction to{' '}
+                  <span className="font-mono text-accent-green font-bold">{guestProbability}%</span>.
+                  Create a free account to lock it in and track your accuracy.
+                </p>
+              </div>
+
+              <Link
+                href="/auth/signup"
+                className="block w-full py-3 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors text-center"
+              >
+                Create free account
+              </Link>
+              <p className="text-center text-text-secondary text-xs mt-3">
+                Already have an account?{' '}
+                <Link href="/auth/login" className="text-accent-blue hover:underline">
+                  Log in
+                </Link>
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
