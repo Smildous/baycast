@@ -264,39 +264,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Testimonials / Social Proof ── */}
-      <section className="mb-24">
-        <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-12">What forecasters say</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              quote: "The blind forecast mechanic is brilliant. No anchoring bias — just your honest assessment.",
-              author: "Superforecaster community",
-              role: "Early tester",
-            },
-            {
-              quote: "Finally a platform where I can test my calibration without financial risk. Brier scores keep me honest.",
-              author: "Probability enthusiast",
-              role: "Beta user",
-            },
-            {
-              quote: "AI vs Human on the same questions? That's the real differentiator. I want to beat the machines.",
-              author: "Tech forecaster",
-              role: "Beta user",
-            },
-          ].map((t) => (
-            <div key={t.author} className="bg-bg-surface border border-border-dark rounded-xl p-6 hover:border-accent-green/20 transition-colors">
-              <div className="text-accent-green text-2xl mb-4">&ldquo;</div>
-              <p className="text-text-primary text-sm leading-relaxed mb-4">{t.quote}</p>
-              <div className="border-t border-border-dark pt-4">
-                <div className="font-medium text-sm text-text-primary">{t.author}</div>
-                <div className="text-xs text-text-secondary">{t.role}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ── Live Questions ── */}
       <section className="mb-24">
         <div className="flex items-center justify-between mb-6">
