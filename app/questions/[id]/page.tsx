@@ -266,9 +266,17 @@ export default async function QuestionDetailPage({ params }: Props) {
         </div>
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
           <div className="text-2xl font-mono font-bold text-text-primary">
-            {isBlind ? `${forecasters}` : forecasters}
+            {forecasters >= 50
+              ? (isBlind ? `${forecasters}` : forecasters)
+              : '—'}
           </div>
-          <div className="text-text-secondary text-sm">Forecaster{forecasters !== 1 ? 's' : ''}</div>
+          <div className="text-text-secondary text-sm">
+            {forecasters >= 50
+              ? `Forecaster${forecasters !== 1 ? 's' : ''}`
+              : forecasters > 0
+                ? 'Growing community'
+                : 'No forecasts yet'}
+          </div>
         </div>
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
           <div className="text-2xl font-mono font-bold text-text-primary">

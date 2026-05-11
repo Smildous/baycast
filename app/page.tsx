@@ -158,7 +158,10 @@ export default async function HomePage() {
       <section className="grid grid-cols-3 gap-4 mb-24">
         {[
           { value: stats.questions, label: 'Questions live now', icon: '📊' },
-          { value: stats.users, label: 'Forecasters joined', icon: '👥' },
+          ...(stats.users >= 50
+            ? [{ value: stats.users, label: 'Forecasters joined', icon: '👥' }]
+            : [{ value: 'AI vs Human', label: 'Forecasting', icon: '🤖' }]
+          ),
           { value: '100%', label: 'Free to play', icon: '🎯' },
         ].map((s) => (
           <div key={s.label} className="bg-bg-surface border border-border-dark rounded-xl p-6 text-center hover:border-accent-green/20 transition-colors">
@@ -353,9 +356,11 @@ export default async function HomePage() {
               Explore Questions →
             </Link>
           </div>
-          <p className="text-text-secondary/60 text-xs mt-6">
-            Join {stats.users} forecaster{stats.users !== 1 ? 's' : ''} already on Baycast
-          </p>
+          {stats.users >= 50 && (
+            <p className="text-text-secondary/60 text-xs mt-6">
+              Join {stats.users} forecaster{stats.users !== 1 ? 's' : ''} already on Baycast
+            </p>
+          )}
         </div>
       </section>
     </div>
