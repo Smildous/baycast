@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import QuestionsList from '@/components/QuestionsList'
 import WelcomeBanner from '@/components/WelcomeBanner'
+import QuestionCard from '@/components/QuestionCard'
 import type { Question } from '@/lib/types'
 import { CATEGORIES, normalizeCategory } from '@/lib/types'
 import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
@@ -19,8 +20,16 @@ export const dynamic = 'force-dynamic'
 
 const PAGE_SIZE = 10
 
+type SortOption = 'closing-soon' | 'newest' | 'most-active'
+
+const SORT_OPTIONS: { label: string; value: SortOption }[] = [
+  { label: 'Closing Soon', value: 'closing-soon' },
+  { label: 'Newest', value: 'newest' },
+  { label: 'Most Active', value: 'most-active' },
+]
+
 interface Props {
-  searchParams: { category?: string; status?: string; page?: string }
+  searchParams: { category?: string; status?: string; page?: string; sort?: string }
 }
 
 // Récupère les prévisions agrégées pour un ensemble de questions
@@ -71,6 +80,12 @@ export default async function QuestionsPage({ searchParams }: Props) {
     ? normalizeCategory(searchParams.category)
     : undefined
 
+  // Parse sort option
+  const validSorts = new Set<string>(SORT_OPTIONS.map(s => s.value))
+  const sortOption: SortOption = validSorts.has(searchParams.sort ?? '')
+    ? (searchParams.sort as SortOption)
+    : 'closing-soon'
+
   // Pagination: parse page param, default to 1
   const currentPage = Math.max(1, parseInt(searchParams.page ?? '1', 10) || 1)
 
@@ -78,12 +93,9 @@ export default async function QuestionsPage({ searchParams }: Props) {
 
   // Fetch all questions for the current status — category filtering
   // is done client-side via normalizeCategory() for reliability.
-  // The Supabase .or() + .ilike() approach was unreliable (AQ filter regression).
-  // Dataset is small enough that client-side filtering is fine.
   const { data: allData } = await supabase
     .from('questions')
     .select('*')
-    .order('closes_at', { ascending: true })
     .eq('status', statusFilter)
 
   const allQuestions = (allData ?? []) as Question[]
@@ -94,14 +106,33 @@ export default async function QuestionsPage({ searchParams }: Props) {
     ? allQuestions.filter(q => normalizeCategory(q.category) === normalizedCategory)
     : allQuestions
 
+  // Count open questions for the heading (always count open regardless of current filter)
+  const { count: openCount } = await supabase
+    .from('questions')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'open')
+
+  // Server-side sort
+  const sorted = [...filtered].sort((a, b) => {
+    switch (sortOption) {
+      case 'newest':
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      case 'most-active':
+        return (b.forecasters_count ?? 0) - (a.forecasters_count ?? 0)
+      case 'closing-soon':
+      default:
+        return new Date(a.closes_at).getTime() - new Date(b.closes_at).getTime()
+    }
+  })
+
   // Client-side pagination
-  const totalCount = filtered.length
+  const totalCount = sorted.length
   const totalPages = Math.ceil(totalCount / PAGE_SIZE)
   const from = (currentPage - 1) * PAGE_SIZE
   const to = from + PAGE_SIZE - 1
-  const questions = filtered.slice(from, to + 1)
+  const questions = sorted.slice(from, to + 1)
 
-  // Récupère les probabilités agrégées et le nombre de prévisionnistes
+  // Fetch aggregates for paginated questions
   const ids = questions.map((q) => q.id)
   const aggregates = await fetchAggregates(supabase, ids)
   const enriched = questions.map((q) => {
@@ -112,6 +143,33 @@ export default async function QuestionsPage({ searchParams }: Props) {
       forecasters_count: agg?.count ?? 0,
     }
   })
+
+  // Fetch "Closing Soon" section: top 3 open questions by closes_at ascending
+  // Only show if there are 3+ open questions
+  const showClosingSoon = (openCount ?? 0) >= 3
+  let closingSoonQuestions: Question[] = []
+  let closingSoonEnriched: Question[] = []
+
+  if (showClosingSoon) {
+    const { data: closingSoonData } = await supabase
+      .from('questions')
+      .select('*')
+      .eq('status', 'open')
+      .order('closes_at', { ascending: true })
+      .limit(3)
+
+    closingSoonQuestions = (closingSoonData ?? []) as Question[]
+    const csIds = closingSoonQuestions.map(q => q.id)
+    const csAggregates = await fetchAggregates(supabase, csIds)
+    closingSoonEnriched = closingSoonQuestions.map(q => {
+      const agg = csAggregates.get(q.id)
+      return {
+        ...q,
+        aggregate_probability: agg?.avg ?? undefined,
+        forecasters_count: agg?.count ?? 0,
+      }
+    })
+  }
 
   // Only show category buttons that have at least 1 question (AQ-105)
   const categoriesWithQuestions = CATEGORIES.filter((cat) =>
@@ -124,6 +182,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
     const base: Record<string, string | undefined> = {}
     if (normalizedCategory) base.category = normalizedCategory
     if (searchParams.status) base.status = searchParams.status
+    if (sortOption !== 'closing-soon') base.sort = sortOption
     for (const [k, v] of Object.entries(overrides)) {
       if (v === undefined) {
         delete base[k]
@@ -139,6 +198,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
     const base: Record<string, string | undefined> = {}
     if (normalizedCategory) base.category = normalizedCategory
     if (searchParams.status) base.status = searchParams.status
+    if (sortOption !== 'closing-soon') base.sort = sortOption
     if (page > 1) base.page = String(page)
     return `/questions${buildQueryString(base)}`
   }
@@ -166,7 +226,12 @@ export default async function QuestionsPage({ searchParams }: Props) {
       </Suspense>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-outfit font-bold mb-2">Questions</h1>
+        <h1 className="text-3xl font-outfit font-bold mb-2">
+          Questions
+          <span className="text-lg font-normal text-text-secondary ml-2">
+            ({openCount ?? 0} open)
+          </span>
+        </h1>
         <p className="text-text-secondary">Every forecast you add sharpens the collective estimate.</p>
       </div>
 
@@ -197,8 +262,8 @@ export default async function QuestionsPage({ searchParams }: Props) {
         ))}
       </div>
 
-      {/* Status filter */}
-      <div className="flex gap-2 mb-8">
+      {/* Status filter + Sort controls */}
+      <div className="flex flex-wrap items-center gap-2 mb-8">
         {[
           { label: 'Open', value: 'open' },
           { label: 'Closed', value: 'closed' },
@@ -222,7 +287,42 @@ export default async function QuestionsPage({ searchParams }: Props) {
             </a>
           )
         })}
+
+        {/* Sort separator */}
+        <span className="text-border-dark mx-1 hidden sm:inline">|</span>
+
+        {/* Sort controls */}
+        {SORT_OPTIONS.map(({ label, value }) => {
+          const isActive = sortOption === value
+          return (
+            <a
+              key={value}
+              href={filterHref({ sort: value })}
+              className={`px-4 py-1.5 rounded-lg border text-sm transition-colors ${
+                isActive
+                  ? 'border-accent-green text-accent-green bg-accent-green/10'
+                  : 'border-border-dark text-text-secondary hover:border-accent-green/30'
+              }`}
+            >
+              {label}
+            </a>
+          )
+        })}
       </div>
+
+      {/* Closing Soon section */}
+      {showClosingSoon && closingSoonEnriched.length > 0 && (
+        <div className="mb-8 border border-amber-500/30 bg-amber-500/5 rounded-xl p-5">
+          <h2 className="text-lg font-outfit font-semibold mb-4 text-amber-400">
+            ⚡ Closing Soon
+          </h2>
+          <div className="space-y-3">
+            {closingSoonEnriched.map((q) => (
+              <QuestionCard key={q.id} question={q} />
+            ))}
+          </div>
+        </div>
+      )}
 
       <QuestionsList questions={enriched} />
 

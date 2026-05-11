@@ -110,11 +110,12 @@ export interface Question {
   blind_until: string | null
   resolved_at: string | null
   resolution: Record<string, unknown> | null
-  status: QuestionStatus
-  created_by: string
+  created_at: string;
+  status: QuestionStatus;
+  created_by: string;
   // aggregated fields (from views/joins)
-  forecasters_count?: number
-  aggregate_probability?: number
+  forecasters_count?: number;
+  aggregate_probability?: number;
 }
 
 export interface QuestionOptions {
