@@ -97,7 +97,7 @@ export default function AuthForm({ mode }: Props) {
               minLength={3}
               maxLength={30}
               placeholder="YourName"
-              className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors"
+              className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors"
             />
           </div>
         )}
@@ -110,7 +110,7 @@ export default function AuthForm({ mode }: Props) {
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="you@example.com"
-            className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors"
+            className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors"
           />
         </div>
 
@@ -123,7 +123,7 @@ export default function AuthForm({ mode }: Props) {
             required
             minLength={6}
             placeholder="••••••••"
-            className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors"
+            className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors"
           />
         </div>
 

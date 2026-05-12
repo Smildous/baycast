@@ -38,7 +38,7 @@ export default function ForecastSlider({ value, onChange, disabled = false }: Pr
             type="button"
             onClick={() => onChange(p)}
             disabled={disabled}
-            className={`px-3 py-1 rounded-lg border text-xs font-mono transition-colors ${
+            className={`px-3 py-2 rounded-lg border text-xs font-mono transition-colors ${
               value === p
                 ? 'border-accent-green text-accent-green bg-accent-green/10'
                 : 'border-border-dark text-text-secondary hover:border-accent-green/40'

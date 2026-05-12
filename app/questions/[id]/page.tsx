@@ -10,6 +10,7 @@ import ForecastForm from '@/components/ForecastForm'
 import ShareButtons from '@/components/ShareButtons'
 import JsonLdScript from '@/components/JsonLdScript'
 import WelcomeBanner from '@/components/WelcomeBanner'
+import RelatedQuestions from '@/components/RelatedQuestions'
 import type { Question, Forecast, ForecastPrediction } from '@/lib/types'
 import { formatDate, questionPhase } from '@/lib/utils'
 
@@ -360,6 +361,11 @@ export default async function QuestionDetailPage({ params }: Props) {
           />
         </div>
       )}
+
+      {/* Related Questions */}
+      <Suspense fallback={null}>
+        <RelatedQuestions currentQuestionId={q.id} category={q.category} />
+      </Suspense>
     </div>
   )
 }

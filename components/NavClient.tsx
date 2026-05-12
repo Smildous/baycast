@@ -205,7 +205,7 @@ export default function NavClient({ user, profile }: Props) {
           </span>
           <button
             onClick={closeMobileDrawer}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 transition-colors"
+            className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-white/5 transition-colors"
             aria-label="Close menu"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">

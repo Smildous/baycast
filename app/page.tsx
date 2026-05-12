@@ -129,7 +129,7 @@ export default async function HomePage() {
           </div>
 
           {/* Trust micro-bar */}
-          <div className="flex items-center justify-center gap-6 mt-10 text-sm text-text-secondary">
+          <div className="flex items-center justify-center gap-6 mt-10 text-sm text-text-secondary flex-wrap text-center">
             <span className="flex items-center gap-1.5">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M8 1L10.1 5.3L15 6L11.5 9.4L12.3 14.3L8 12.1L3.7 14.3L4.5 9.4L1 6L5.9 5.3L8 1Z" fill="#0F9D58"/>
