@@ -112,38 +112,6 @@ export default async function QuestionsPage({ searchParams }: Props) {
     .select('*', { count: 'exact', head: true })
     .eq('status', 'open')
 
-  // Server-side sort
-  const sorted = [...filtered].sort((a, b) => {
-    switch (sortOption) {
-      case 'newest':
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      case 'most-active':
-        return (b.forecasters_count ?? 0) - (a.forecasters_count ?? 0)
-      case 'closing-soon':
-      default:
-        return new Date(a.closes_at).getTime() - new Date(b.closes_at).getTime()
-    }
-  })
-
-  // Client-side pagination
-  const totalCount = sorted.length
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
-  const from = (currentPage - 1) * PAGE_SIZE
-  const to = from + PAGE_SIZE - 1
-  const questions = sorted.slice(from, to + 1)
-
-  // Fetch aggregates for paginated questions
-  const ids = questions.map((q) => q.id)
-  const aggregates = await fetchAggregates(supabase, ids)
-  const enriched = questions.map((q) => {
-    const agg = aggregates.get(q.id)
-    return {
-      ...q,
-      aggregate_probability: agg?.avg ?? undefined,
-      forecasters_count: agg?.count ?? 0,
-    }
-  })
-
   // Fetch "Closing Soon" section: top 3 open questions by closes_at ascending
   // Only show if there are 3+ open questions
   const showClosingSoon = (openCount ?? 0) >= 3
@@ -170,6 +138,44 @@ export default async function QuestionsPage({ searchParams }: Props) {
       }
     })
   }
+
+  // Server-side sort
+  const sorted = [...filtered].sort((a, b) => {
+    switch (sortOption) {
+      case 'newest':
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      case 'most-active':
+        return (b.forecasters_count ?? 0) - (a.forecasters_count ?? 0)
+      case 'closing-soon':
+      default:
+        return new Date(a.closes_at).getTime() - new Date(b.closes_at).getTime()
+    }
+  })
+
+  // Exclude questions already shown in the Closing Soon section from the main list
+  const closingSoonIds = new Set(closingSoonQuestions.map(q => q.id))
+  const mainQuestions = showClosingSoon
+    ? sorted.filter(q => !closingSoonIds.has(q.id))
+    : sorted
+
+  // Client-side pagination
+  const totalCount = mainQuestions.length
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
+  const from = (currentPage - 1) * PAGE_SIZE
+  const to = from + PAGE_SIZE - 1
+  const questions = mainQuestions.slice(from, to + 1)
+
+  // Fetch aggregates for paginated questions
+  const ids = questions.map((q) => q.id)
+  const aggregates = await fetchAggregates(supabase, ids)
+  const enriched = questions.map((q) => {
+    const agg = aggregates.get(q.id)
+    return {
+      ...q,
+      aggregate_probability: agg?.avg ?? undefined,
+      forecasters_count: agg?.count ?? 0,
+    }
+  })
 
   // Only show category buttons that have at least 1 question (AQ-105)
   const categoriesWithQuestions = CATEGORIES.filter((cat) =>
