@@ -84,7 +84,7 @@ export default async function ActivityPage() {
         <div className="space-y-1">
           {items.map((item) => {
             const displayName = item.profiles?.display_name ?? 'Anonymous'
-            const probability = Math.round(item.prediction.probability * 100)
+            const probability = Math.min(100, Math.max(0, Math.round(item.prediction.probability * 100)))
             const questionTitle = item.questions?.title ?? 'Unknown Question'
             const questionHref = item.questions ? `/questions/${item.questions.id}` : '#'
 
