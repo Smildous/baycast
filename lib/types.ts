@@ -91,6 +91,8 @@ export interface Profile {
   avatar_url: string | null
   bio: string | null
   is_admin: boolean
+  // Onboarding (AQ-162)
+  onboarding_complete?: boolean
   // Badge fields (added v1)
   badge_tier?: BadgeTier
   badge_ever_reached?: BadgeTier

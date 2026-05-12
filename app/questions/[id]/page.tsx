@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import CategoryBadge from '@/components/CategoryBadge'
@@ -8,6 +9,7 @@ import Sparkline from '@/components/Sparkline'
 import ForecastForm from '@/components/ForecastForm'
 import ShareButtons from '@/components/ShareButtons'
 import JsonLdScript from '@/components/JsonLdScript'
+import WelcomeBanner from '@/components/WelcomeBanner'
 import type { Question, Forecast, ForecastPrediction } from '@/lib/types'
 import { formatDate, questionPhase } from '@/lib/utils'
 
@@ -197,6 +199,11 @@ export default async function QuestionDetailPage({ params }: Props) {
     <div className="max-w-3xl mx-auto px-4 py-10">
       {/* JSON-LD Structured Data — injected into <head> via client component with cleanup */}
       <JsonLdScript data={jsonLd} />
+
+      {/* Onboarding banner — step 2: submit your forecast */}
+      <Suspense fallback={null}>
+        <WelcomeBanner />
+      </Suspense>
 
       {/* Header */}
       <div className="mb-6">

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import ForecastSlider from './ForecastSlider'
+import { advanceOnboardingStep } from './WelcomeBanner'
 import type { Forecast } from '@/lib/types'
 import Link from 'next/link'
 
@@ -34,6 +35,13 @@ export default function ForecastForm({
   const [success, setSuccess] = useState(false)
   const [showHint, setShowHint] = useState(false)
   const [showCelebration, setShowCelebration] = useState(false)
+
+  // Advance onboarding to step 2 ("forecast") when user lands on this form
+  useEffect(() => {
+    if (!isLoggedIn) return
+    if (typeof window === 'undefined') return
+    advanceOnboardingStep('forecast')
+  }, [isLoggedIn])
 
   // Step B: Show first-visit tooltip pointing to the slider
   useEffect(() => {
@@ -224,10 +232,23 @@ export default function ForecastForm({
       setOptimisticProbability(prevOptimistic)
       setSuccess(false)
     } else {
-      // Step C: Check if this is the first forecast (no existing forecast before this)
+      // Check if this is the first forecast (no existing forecast before this)
       const isFirstForecast = !existingForecast
       if (isFirstForecast) {
-        // Try Supabase metadata update, fallback to localStorage
+        // Mark onboarding as done
+        advanceOnboardingStep('done')
+
+        // Try Supabase profile update for onboarding_complete
+        try {
+          await supabase
+            .from('profiles')
+            .update({ onboarding_complete: true })
+            .eq('id', user.id)
+        } catch {
+          // Non-critical — localStorage is the primary tracker
+        }
+
+        // Also update user metadata
         try {
           await supabase.auth.updateUser({ data: { first_forecast_made: true } })
         } catch {
@@ -256,17 +277,26 @@ export default function ForecastForm({
         </div>
       )}
 
-      {/* Step C: Celebratory message after first forecast */}
+      {/* Celebratory message after first forecast */}
       {showCelebration && (
-        <div className="p-4 rounded-xl border border-accent-green/40 bg-gradient-to-r from-accent-green/10 via-accent-green/5 to-transparent">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl flex-shrink-0">🎯</span>
-            <div>
-              <p className="text-text-primary font-semibold text-sm">
+        <div className="relative p-5 rounded-xl border border-accent-green/50 bg-gradient-to-r from-accent-green/15 via-accent-green/5 to-transparent overflow-hidden">
+          {/* Confetti dots decoration */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+            <div className="absolute top-2 left-[10%] w-2 h-2 rounded-full bg-yellow-400 animate-bounce" />
+            <div className="absolute top-3 left-[30%] w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0.1s' }} />
+            <div className="absolute top-2 left-[55%] w-2 h-2 rounded-full bg-pink-400 animate-bounce" style={{ animationDelay: '0.2s' }} />
+            <div className="absolute top-3 left-[75%] w-1.5 h-1.5 rounded-full bg-green-400 animate-bounce" style={{ animationDelay: '0.3s' }} />
+            <div className="absolute top-2 left-[90%] w-2 h-2 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: '0.15s' }} />
+          </div>
+
+          <div className="flex items-center gap-3 relative">
+            <span className="text-3xl flex-shrink-0">🎉</span>
+            <div className="flex-1">
+              <p className="text-text-primary font-semibold">
                 Your first forecast is in!
               </p>
               <p className="text-text-secondary text-sm">
-                Come back when this question resolves to see your score.
+                Congratulations — you&apos;re now a forecaster. Come back when this question resolves to see your score.
               </p>
             </div>
             <button
@@ -283,7 +313,7 @@ export default function ForecastForm({
         </div>
       )}
 
-      {/* Step B: First-visit tooltip pointing to the slider */}
+      {/* First-visit tooltip pointing to the slider */}
       <div className="relative">
         {showHint && (
           <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-10 animate-bounce">
