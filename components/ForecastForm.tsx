@@ -111,12 +111,6 @@ export default function ForecastForm({
               disabled={false}
             />
           </div>
-          <button
-            type="submit"
-            className="w-full py-3 rounded-lg bg-accent-green text-white font-semibold hover:bg-accent-green/90 transition-colors"
-          >
-            Submit forecast
-          </button>
           {sliderReleased && (
             <p className="text-center text-text-secondary text-sm">
               Your pick:{' '}
