@@ -5,6 +5,9 @@ import Link from 'next/link'
 import EmptyState from '@/components/EmptyState'
 import { buildSEO } from '@/lib/seo'
 
+// Ensure dynamic rendering so leaderboard reflects live scores
+export const dynamic = 'force-dynamic'
+
 export const metadata = buildSEO({
   title: 'Forecaster Leaderboard',
   description: 'Top forecasters ranked by Brier score. See who has the most accurate predictions on Baycast.',

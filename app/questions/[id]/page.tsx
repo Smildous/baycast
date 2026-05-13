@@ -2,6 +2,9 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+
+// Ensure dynamic rendering so question data is always fresh
+export const dynamic = 'force-dynamic'
 import CategoryBadge from '@/components/CategoryBadge'
 import Countdown from '@/components/Countdown'
 import ProbBar from '@/components/ProbBar'

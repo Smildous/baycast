@@ -22,12 +22,22 @@ const websiteJsonLd: Record<string, unknown> = {
   '@type': 'WebSite',
   name: 'Baycast',
   url: 'https://baycast-p.vercel.app',
-  description: 'Prediction polling platform combining human forecasters and AI agents',
+  description: 'Prediction polling platform',
   potentialAction: {
     '@type': 'SearchAction',
     target: 'https://baycast-p.vercel.app/questions?q={search_term_string}',
     'query-input': 'required name=search_term_string',
   },
+}
+
+const organizationJsonLd: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Baycast',
+  description: 'Prediction polling platform',
+  url: 'https://baycast-p.vercel.app',
+  logo: 'https://baycast-p.vercel.app/logo.png',
+  sameAs: [],
 }
 
 async function getStats() {
@@ -83,8 +93,9 @@ export default async function HomePage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4">
-      {/* WebSite JSON-LD for SEO */}
+      {/* WebSite + Organization JSON-LD for SEO */}
       <JsonLdScript data={websiteJsonLd} />
+      <JsonLdScript data={organizationJsonLd} />
 
       {/* ── Hero ── */}
       <section className="text-center py-16 md:py-24 relative">

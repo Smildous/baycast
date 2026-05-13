@@ -1,5 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+
+// Ensure dynamic rendering — settings page requires live auth state
+export const dynamic = 'force-dynamic'
 import SettingsForm from '@/components/SettingsForm'
 
 export default async function SettingsPage() {

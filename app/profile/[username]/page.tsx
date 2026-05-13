@@ -1,5 +1,8 @@
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+
+// Ensure dynamic rendering so profile data is always fresh
+export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import Image from 'next/image'
 import EmptyState from '@/components/EmptyState'

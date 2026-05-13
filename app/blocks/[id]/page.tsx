@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+
+// Ensure dynamic rendering so block detail is always fresh
+export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import CategoryBadge from '@/components/CategoryBadge'
 import type { Block, BlockLeaderboardEntry, Question, ScoreWithProfile } from '@/lib/types'

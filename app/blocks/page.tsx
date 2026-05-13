@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import BlockCard from '@/components/BlockCard'
+
+// Ensure dynamic rendering so blocks reflect live data
+export const dynamic = 'force-dynamic'
 import EmptyState from '@/components/EmptyState'
 import type { Block, BlockQuestion, ScoreWithProfile } from '@/lib/types'
 
