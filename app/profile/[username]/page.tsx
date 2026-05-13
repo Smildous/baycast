@@ -85,6 +85,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     { data: scores },
     { data: forecasts, count: forecastsTotal },
     { data: resolvedRaw },
+    { data: forecastDatesRaw },
   ] = await Promise.all([
     supabase
       .from('scores')
@@ -101,6 +102,12 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       .from('forecasts')
       .select('prediction, questions(status, resolution)')
       .eq('user_id', p.id),
+    // All forecast dates for streak calculation (AQ-199)
+    supabase
+      .from('forecasts')
+      .select('created_at')
+      .eq('user_id', p.id)
+      .order('created_at', { ascending: false }),
   ])
 
   const scoreList = (scores ?? []) as Score[]
@@ -112,6 +119,49 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   for (const sc of scoreList) {
     scoreMap.set(sc.question_id, sc)
   }
+
+  // Compute forecast streak (AQ-199): consecutive days with at least 1 forecast
+  const forecastStreak = (() => {
+    const datesRaw = (forecastDatesRaw ?? []) as { created_at: string }[]
+    if (datesRaw.length === 0) return 0
+
+    // Extract unique UTC date strings (YYYY-MM-DD)
+    const uniqueDays = new Set<string>()
+    for (const f of datesRaw) {
+      const d = new Date(f.created_at)
+      const dayStr = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`
+      uniqueDays.add(dayStr)
+    }
+
+    const sortedDays = Array.from(uniqueDays).sort().reverse() // newest first
+    const today = new Date()
+    const todayStr = `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, '0')}-${String(today.getUTCDate()).padStart(2, '0')}`
+
+    // Check if the most recent forecast day is today or yesterday
+    if (sortedDays.length === 0) return 0
+    const mostRecent = sortedDays[0]
+    const mostRecentDate = new Date(mostRecent + 'T00:00:00Z')
+    const todayDate = new Date(todayStr + 'T00:00:00Z')
+    const diffDays = Math.round((todayDate.getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24))
+
+    if (diffDays > 1) return 0 // Streak broken — last forecast was 2+ days ago
+
+    let streak = 0
+    let expectedDate = mostRecentDate
+
+    for (const day of sortedDays) {
+      const currentDate = new Date(day + 'T00:00:00Z')
+      const gap = Math.round((expectedDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24))
+      if (gap === 0) {
+        streak++
+        expectedDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000)
+      } else {
+        break
+      }
+    }
+
+    return streak
+  })()
 
   const avgBrier =
     scoreList.length > 0
@@ -180,6 +230,30 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             {scoreList.length}
           </div>
           <div className="text-text-secondary text-sm mt-1">Resolved</div>
+        </div>
+      </div>
+
+      {/* Forecast streak (AQ-199) */}
+      <div className="bg-bg-surface border border-border-dark rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-orange-900/40 border border-orange-800 flex items-center justify-center text-lg">
+              🔥
+            </div>
+            <div>
+              <div className="text-text-primary font-semibold">
+                {forecastStreak > 0 ? `${forecastStreak}-day forecast streak` : 'No active streak'}
+              </div>
+              <div className="text-text-secondary text-sm">
+                {forecastStreak > 0
+                  ? 'Keep it going — forecast every day!'
+                  : 'Make a forecast today to start your streak!'}
+              </div>
+            </div>
+          </div>
+          <span className="text-2xl font-mono font-bold text-orange-400">
+            {forecastStreak}
+          </span>
         </div>
       </div>
 
@@ -504,6 +578,12 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 {scoreList.length}
               </div>
               <div className="text-text-secondary text-sm">Resolved</div>
+            </div>
+            <div>
+              <div className="text-xl font-mono font-bold text-orange-400">
+                {forecastStreak}
+              </div>
+              <div className="text-text-secondary text-sm">🔥 Streak</div>
             </div>
           </div>
         </div>
