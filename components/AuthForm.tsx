@@ -8,6 +8,24 @@ interface Props {
   mode: 'login' | 'signup'
 }
 
+interface FieldErrors {
+  email?: string
+  password?: string
+}
+
+function validateEmail(email: string): string | undefined {
+  if (!email.trim()) return 'Enter a valid email'
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) return 'Enter a valid email'
+  return undefined
+}
+
+function validatePassword(password: string): string | undefined {
+  if (!password) return 'Password must be at least 6 characters'
+  if (password.length < 6) return 'Password must be at least 6 characters'
+  return undefined
+}
+
 export default function AuthForm({ mode }: Props) {
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -16,9 +34,24 @@ export default function AuthForm({ mode }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+
+    // Inline validation: show all errors immediately
+    const emailErr = validateEmail(email)
+    const passwordErr = validatePassword(password)
+    const newErrors: FieldErrors = {}
+    if (emailErr) newErrors.email = emailErr
+    if (passwordErr) newErrors.password = passwordErr
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors)
+      return
+    }
+
+    setFieldErrors({})
     setLoading(true)
     setError(null)
     setInfo(null)
@@ -28,30 +61,53 @@ export default function AuthForm({ mode }: Props) {
     if (mode === 'signup') {
       // Set flag so the welcome banner shows after email confirmation
       localStorage.setItem('baycast_just_signed_up', 'true')
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { display_name: displayName },
-          emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent('/questions?welcome=true')}`,
-        },
-      })
-      if (error) {
-        setError(error.message)
-        localStorage.removeItem('baycast_just_signed_up')
-      } else {
-        setInfo('Check your email to confirm your account.')
-      }
+      supabase.auth
+        .signUp({
+          email,
+          password,
+          options: {
+            data: { display_name: displayName },
+            emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent('/questions?welcome=true')}`,
+          },
+        })
+        .then(({ error }) => {
+          if (error) {
+            setError(error.message)
+            localStorage.removeItem('baycast_just_signed_up')
+          } else {
+            setInfo('Check your email to confirm your account.')
+          }
+          setLoading(false)
+        })
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) {
-        setError(error.message)
-      } else {
-        router.push('/')
-        router.refresh()
-      }
+      supabase.auth
+        .signInWithPassword({ email, password })
+        .then(({ error }) => {
+          if (error) {
+            setError(error.message)
+          } else {
+            router.push('/')
+            router.refresh()
+          }
+          setLoading(false)
+        })
     }
-    setLoading(false)
+  }
+
+  function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setEmail(e.target.value)
+    // Clear email error when user starts typing
+    if (fieldErrors.email) {
+      setFieldErrors((prev) => ({ ...prev, email: undefined }))
+    }
+  }
+
+  function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setPassword(e.target.value)
+    // Clear password error when user starts typing
+    if (fieldErrors.password) {
+      setFieldErrors((prev) => ({ ...prev, password: undefined }))
+    }
   }
 
   async function handleGoogle() {
@@ -85,7 +141,7 @@ export default function AuthForm({ mode }: Props) {
         <div className="flex-1 h-px bg-border-dark" />
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         {mode === 'signup' && (
           <div>
             <label className="block text-sm text-text-secondary mb-1.5">Username</label>
@@ -107,11 +163,15 @@ export default function AuthForm({ mode }: Props) {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+            onChange={handleEmailChange}
             placeholder="you@example.com"
-            className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors"
+            className={`w-full px-4 py-3 rounded-lg bg-bg-primary border text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors ${
+              fieldErrors.email ? 'border-red-500' : 'border-border-dark'
+            }`}
           />
+          {fieldErrors.email && (
+            <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
+          )}
         </div>
 
         <div>
@@ -119,12 +179,15 @@ export default function AuthForm({ mode }: Props) {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
+            onChange={handlePasswordChange}
             placeholder="••••••••"
-            className="w-full px-4 py-3 rounded-lg bg-bg-primary border border-border-dark text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors"
+            className={`w-full px-4 py-3 rounded-lg bg-bg-primary border text-text-primary placeholder-text-secondary focus:outline-none focus:border-accent-green transition-colors ${
+              fieldErrors.password ? 'border-red-500' : 'border-border-dark'
+            }`}
           />
+          {fieldErrors.password && (
+            <p className="text-red-500 text-sm mt-1">{fieldErrors.password}</p>
+          )}
         </div>
 
         {error && (
