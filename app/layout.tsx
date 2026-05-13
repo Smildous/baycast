@@ -55,7 +55,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="flex items-center gap-6">
                   <Link href="/questions" className="hover:text-text-primary transition-colors">Questions</Link>
                   <Link href="/leaderboard" className="hover:text-text-primary transition-colors">Leaderboard</Link>
-                  <Link href="/blocks" className="hover:text-text-primary transition-colors">Blocks</Link>
+                  {/* TODO(AQ-190): Re-enable Blocks link when Blocks feature is ready */}
+                  {/* <Link href="/blocks" className="hover:text-text-primary transition-colors">Blocks</Link> */}
                   <Link href="/auth/signup" className="hover:text-text-primary transition-colors">Sign up</Link>
                 </div>
                 <div className="flex items-center gap-4">

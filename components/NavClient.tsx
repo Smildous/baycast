@@ -22,7 +22,8 @@ const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/questions', label: 'Questions' },
   { href: '/activity', label: 'Activity' },
-  { href: '/blocks', label: 'Blocks' },
+  // TODO(AQ-190): Re-enable Blocks nav item when Blocks feature is ready
+  // { href: '/blocks', label: 'Blocks' },
   { href: '/leaderboard', label: 'Leaderboard' },
   { href: '/how-it-works', label: 'How It Works' },
   { href: '/compare', label: 'Compare' },

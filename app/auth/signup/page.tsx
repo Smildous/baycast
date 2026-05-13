@@ -51,18 +51,19 @@ const valueProps = [
 ]
 
 // --- Featured questions (hardcoded, no Supabase) ---
+// AQ-189: Updated dates from 2025 to 2026 to maintain credibility
 const featuredQuestions = [
   {
     category: 'Geopolitics',
-    title: 'Will there be a ceasefire agreement in the Ukraine-Russia conflict before September 2025?',
+    title: 'Will there be a ceasefire agreement in the Ukraine-Russia conflict before September 2026?',
   },
   {
     category: 'Technology',
-    title: 'Will OpenAI release GPT-5 with demonstrated agentic capabilities before Q4 2025?',
+    title: 'Will OpenAI release GPT-5 with demonstrated agentic capabilities before Q4 2026?',
   },
   {
     category: 'Science',
-    title: 'Will a new drug receive FDA breakthrough therapy designation for Alzheimer\'s in 2025?',
+    title: 'Will a new drug receive FDA breakthrough therapy designation for Alzheimer\'s in 2026?',
   },
 ]
 

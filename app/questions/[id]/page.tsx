@@ -128,17 +128,20 @@ export default async function QuestionDetailPage({ params }: Props) {
   const isOpen = q.status === 'open'
   const isResolved = q.status === 'resolved'
 
+  // Blind Consensus Protocol (AQ-188):
+  // Only reveal aggregate/consensus data AFTER the current user has submitted a forecast.
   // During blind phase, skip fetching other users' forecasts entirely.
-  // RLS policy also enforces this server-side, but we avoid the query for performance.
-  // We still fetch the count of forecasters (including the current user).
+  // After blind phase, still hide consensus if the user has not yet forecasted.
+  const hasUserForecasted = !!userForecast
+
   let allForecasts: { prediction: ForecastPrediction }[] | null = null
   let forecasters = 0
   let avgProb: number | null = null
   let historyData: number[] = []
   let forecastsError: string | null = null
 
-  if (!isBlind) {
-    // Fetch all forecasts for aggregate display (only when visible)
+  if (!isBlind && hasUserForecasted) {
+    // Fetch all forecasts for aggregate display (only when user has forecasted)
     const { data, error } = await supabase
       .from('forecasts')
       .select('prediction')
@@ -160,7 +163,7 @@ export default async function QuestionDetailPage({ params }: Props) {
     historyData =
       allForecasts?.map((f) => (f.prediction as ForecastPrediction).probability) ?? []
   } else {
-    // During blind phase, only count forecasters (RLS ensures only own forecast is returned)
+    // During blind phase OR user hasn't forecasted: only count forecasters
     const { count } = await supabase
       .from('forecasts')
       .select('*', { count: 'exact', head: true })
@@ -260,14 +263,36 @@ export default async function QuestionDetailPage({ params }: Props) {
         </div>
       )}
 
-      {/* Stats row — only show aggregate after blind phase */}
+      {/* Blind Consensus Protocol (AQ-188): hide consensus until user forecasts */}
+      {!hasUserForecasted && !isBlind && isOpen && (
+        <div className="mb-8 p-5 rounded-xl border border-accent-green/30 bg-accent-green/10">
+          <div className="text-accent-green font-semibold mb-1">
+            🔒 Submit your forecast to see the community consensus
+          </div>
+          <p className="text-text-secondary text-sm">
+            Baycast uses a Blind Consensus Protocol to prevent anchoring bias. Add your forecast below to reveal the aggregate probability and community predictions.
+          </p>
+        </div>
+      )}
+      {!hasUserForecasted && !user && isOpen && (
+        <div className="mb-8 p-5 rounded-xl border border-accent-blue/30 bg-accent-blue/10">
+          <div className="text-accent-blue font-semibold mb-1">
+            Sign in to forecast and see the community consensus
+          </div>
+          <p className="text-text-secondary text-sm">
+            Join Baycast to submit your prediction and unlock the aggregate probability.
+          </p>
+        </div>
+      )}
+
+      {/* Stats row — only show aggregate after blind phase AND user has forecasted */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
           <div className="text-2xl font-mono font-bold text-accent-green">
-            {isBlind ? '—' : avgProb !== null ? `${avgProb}%` : '—'}
+            {(isBlind || !hasUserForecasted) ? '—' : avgProb !== null ? `${avgProb}%` : '—'}
           </div>
           <div className="text-text-secondary text-sm">
-            {!isBlind && forecasters === 0
+            {(!isBlind && hasUserForecasted) && forecasters === 0
               ? 'No forecasts yet — be the first!'
               : 'Consensus'}
           </div>
@@ -275,7 +300,7 @@ export default async function QuestionDetailPage({ params }: Props) {
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
           <div className="text-2xl font-mono font-bold text-text-primary">
             {forecasters >= 50
-              ? (isBlind ? `${forecasters}` : forecasters)
+              ? ((isBlind || !hasUserForecasted) ? `${forecasters}` : forecasters)
               : '—'}
           </div>
           <div className="text-text-secondary text-sm">
@@ -294,15 +319,15 @@ export default async function QuestionDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Probability bar — hidden during blind phase */}
-      {!isBlind && avgProb !== null && (
+      {/* Probability bar — hidden during blind phase or until user forecasts */}
+      {!isBlind && hasUserForecasted && avgProb !== null && (
         <div className="mb-8">
           <ProbBar probability={avgProb} />
         </div>
       )}
 
-      {/* Sparkline — hidden during blind phase */}
-      {!isBlind && historyData.length > 1 && (
+      {/* Sparkline — hidden during blind phase or until user forecasts */}
+      {!isBlind && hasUserForecasted && historyData.length > 1 && (
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 mb-8">
           <div className="text-sm text-text-secondary mb-3">Consensus over time</div>
           <Sparkline data={historyData} />
