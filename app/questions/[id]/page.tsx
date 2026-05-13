@@ -42,25 +42,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const fcCount = forecastCount ?? 0
 
-  // Fetch aggregate probability for OG title
-  const { data: forecasts } = await supabase
-    .from('forecasts')
-    .select('prediction')
-    .eq('question_id', q.id)
-
-  const avgProb =
-    forecasts && forecasts.length > 0
-      ? Math.round(
-          forecasts.reduce(
-            (sum: number, f: { prediction: { probability: number } }) =>
-              sum + f.prediction.probability,
-            0
-          ) / forecasts.length
-        )
-      : null
-
-  const probLabel = avgProb !== null ? ` — ${avgProb}% Yes` : ''
-  const title = `${q.title}${probLabel} — Baycast`
+  // BCP: Do NOT include aggregate probability in page title — leaks consensus to
+  // browser tabs, search results, and social shares before user has forecasted.
+  const title = `${q.title} — Baycast`
   const description = `${q.category} · ${q.status.charAt(0).toUpperCase() + q.status.slice(1)} · ${fcCount} forecaster${fcCount !== 1 ? 's' : ''}${q.description ? `. ${q.description}` : ''}`
   const ogImageUrl = `/questions/${q.id}/opengraph-image`
 

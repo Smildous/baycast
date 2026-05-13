@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function QuestionCard({ question: q }: Props) {
-  const prob = q.aggregate_probability ?? null
+  // BCP: Never show aggregate probability on list/card views — consensus is blind
   const forecasters = q.forecasters_count ?? 0
 
   return (
@@ -27,7 +27,6 @@ export default function QuestionCard({ question: q }: Props) {
           <h3 className="font-medium text-text-primary group-hover:text-white transition-colors line-clamp-2 mb-3">
             {q.title}
           </h3>
-          {prob !== null && <ProbBar probability={prob} compact />}
           <div className="mt-2 text-text-secondary text-xs">
             {forecasters >= 50
               ? `${forecasters} forecaster${forecasters > 1 ? 's' : ''}`
@@ -36,14 +35,6 @@ export default function QuestionCard({ question: q }: Props) {
                 : 'Be the first to forecast'}
           </div>
         </div>
-
-        {/* Probability display */}
-        {prob !== null && (
-          <div className="shrink-0 text-right">
-            <div className="text-2xl font-mono font-bold text-accent-green">{prob}%</div>
-            <div className="text-xs text-text-secondary">consensus</div>
-          </div>
-        )}
       </div>
     </Link>
   )
