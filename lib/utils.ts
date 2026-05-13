@@ -106,5 +106,8 @@ export const CATEGORY_COLORS: Record<string, string> = {
   Science: 'bg-purple-900/40 text-purple-300 border-purple-800',
   Sports: 'bg-orange-900/40 text-orange-300 border-orange-800',
   Culture: 'bg-pink-900/40 text-pink-300 border-pink-800',
+  AI: 'bg-cyan-900/40 text-cyan-300 border-cyan-800',
+  Crypto: 'bg-emerald-900/40 text-emerald-300 border-emerald-800',
+  Entertainment: 'bg-violet-900/40 text-violet-300 border-violet-800',
   Other: 'bg-gray-800/40 text-gray-300 border-gray-700',
 }
