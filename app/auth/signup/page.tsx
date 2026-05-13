@@ -55,17 +55,14 @@ const featuredQuestions = [
   {
     category: 'Geopolitics',
     title: 'Will there be a ceasefire agreement in the Ukraine-Russia conflict before September 2025?',
-    forecasterLabel: '142 forecasters',
   },
   {
     category: 'Technology',
     title: 'Will OpenAI release GPT-5 with demonstrated agentic capabilities before Q4 2025?',
-    forecasterLabel: '98 forecasters',
   },
   {
     category: 'Science',
     title: 'Will a new drug receive FDA breakthrough therapy designation for Alzheimer\'s in 2025?',
-    forecasterLabel: '67 forecasters',
   },
 ]
 
@@ -140,10 +137,9 @@ export default function SignupPage() {
                         {q.category}
                       </span>
                     </div>
-                    <p className="text-text-primary text-sm font-medium leading-snug mb-2 line-clamp-2">
+                    <p className="text-text-primary text-sm font-medium leading-snug line-clamp-2">
                       {q.title}
                     </p>
-                    <p className="text-text-secondary text-xs">{q.forecasterLabel}</p>
                   </div>
                 ))}
               </div>
