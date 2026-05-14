@@ -10,7 +10,7 @@ Baycast now has 44 live questions.
 
 BCP is still blind. The market has not caught up yet.
 
-If you want to test your view on Bay Area policy, housing, transit, AI, local politics, and public outcomes, today is a good day to start.
+If you want to test your view on AI, elections, economics, science, sports, crypto, public policy, and public outcomes, today is a good day to start.
 
 I am posting it now because distribution is the bottleneck.
 
@@ -22,7 +22,7 @@ I am posting it now because distribution is the bottleneck.
 
 Baycast now has 44 live questions.
 
-All are open. Most are about Bay Area policy, housing, transit, AI, elections, institutions, and public outcomes.
+All are open. Most are about AI, elections, economics, science, sports, crypto, public policy, institutions, and public outcomes.
 
 This is the point where I should stop polishing and ask people to use it.
 
@@ -38,9 +38,9 @@ That will not stay true forever.
 
 ### 3
 
-I built Baycast because local decisions are full of confident claims that never get scored.
+I built Baycast because public debates are full of confident claims that never get scored.
 
-People say what will happen with housing, streets, budgets, elections, permitting, AI policy, public safety, and transit.
+People say what will happen with AI, elections, economics, science, sports, crypto, public policy, and institutions.
 
 Then everyone moves on.
 
@@ -52,7 +52,7 @@ This is not a finished grand platform announcement.
 
 It is a working thing with 44 live questions and one obvious need: more forecasters.
 
-If you know the Bay Area well, your first few forecasts are unusually valuable right now.
+If you know the one of these domains well, your first few forecasts are unusually valuable right now.
 
 ### 5
 
@@ -68,7 +68,7 @@ That is enough to make the market less blind.
 
 Quick update: Baycast now has 44 live questions, all open.
 
-The interesting thing is that the market is still very underdeveloped. BCP is basically blind right now, so early forecasts actually matter. If you know the Bay Area, local government, housing, transit, AI policy, elections, or public institutions, there are probably a few questions where your view is better than the current market.
+The interesting thing is that the market is still very underdeveloped. BCP is basically blind right now, so early forecasts actually matter. If you know the AI, elections, economics, science, sports, crypto, public policy, or institutions, there are probably a few questions where your view is better than the current market.
 
 I am trying to avoid overlaunching this. The product exists, the questions are live, and the missing piece is distribution. So I am sharing it now instead of waiting for a cleaner moment.
 
@@ -78,19 +78,19 @@ Link: [link]
 
 ## Reddit post
 
-Title: I made a Bay Area prediction market. It now has 44 live questions and needs forecasters.
+Title: I made a prediction polling platform. It now has 44 live questions and needs forecasters.
 
 Post:
 
-I have been working on Baycast, a prediction market for Bay Area questions.
+I have been working on Baycast, a prediction market for AI, economics, science, sports, crypto, policy, and public outcomes.
 
-It now has 44 live questions, all open. Topics include housing, transit, local politics, AI, public institutions, budgets, and other outcomes people argue about but rarely track.
+It now has 44 live questions, all open. Topics include AI, economics, science, sports, crypto, public policy, institutions, and other outcomes people argue about but rarely track.
 
 The current state is pretty simple: the product is live, but the market is still blind. BCP has very little signal right now. That means early users are not just clicking around. They can actually shape the first useful consensus.
 
 I am posting today because the bottleneck is no longer making more launch docs or polishing copy. It is getting people with local knowledge to forecast.
 
-If you know the Bay Area and have a few minutes, I would appreciate it if you tried one thing:
+If you know one of these domains and have a few minutes, I would appreciate it if you tried one thing:
 
 Pick a question where the probability looks wrong, make a forecast, and leave a short comment if your reasoning is useful.
 
@@ -110,7 +110,7 @@ Minute 4 to 6: Add the HN update where it fits best. If there is already a relev
 
 Minute 6 to 8: Post the Reddit version in the most relevant allowed place. Use the title as written unless the subreddit requires a different format.
 
-Minute 8 to 9: Send the short X post text directly to 3 people who know Bay Area policy, startups, housing, transit, or local politics. Ask them to forecast one question, not to promote it.
+Minute 8 to 9: Send the short X post text directly to 3 people who know AI, economics, science, sports, crypto, public policy, or forecasting. Ask them to forecast one question, not to promote it.
 
 Minute 9 to 10: Stop editing. Watch for replies, answer plainly, and point people to one specific question if they ask where to start.
 
