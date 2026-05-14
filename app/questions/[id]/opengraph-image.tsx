@@ -345,8 +345,8 @@ export default async function Image({ params }: { params: { id: string } }) {
               color: '#4a5568',
             }}
           >
-            <span>Not a prediction market.</span>
-            <span style={{ color: '#0F9D58' }}>Pure forecasting.</span>
+            <span>Crowd predictions.</span>
+            <span style={{ color: '#0F9D58' }}>Scored by reality.</span>
           </div>
         </div>
 

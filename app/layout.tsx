@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
   title: 'Baycast - Forecast real events',
   description: 'Baycast lets you forecast real events, compare your accuracy, and see how humans and AI score over time.',
-  keywords: ['prediction polling', 'forecasting', 'superforecasting', 'Bayes', 'Brier score', 'prediction market alternative', 'AI forecasting'],
+  keywords: ['crowd prediction', 'forecasting', 'collective intelligence', 'wisdom of the crowds', 'Brier score', 'AI forecasting'],
   authors: [{ name: 'Baycast', url: 'https://baycast-p.vercel.app' }],
   openGraph: {
     title: 'Baycast - Forecast real events',
@@ -68,7 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   </Link>
                 </div>
                 <div className="text-text-secondary/60">
-                  Not a prediction market. Pure forecasting.
+                  Crowd predictions. Scored by reality.
                 </div>
               </div>
             </footer>
