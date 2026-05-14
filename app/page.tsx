@@ -151,7 +151,7 @@ export default async function HomePage() {
                 <circle cx="8" cy="8" r="7" stroke="#0F9D58" strokeWidth="1.5" fill="none"/>
                 <path d="M5 8L7 10L11 6" stroke="#0F9D58" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              No sign-up card
+              No payment required
             </span>
             <span className="flex items-center gap-1.5">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
