@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 export const metadata = buildSEO({
   title: 'How Baycast works',
   description:
-    'Baycast turns independent probability forecasts into collective intelligence. Make a forecast before seeing the crowd, then get scored when the outcome is known.',
+    'Baycast uses the wisdom of the crowds without letting the crowd influence your first call. Make a forecast before seeing consensus, then get scored when the outcome is known.',
   path: '/how-it-works',
   ogImage: '/opengraph-image',
 })
@@ -95,7 +95,7 @@ export default function HowItWorksPage() {
             Works
           </h1>
           <p className="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Baycast turns independent forecasts into collective intelligence. Make your call before seeing the crowd, then compare your judgment with the aggregate signal.
+            Baycast uses the wisdom of the crowds without letting the crowd influence your first call. Make your call before seeing consensus, then compare your judgment with the aggregate signal.
           </p>
         </div>
       </section>
@@ -106,7 +106,7 @@ export default function HowItWorksPage() {
           How collective forecasting works
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto">
-          Every question follows a simple flow designed to keep forecasts independent before they become a collective signal.
+          Every question follows a simple flow: independent judgment first, crowd signal second.
         </p>
 
         {/* Phase flow diagram */}
@@ -211,7 +211,7 @@ export default function HowItWorksPage() {
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-accent-blue/5 rounded-full blur-[100px] pointer-events-none" />
           <div className="relative">
             <h2 className="text-2xl md:text-3xl font-outfit font-semibold mb-6">
-              Why blind forecasting improves collective intelligence
+              Why blind forecasting protects wisdom of the crowds
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
@@ -410,7 +410,7 @@ export default function HowItWorksPage() {
             {
               question: 'Why does Baycast hide forecasts during Phase A?',
               answer:
-                'When people see others\' predictions before forming their own, they often anchor to the crowd. That weakens the wisdom of crowds. By hiding forecasts until Phase B, Baycast keeps each prediction independent, which makes the later collective intelligence more useful.',
+                'When people see others\' predictions before forming their own, they often anchor to the crowd. That weakens the wisdom of the crowds. By hiding forecasts until Phase B, Baycast keeps each prediction independent, which makes the later collective signal more useful.',
             },
             {
               question: 'How is the aggregate probability calculated?',
