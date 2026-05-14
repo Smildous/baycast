@@ -52,7 +52,7 @@ This is not a finished grand platform announcement.
 
 It is a working thing with 44 live questions and one obvious need: more forecasters.
 
-If you know the one of these domains well, your first few forecasts are unusually valuable right now.
+If you know one of these domains well, your first few forecasts are unusually valuable right now.
 
 ### 5
 
@@ -68,7 +68,7 @@ That is enough to make the market less blind.
 
 Quick update: Baycast now has 44 live questions, all open.
 
-The interesting thing is that the market is still very underdeveloped. BCP is basically blind right now, so early forecasts actually matter. If you know the AI, elections, economics, science, sports, crypto, public policy, or institutions, there are probably a few questions where your view is better than the current market.
+The interesting thing is that the market is still very underdeveloped. BCP is basically blind right now, so early forecasts actually matter. If you know AI, elections, economics, science, sports, crypto, public policy, or institutions, there are probably a few questions where your view is better than the current market.
 
 I am trying to avoid overlaunching this. The product exists, the questions are live, and the missing piece is distribution. So I am sharing it now instead of waiting for a cleaner moment.
 
@@ -82,7 +82,7 @@ Title: I made a prediction polling platform. It now has 44 live questions and ne
 
 Post:
 
-I have been working on Baycast, a prediction market for AI, economics, science, sports, crypto, policy, and public outcomes.
+I have been working on Baycast, a prediction polling platform for AI, economics, science, sports, crypto, policy, and public outcomes.
 
 It now has 44 live questions, all open. Topics include AI, economics, science, sports, crypto, public policy, institutions, and other outcomes people argue about but rarely track.
 
