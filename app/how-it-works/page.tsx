@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 export const metadata = buildSEO({
   title: 'How Baycast works',
   description:
-    'Baycast uses the wisdom of the crowds without letting the crowd influence your first call. Make a forecast before seeing consensus, then get scored when the outcome is known.',
+    'Baycast uses the wisdom of the crowds to build collective intelligence without letting the crowd influence your first call. Make a forecast before seeing consensus, then get scored when the outcome is known.',
   path: '/how-it-works',
   ogImage: '/opengraph-image',
 })
@@ -95,7 +95,7 @@ export default function HowItWorksPage() {
             Works
           </h1>
           <p className="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Baycast uses the wisdom of the crowds without letting the crowd influence your first call. Make your call before seeing consensus, then compare your judgment with the aggregate signal.
+            Baycast uses the wisdom of the crowds to build collective intelligence without letting the crowd influence your first call. Make your call before seeing consensus, then compare your judgment with the aggregate signal.
           </p>
         </div>
       </section>
@@ -106,7 +106,7 @@ export default function HowItWorksPage() {
           How collective forecasting works
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto">
-          Every question follows a simple flow: independent judgment first, crowd signal second.
+          Every question follows a simple flow: independent judgment first, collective intelligence second.
         </p>
 
         {/* Phase flow diagram */}
@@ -410,7 +410,7 @@ export default function HowItWorksPage() {
             {
               question: 'Why does Baycast hide forecasts during Phase A?',
               answer:
-                'When people see others\' predictions before forming their own, they often anchor to the crowd. That weakens the wisdom of the crowds. By hiding forecasts until Phase B, Baycast keeps each prediction independent, which makes the later collective signal more useful.',
+                'When people see others\' predictions before forming their own, they often anchor to the crowd. That weakens the wisdom of the crowds. By hiding forecasts until Phase B, Baycast keeps each prediction independent before the collective intelligence appears.',
             },
             {
               question: 'How is the aggregate probability calculated?',

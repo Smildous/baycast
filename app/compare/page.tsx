@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 export const metadata = buildSEO({
   title: 'Baycast vs Polymarket vs Metaculus vs Manifold - Comparison',
   description:
-    'Compare Baycast with Polymarket, Metaculus, Manifold, and Kalshi. Baycast builds collective intelligence from private forecasts first, not trades or market prices.',
+    'Compare Baycast with Polymarket, Metaculus, Manifold, and Kalshi. Baycast builds collective intelligence from private forecasts first, inspired by wisdom of the crowds, not trades or market prices.',
   path: '/compare',
   ogImage: '/opengraph-image',
 })
@@ -223,7 +223,7 @@ export default function ComparePage() {
               Prediction markets attract capital. That can be useful, but some activity reflects strategy, liquidity, or price movement more than pure forecasting.
             </p>
             <p className="text-text-secondary leading-relaxed mb-6">
-              Baycast is built for the wisdom of the crowds instead: independent probability forecasts, equal weighting, and scoring based on what actually happens.
+              Baycast is built for the wisdom of the crowds: independent probability forecasts, equal weighting, and scoring based on what actually happens. The result is cleaner collective intelligence.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
               <div>
@@ -331,7 +331,7 @@ export default function ComparePage() {
           What makes Baycast different
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto">
-          The mechanics that make wisdom of the crowds more useful: independent forecasts first, consensus after.
+          The mechanics that make wisdom of the crowds useful: independent forecasts first, collective intelligence after.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -339,7 +339,7 @@ export default function ComparePage() {
             {
               number: '01',
               title: 'Blind consensus',
-              description: 'Forecasts stay hidden until you submit yours. That protects independent judgment, which is what makes wisdom of the crowds useful.',
+              description: 'Forecasts stay hidden until you submit yours. That protects independent judgment, which is what makes the wisdom of the crowds useful.',
               icon: (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z" stroke="currentColor" strokeWidth="1.5" fill="none" className="text-accent-green" />

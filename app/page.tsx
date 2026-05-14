@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic'
 export const metadata = buildSEO({
   title: 'Baycast - Predict Real Events',
   description:
-    'Forecast real events, build a scored accuracy record, and see collective intelligence emerge from independent human and AI predictions. No money. No gambling.',
+    'Forecast real events, build a scored accuracy record, and see independent human and AI predictions become collective intelligence. Inspired by wisdom of the crowds. No money. No gambling.',
   path: '',
 })
 
@@ -120,7 +120,7 @@ export default async function HomePage() {
             </span>
           </h1>
           <p className="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Wisdom of the crowds works best when people think independently first. Forecast real events, compare with AI models, and see the crowd signal after you answer.{' '}
+            Wisdom of the crowds works best when people think independently first. Baycast collects those independent calls and turns them into scored collective intelligence. Forecast real events, compare with AI models, and see the crowd signal after you answer.{' '}
             <span className="text-text-primary font-medium">No money. No gambling.</span>
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
@@ -187,7 +187,7 @@ export default async function HomePage() {
       {/* ── How Baycast Works ── */}
       <section className="mb-24">
         <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">How Baycast Works</h2>
-        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Prediction polling, not gambling. Make your own call first, then see how the crowd compares when the outcome is scored.</p>
+        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Prediction polling, not gambling. Make your own call first, then see how independent forecasts combine after the outcome is scored.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
@@ -262,7 +262,7 @@ export default async function HomePage() {
             {
               icon: '🧠',
               title: 'Cleaner crowd signal',
-              description: 'Answer first. See the crowd later. That is how Baycast keeps the wisdom of the crowds from turning into copycat thinking.',
+              description: 'Answer first. See the crowd later. That keeps the wisdom of the crowds independent, so collective intelligence does not become copycat thinking.',
             },
           ].map((card) => (
             <div key={card.title} className="bg-bg-surface border border-border-dark rounded-xl p-6 text-center hover:border-accent-green/20 transition-colors">
