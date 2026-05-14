@@ -85,7 +85,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
   const validSorts = new Set<string>(SORT_OPTIONS.map(s => s.value))
   const sortOption: SortOption = validSorts.has(searchParams.sort ?? '')
     ? (searchParams.sort as SortOption)
-    : 'closing-soon'
+    : 'newest'
 
   // Pagination: parse page param, default to 1
   const currentPage = Math.max(1, parseInt(searchParams.page ?? '1', 10) || 1)
@@ -126,7 +126,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
     .sort((a, b) => new Date(a.closes_at).getTime() - new Date(b.closes_at).getTime())
     .slice(0, 3)
 
-  const showClosingSoon = statusFilter === 'open' && closingSoonQuestions.length > 0
+  const showClosingSoon = statusFilter === 'open' && sortOption !== 'closing-soon' && closingSoonQuestions.length > 0
   let closingSoonEnriched: Question[] = []
 
   if (showClosingSoon) {
@@ -142,8 +142,13 @@ export default async function QuestionsPage({ searchParams }: Props) {
     })
   }
 
-  // Server-side sort
-  const sorted = [...filtered].sort((a, b) => {
+  // Server-side sort. The explicit "Closing Soon" filter should not show
+  // long-range questions just because they are the next to close overall.
+  const sortableQuestions = sortOption === 'closing-soon'
+    ? filtered.filter((q) => isClosingSoon(q.closes_at, CLOSING_SOON_WINDOW_DAYS))
+    : filtered
+
+  const sorted = [...sortableQuestions].sort((a, b) => {
     switch (sortOption) {
       case 'newest':
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -191,7 +196,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
     const base: Record<string, string | undefined> = {}
     if (normalizedCategory) base.category = normalizedCategory
     if (searchParams.status) base.status = searchParams.status
-    if (sortOption !== 'closing-soon') base.sort = sortOption
+    if (sortOption !== 'newest') base.sort = sortOption
     for (const [k, v] of Object.entries(overrides)) {
       if (v === undefined) {
         delete base[k]
@@ -207,7 +212,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
     const base: Record<string, string | undefined> = {}
     if (normalizedCategory) base.category = normalizedCategory
     if (searchParams.status) base.status = searchParams.status
-    if (sortOption !== 'closing-soon') base.sort = sortOption
+    if (sortOption !== 'newest') base.sort = sortOption
     if (page > 1) base.page = String(page)
     return `/questions${buildQueryString(base)}`
   }
