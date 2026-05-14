@@ -5,6 +5,8 @@ import Link from 'next/link'
 import type { Notification, NotificationType } from '@/lib/types'
 import { NOTIFICATION_TYPE_CONFIG } from '@/lib/types'
 
+export const dynamic = 'force-dynamic'
+
 const PAGE_SIZE = 20
 
 function formatTimeAgo(dateStr: string): string {

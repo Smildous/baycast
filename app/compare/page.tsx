@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { buildSEO } from '@/lib/seo'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = buildSEO({
   title: 'Baycast vs Polymarket vs Metaculus vs Manifold — Platform Comparison',
   description:

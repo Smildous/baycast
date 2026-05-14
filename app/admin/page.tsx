@@ -5,6 +5,8 @@ import type { Question } from '@/lib/types'
 import { normalizeCategory } from '@/lib/categoryMap'
 import { formatDate } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
+
 const PAGE_SIZE = 20
 
 interface Props {
