@@ -46,8 +46,8 @@ export default function QuestionsList({ questions }: Props) {
         <div className="bg-bg-surface border border-border-dark rounded-xl">
           <EmptyState
             icon="🔍"
-            title="No questions match your search"
-            description="Try adjusting your search terms or browse all questions."
+            title="No match"
+            description="Try another word, or clear the search."
           />
         </div>
       ) : (

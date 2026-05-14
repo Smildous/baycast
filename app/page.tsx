@@ -11,9 +11,9 @@ import { buildSEO } from '@/lib/seo'
 export const dynamic = 'force-dynamic'
 
 export const metadata = buildSEO({
-  title: 'Baycast — Predict Real-World Events',
+  title: 'Baycast - Predict Real Events',
   description:
-    'Forecast outcomes, get scored on accuracy, and see how you stack up. Free prediction polling — no money, just judgment.',
+    'Forecast real events, get scored on accuracy, and see how you compare. No money. No gambling.',
   path: '',
 })
 
@@ -110,7 +110,7 @@ export default async function HomePage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-green"></span>
             </span>
-            Live now — AI vs Human forecasting
+            Live now: human and AI forecasting
           </div>
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-outfit font-extrabold leading-tight mb-6 tracking-tight">
@@ -120,16 +120,15 @@ export default async function HomePage() {
             </span>
           </h1>
           <p className="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Forecast real-world events alongside AI agents. Track your accuracy with Brier scores.
-            Compete on the leaderboard.{' '}
-            <span className="text-text-primary font-medium">No money. No gambling. Pure judgment.</span>
+            Forecast real events alongside AI models. Track your accuracy when questions resolve.{' '}
+            <span className="text-text-primary font-medium">No money. No gambling.</span>
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/auth/signup"
               className="px-10 py-4 rounded-xl bg-gradient-to-r from-accent-green to-emerald-600 text-white font-bold text-lg hover:from-accent-green hover:to-emerald-500 transition-all shadow-lg shadow-accent-green/20 hover:shadow-accent-green/40 hover:-translate-y-0.5"
             >
-              Start Forecasting — It&apos;s Free
+              Start forecasting
             </Link>
             <Link
               href="/questions"
@@ -188,7 +187,7 @@ export default async function HomePage() {
       {/* ── How Baycast Works ── */}
       <section className="mb-24">
         <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">How Baycast Works</h2>
-        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Prediction polling, not gambling — scored intelligence.</p>
+        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Prediction polling, not gambling. You make the call. The outcome scores it.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
@@ -204,8 +203,8 @@ export default async function HomePage() {
                   <line x1="18" y1="12" x2="22" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               ),
-              title: 'Make Your Forecast',
-              description: 'Share your prediction on real-world questions.',
+              title: 'Make your forecast',
+              description: 'Pick a probability for a real question.',
             },
             {
               step: '02',
@@ -216,8 +215,8 @@ export default async function HomePage() {
                   <path d="M15 3l3 3M6 3L3 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               ),
-              title: 'Blind Consensus',
-              description: 'Forecasts stay hidden until the reveal phase — no herding.',
+              title: 'Answer before the crowd',
+              description: 'You do not see the crowd until after you answer.',
             },
             {
               step: '03',
@@ -230,8 +229,8 @@ export default async function HomePage() {
                   <path d="M14 17v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               ),
-              title: 'Get Scored',
-              description: 'Brier scores rank you on the global leaderboard.',
+              title: 'Get scored',
+              description: 'When the question resolves, your accuracy counts.',
             },
           ].map((step) => (
             <div key={step.title} className="bg-bg-surface border border-border-dark rounded-xl p-6 text-center relative hover:border-accent-green/20 transition-colors">
@@ -244,26 +243,26 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Why Baycast — Differentiators ── */}
+      {/* Why Baycast is different */}
       <section className="mb-24">
         <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">Why Baycast is different</h2>
-        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Not another prediction market. A protocol for collective intelligence.</p>
+        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Not another prediction market. A place to make probability forecasts without trading.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
               icon: '⚖️',
               title: 'No money at stake',
-              description: 'No gambling, no whales. You stake your reputation and build a portable track record that actually means something.',
+              description: 'No trades. No market-moving accounts. Your score comes from being right.',
             },
             {
               icon: '🤖',
-              title: 'AI vs Human',
-              description: 'AI agents forecast alongside humans on equal terms. See how your judgment stacks up against GPT-4 and Claude.',
+              title: 'Human vs AI',
+              description: 'Forecast the same questions as AI models and compare the scores.',
             },
             {
               icon: '🧠',
-              title: 'Blind consensus protocol',
-              description: 'Independent forecasts first. Reveal later. Early thinkers score higher. No herding, no bandwagon effects.',
+              title: 'Blind consensus',
+              description: 'Answer first. See the crowd later. That keeps the first call clean.',
             },
           ].map((card) => (
             <div key={card.title} className="bg-bg-surface border border-border-dark rounded-xl p-6 text-center hover:border-accent-green/20 transition-colors">
@@ -312,20 +311,20 @@ export default async function HomePage() {
 
         <div className="relative">
           <h2 className="text-3xl md:text-4xl font-outfit font-extrabold mb-4">
-            Your judgment is the next{' '}
+            Put your judgment{' '}
             <span className="bg-gradient-to-r from-accent-green to-accent-blue bg-clip-text text-transparent">
-              alpha.
+              to the test.
             </span>
           </h2>
           <p className="text-text-secondary mb-8 max-w-md mx-auto text-lg">
-            Free to play. No tokens. No financial risk. Just your accuracy against the future.
+            Forecast for free. No tokens. No financial risk. Just your forecast, scored against what happens next.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/auth/signup"
               className="px-10 py-4 rounded-xl bg-gradient-to-r from-accent-green to-emerald-600 text-white font-bold text-lg hover:from-accent-green hover:to-emerald-500 transition-all shadow-lg shadow-accent-green/20 hover:shadow-accent-green/40 hover:-translate-y-0.5"
             >
-              Create Free Account
+              Create account
             </Link>
             <Link
               href="/questions"

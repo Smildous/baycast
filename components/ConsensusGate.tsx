@@ -31,11 +31,10 @@ export default function ConsensusGate({
   return (
     <div className="mb-8 p-5 rounded-xl border border-yellow-800/50 bg-yellow-900/20">
       <div className="text-yellow-300 font-semibold mb-2">
-        🔒 Make {FORECASTS_TO_UNLOCK} forecasts to unlock consensus view
+        🔒 Make {FORECASTS_TO_UNLOCK} forecasts to see crowd numbers
       </div>
       <p className="text-text-secondary text-sm mb-4">
-        Submit predictions on {FORECASTS_TO_UNLOCK} different questions to unlock aggregate
-        stats and community insights across all questions.
+        Call {FORECASTS_TO_UNLOCK} questions first. Then we&apos;ll show the crowd numbers across Baycast.
       </p>
 
       {/* Progress bar */}
@@ -58,7 +57,7 @@ export default function ConsensusGate({
         href="/questions"
         className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-yellow-400/20 border border-yellow-800/50 text-yellow-300 text-sm font-medium hover:bg-yellow-400/30 transition-colors"
       >
-        <span>Browse questions to forecast</span>
+        <span>Browse questions</span>
         <svg
           className="w-4 h-4"
           fill="none"

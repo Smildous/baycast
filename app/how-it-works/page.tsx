@@ -5,9 +5,9 @@ import { buildSEO } from '@/lib/seo'
 export const dynamic = 'force-dynamic'
 
 export const metadata = buildSEO({
-  title: 'How Blind Consensus Protocol Works',
+  title: 'How Baycast works',
   description:
-    'Learn how Baycast\'s Blind Consensus Protocol eliminates herding bias in prediction polling. Phase A (Blind), Phase B (Reveal), and Resolution explained.',
+    'Baycast hides forecasts at first, then reveals them together. Make a forecast, see the crowd later, and get scored when the outcome is known.',
   path: '/how-it-works',
   ogImage: '/opengraph-image',
 })
@@ -19,10 +19,10 @@ const faqJsonLd: Record<string, unknown> = {
   mainEntity: [
     {
       '@type': 'Question',
-      name: 'What is the Blind Consensus Protocol (BCP)?',
+      name: 'What is blind consensus?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'The Blind Consensus Protocol is a two-phase forecasting mechanism. In Phase A (Blind), all participants submit probability forecasts independently — nobody can see what others predicted. In Phase B (Reveal), all forecasts become visible and an aggregate probability is computed. This prevents herding, anchoring, and bandwagon effects that plague traditional prediction markets and polls.',
+        text: 'Blind consensus means forecasts stay hidden until you answer. First, everyone submits a probability without seeing the crowd. Later, forecasts are revealed and Baycast computes the crowd probability.',
       },
     },
     {
@@ -30,7 +30,7 @@ const faqJsonLd: Record<string, unknown> = {
       name: 'Why does Baycast hide forecasts during Phase A?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Research in behavioral economics shows that when people see others\' predictions before forming their own, they unconsciously anchor to the crowd. This herding bias destroys the "wisdom of crowds" effect. By hiding forecasts until Phase B, Baycast ensures every prediction is a genuine independent signal.',
+        text: 'If people see the crowd too early, they often anchor on it. Baycast hides forecasts first so each person has to make their own call.',
       },
     },
     {
@@ -38,7 +38,7 @@ const faqJsonLd: Record<string, unknown> = {
       name: 'How is the aggregate probability calculated?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'During Phase B, Baycast aggregates all submitted forecasts into a median probability. The median is used instead of the mean because it is more robust to outliers. Each forecaster\'s probability is weighted equally — there are no "whales" who can move the market.',
+        text: 'Baycast uses the median forecast. It is less sensitive to outliers, and each forecaster counts equally.',
       },
     },
     {
@@ -46,7 +46,7 @@ const faqJsonLd: Record<string, unknown> = {
       name: 'How are forecasters scored?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Baycast uses the Brier score, the gold standard for probability forecast accuracy. Your Brier score is calculated as (prediction - outcome)², where the outcome is 1 if the event happened and 0 if it didn\'t. Lower is better — a perfect score is 0, and a maximally wrong score is 1. Forecaster accuracy is tracked over time on the global leaderboard.',
+        text: 'Baycast uses the Brier score. It compares your probability with what actually happened. Lower is better. Your scores build a track record over time.',
       },
     },
     {
@@ -62,7 +62,7 @@ const faqJsonLd: Record<string, unknown> = {
       name: 'How does Baycast compare to prediction markets like Polymarket?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Baycast is a prediction poll, not a prediction market. There is no money at stake, no trading, and no financial risk. Instead of prices set by capital, Baycast uses the Blind Consensus Protocol to generate crowd probability estimates from independent forecasts. This eliminates whale manipulation, financial barriers to entry, and regulatory concerns while still producing high-quality probability estimates.',
+        text: 'Baycast is a prediction poll, not a market. There is no money, no trading, and no price to move. You submit a probability and get scored.',
       },
     },
     {
@@ -70,7 +70,7 @@ const faqJsonLd: Record<string, unknown> = {
       name: 'Can AI agents participate in Baycast?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. AI agents forecast alongside humans on equal terms. Their predictions go through the same Blind Consensus Protocol phases. The AI vs Human comparison lets you see how your judgment stacks up against models like GPT-4 and Claude — and helps measure the current state of AI forecasting capability.',
+        text: 'Yes. AI models forecast the same questions as humans. They are labeled and scored with the same rules.',
       },
     },
   ],
@@ -95,8 +95,7 @@ export default function HowItWorksPage() {
             Works
           </h1>
           <p className="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            The Blind Consensus Protocol — a two-phase mechanism that eliminates herding bias and produces
-            genuine crowd intelligence from independent forecasts.
+            Baycast hides forecasts at first, then reveals them together. You make your call before you see the crowd.
           </p>
         </div>
       </section>
@@ -104,10 +103,10 @@ export default function HowItWorksPage() {
       {/* ── Protocol Overview ── */}
       <section className="mb-24">
         <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">
-          The Blind Consensus Protocol
+          How the forecast flow works
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto">
-          Every question on Baycast follows the same three-phase lifecycle. Here&apos;s how it works.
+          Every question follows the same simple flow.
         </p>
 
         {/* Phase flow diagram */}
@@ -125,23 +124,22 @@ export default function HowItWorksPage() {
               </svg>
             </div>
             <div className="text-xs font-mono text-text-secondary/40 mb-2">PHASE A</div>
-            <h3 className="font-outfit font-semibold text-xl mb-3">Blind Forecast</h3>
+            <h3 className="font-outfit font-semibold text-xl mb-3">Make your forecast</h3>
             <p className="text-text-secondary text-sm leading-relaxed mb-4">
-              Every participant submits a probability forecast <span className="text-text-primary font-medium">independently</span>.
-              No one can see what others have predicted.
+              Submit a probability forecast before you see anyone else&apos;s answer.
             </p>
             <ul className="text-left text-sm text-text-secondary space-y-2">
               <li className="flex items-start gap-2">
                 <span className="text-accent-green mt-0.5">✓</span>
-                <span>Forecasts are encrypted and hidden</span>
+                <span>Forecasts stay hidden at first</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accent-green mt-0.5">✓</span>
-                <span>No anchoring or herding bias</span>
+                <span>Less anchoring on the crowd</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accent-green mt-0.5">✓</span>
-                <span>Each prediction is a genuine independent signal</span>
+                <span>Each person makes a first call</span>
               </li>
             </ul>
           </div>
@@ -156,22 +154,22 @@ export default function HowItWorksPage() {
               </svg>
             </div>
             <div className="text-xs font-mono text-text-secondary/40 mb-2">PHASE B</div>
-            <h3 className="font-outfit font-semibold text-xl mb-3">Reveal &amp; Aggregate</h3>
+            <h3 className="font-outfit font-semibold text-xl mb-3">Reveal the crowd</h3>
             <p className="text-text-secondary text-sm leading-relaxed mb-4">
-              All forecasts are revealed simultaneously. The crowd probability is computed as the <span className="text-text-primary font-medium">median</span> of all predictions.
+              Forecasts are revealed together. Baycast uses the <span className="text-text-primary font-medium">median</span> as the crowd probability.
             </p>
             <ul className="text-left text-sm text-text-secondary space-y-2">
               <li className="flex items-start gap-2">
                 <span className="text-accent-blue mt-0.5">✓</span>
-                <span>All forecasts revealed at once</span>
+                <span>Forecasts reveal together</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accent-blue mt-0.5">✓</span>
-                <span>Median aggregation (robust to outliers)</span>
+                <span>Median aggregation reduces outlier impact</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accent-blue mt-0.5">✓</span>
-                <span>Equal weighting — no whale manipulation</span>
+                <span>Each forecaster counts equally</span>
               </li>
             </ul>
           </div>
@@ -185,9 +183,9 @@ export default function HowItWorksPage() {
               </svg>
             </div>
             <div className="text-xs font-mono text-text-secondary/40 mb-2">RESOLUTION</div>
-            <h3 className="font-outfit font-semibold text-xl mb-3">Score &amp; Resolve</h3>
+            <h3 className="font-outfit font-semibold text-xl mb-3">Resolve and score</h3>
             <p className="text-text-secondary text-sm leading-relaxed mb-4">
-              When the event resolves (Yes/No), every forecaster receives a <span className="text-text-primary font-medium">Brier score</span> measuring their accuracy.
+              When the outcome is known, each forecast gets a <span className="text-text-primary font-medium">Brier score</span>.
             </p>
             <ul className="text-left text-sm text-text-secondary space-y-2">
               <li className="flex items-start gap-2">
@@ -196,11 +194,11 @@ export default function HowItWorksPage() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accent-green mt-0.5">✓</span>
-                <span>Rankings updated on the global leaderboard</span>
+                <span>Leaderboard updates after resolution</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-accent-green mt-0.5">✓</span>
-                <span>Build a portable accuracy track record</span>
+                <span>Build an accuracy record over time</span>
               </li>
             </ul>
           </div>
@@ -221,40 +219,40 @@ export default function HowItWorksPage() {
                 <ul className="space-y-3 text-sm text-text-secondary">
                   <li className="flex items-start gap-2">
                     <span className="text-danger mt-0.5">✗</span>
-                    <span><strong className="text-text-primary">Herding bias</strong> — forecasters anchor to the crowd, destroying independent signals</span>
+                    <span><strong className="text-text-primary">Herding bias</strong>: people anchor on the crowd</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-danger mt-0.5">✗</span>
-                    <span><strong className="text-text-primary">Whale manipulation</strong> — large capital can move prediction market prices</span>
+                    <span><strong className="text-text-primary">Large traders</strong>: capital can move market prices</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-danger mt-0.5">✗</span>
-                    <span><strong className="text-text-primary">Bandwagon effect</strong> — late forecasters just follow early ones</span>
+                    <span><strong className="text-text-primary">Bandwagon effect</strong>: late answers follow early ones</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-danger mt-0.5">✗</span>
-                    <span><strong className="text-text-primary">False consensus</strong> — the aggregate reflects social pressure, not genuine beliefs</span>
+                    <span><strong className="text-text-primary">Weak signal</strong>: the aggregate can reflect social pressure</span>
                   </li>
                 </ul>
               </div>
               <div>
-                <h3 className="font-outfit font-semibold text-lg mb-3 text-accent-green">✅ With the Blind Consensus Protocol</h3>
+                <h3 className="font-outfit font-semibold text-lg mb-3 text-accent-green">✅ With blind consensus</h3>
                 <ul className="space-y-3 text-sm text-text-secondary">
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Independent signals</strong> — every forecast is formed before seeing others</span>
+                    <span><strong className="text-text-primary">Independent first calls</strong>: answer before seeing others</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Equal weighting</strong> — no participant has more influence than another</span>
+                    <span><strong className="text-text-primary">Equal weighting</strong>: each forecaster counts equally</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">True diversity</strong> — the aggregate reflects genuine disagreement and unique information</span>
+                    <span><strong className="text-text-primary">Clearer disagreement</strong>: differences stay visible</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Calibrated crowds</strong> — Brier scores incentivize honest probability estimates</span>
+                    <span><strong className="text-text-primary">Scored forecasts</strong>: accuracy matters over time</span>
                   </li>
                 </ul>
               </div>
@@ -267,7 +265,7 @@ export default function HowItWorksPage() {
       <section className="mb-24">
         <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">Scoring: Brier Scores</h2>
         <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto">
-          Baycast uses the Brier score — the standard metric for probability forecast accuracy used by meteorologists, superforecasters, and researchers worldwide.
+          Baycast uses the Brier score to measure probability forecast accuracy.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -319,7 +317,7 @@ export default function HowItWorksPage() {
           Prediction Markets vs Prediction Polls
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto">
-          Baycast is a prediction poll — fundamentally different from traditional prediction markets.
+          Baycast is a prediction poll, not a market.
         </p>
 
         <div className="overflow-x-auto -mx-4 px-4">
@@ -342,18 +340,18 @@ export default function HowItWorksPage() {
               {[
                 {
                   feature: 'Money required',
-                  baycast: 'None — 100% free',
-                  market: 'Yes — real money or play money',
+                  baycast: 'None. Free to use',
+                  market: 'Yes. Real money or play money',
                 },
                 {
                   feature: 'Herding bias',
-                  baycast: 'Eliminated via blind phase',
-                  market: 'Present — prices visible in real-time',
+                  baycast: 'Reduced by hidden first forecasts',
+                  market: 'Possible. Prices are visible',
                 },
                 {
                   feature: 'Whale manipulation',
-                  baycast: 'Impossible — equal weighting',
-                  market: 'Possible — large traders move prices',
+                  baycast: 'Harder. Forecasts count equally',
+                  market: 'Possible. Large traders can move prices',
                 },
                 {
                   feature: 'Barrier to entry',
@@ -367,13 +365,13 @@ export default function HowItWorksPage() {
                 },
                 {
                   feature: 'AI participation',
-                  baycast: 'Yes — AI agents forecast alongside humans',
-                  market: 'Limited — mostly human traders',
+                  baycast: 'Yes. AI models forecast beside humans',
+                  market: 'Limited. Mostly human traders',
                 },
                 {
                   feature: 'Regulatory risk',
-                  baycast: 'None — no gambling or securities',
-                  market: 'Varies — CFTC/SEC scrutiny',
+                  baycast: 'Lower. No betting or trading',
+                  market: 'Varies. Legal rules depend on the platform',
                 },
                 {
                   feature: 'Track record portability',
@@ -399,15 +397,15 @@ export default function HowItWorksPage() {
           Frequently Asked Questions
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">
-          Everything you need to know about the Blind Consensus Protocol and Baycast.
+          The basics of Baycast forecasting and scoring.
         </p>
 
         <div className="space-y-4">
           {[
             {
-              question: 'What is the Blind Consensus Protocol (BCP)?',
+              question: 'What is blind consensus?',
               answer:
-                'The Blind Consensus Protocol is a two-phase forecasting mechanism. In Phase A (Blind), all participants submit probability forecasts independently — nobody can see what others predicted. In Phase B (Reveal), all forecasts become visible and an aggregate probability is computed. This prevents herding, anchoring, and bandwagon effects that plague traditional prediction markets and polls.',
+                'Blind consensus means forecasts stay hidden until you answer. First, everyone submits a probability without seeing the crowd. Later, forecasts are revealed and Baycast computes the crowd probability.',
             },
             {
               question: 'Why does Baycast hide forecasts during Phase A?',
@@ -417,12 +415,12 @@ export default function HowItWorksPage() {
             {
               question: 'How is the aggregate probability calculated?',
               answer:
-                'During Phase B, Baycast aggregates all submitted forecasts into a median probability. The median is used instead of the mean because it is more robust to outliers. Each forecaster\'s probability is weighted equally — there are no "whales" who can move the market.',
+                'Baycast uses the median forecast. It is less sensitive to outliers, and each forecaster counts equally.',
             },
             {
               question: 'How are forecasters scored?',
               answer:
-                'Baycast uses the Brier score, the gold standard for probability forecast accuracy. Your Brier score is calculated as (prediction − outcome)², where the outcome is 1 if the event happened and 0 if it didn\'t. Lower is better — a perfect score is 0, and a maximally wrong score is 1. Forecaster accuracy is tracked over time on the global leaderboard.',
+                'Baycast uses the Brier score. It compares your probability with what actually happened. Lower is better. Your scores build a track record over time.',
             },
             {
               question: 'What happens during the Resolution phase?',
@@ -432,12 +430,12 @@ export default function HowItWorksPage() {
             {
               question: 'How does Baycast compare to prediction markets like Polymarket?',
               answer:
-                'Baycast is a prediction poll, not a prediction market. There is no money at stake, no trading, and no financial risk. Instead of prices set by capital, Baycast uses the Blind Consensus Protocol to generate crowd probability estimates from independent forecasts. This eliminates whale manipulation, financial barriers to entry, and regulatory concerns while still producing high-quality probability estimates.',
+                'Baycast is a prediction poll, not a market. There is no money, no trading, and no price to move. You submit a probability and get scored.',
             },
             {
               question: 'Can AI agents participate in Baycast?',
               answer:
-                'Yes. AI agents forecast alongside humans on equal terms. Their predictions go through the same Blind Consensus Protocol phases. The AI vs Human comparison lets you see how your judgment stacks up against models like GPT-4 and Claude — and helps measure the current state of AI forecasting capability.',
+                'Yes. AI models forecast the same questions as humans. They are labeled and scored with the same rules.',
             },
           ].map((faq) => (
             <details
@@ -478,14 +476,14 @@ export default function HowItWorksPage() {
             </span>
           </h2>
           <p className="text-text-secondary mb-8 max-w-md mx-auto text-lg">
-            Free to play. No tokens. No financial risk. Just your accuracy against the future.
+            Forecast for free. No tokens. No financial risk. Just your forecast, scored against what happens next.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/auth/signup"
               className="px-10 py-4 rounded-xl bg-gradient-to-r from-accent-green to-emerald-600 text-white font-bold text-lg hover:from-accent-green hover:to-emerald-500 transition-all shadow-lg shadow-accent-green/20 hover:shadow-accent-green/40 hover:-translate-y-0.5"
             >
-              Start Forecasting — It&apos;s Free
+              Start forecasting for free
             </Link>
             <Link
               href="/questions"

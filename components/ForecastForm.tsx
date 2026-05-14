@@ -103,7 +103,7 @@ export default function ForecastForm({
       <div className="space-y-6">
         {/* Interactive trial slider — same component as authenticated users */}
         <form onSubmit={handleGuestSubmit} className="space-y-6">
-          <p className="text-text-secondary text-sm">Try it out — slide to set your probability:</p>
+          <p className="text-text-secondary text-sm">Try it. Set your probability:</p>
           <div onMouseUp={handleSliderPointerUp} onTouchEnd={handleSliderPointerUp}>
             <ForecastSlider
               value={guestProbability}
@@ -121,7 +121,7 @@ export default function ForecastForm({
 
         {/* Signup CTA links */}
         <div className="text-center pt-2 border-t border-border-dark">
-          <p className="text-text-secondary mb-4">Sign up to submit your forecast and join the collective estimate.</p>
+          <p className="text-text-secondary mb-4">Sign up to save your forecast and get scored.</p>
           <div className="flex items-center justify-center gap-3">
             <Link
               href="/auth/signup"
@@ -261,7 +261,7 @@ export default function ForecastForm({
         <div className="p-3 rounded-lg bg-yellow-900/20 border border-yellow-800/40 text-yellow-300 text-sm">
           🔒 <strong>Blind phase active:</strong> Your forecast is private. Other forecasters
           cannot see your prediction until the blind phase ends. Make your best independent
-          estimate — you can revise later.
+          estimate. You can revise later.
         </div>
       )}
       {!isBlind && existingForecast && (
@@ -290,7 +290,7 @@ export default function ForecastForm({
                 Your first forecast is in!
               </p>
               <p className="text-text-secondary text-sm">
-                Congratulations — you&apos;re now a forecaster. Come back when this question resolves to see your score.
+                You&apos;re in. Come back when this question resolves to see your score.
               </p>
             </div>
             <button

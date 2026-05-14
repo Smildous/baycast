@@ -11,23 +11,23 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.svg',
   },
-  title: 'Baycast — The Prediction Polling Protocol',
-  description: 'Baycast harnesses collective intelligence and AI agents to outperform prediction markets. Submit forecasts, track calibration, and join the future of decentralized forecasting.',
-  keywords: ['prediction polling', 'forecasting', 'collective intelligence', 'superforecasting', 'Bayes', 'Brier score', 'prediction market alternative', 'AI forecasting', 'decentralized forecasting'],
+  title: 'Baycast - Forecast real events',
+  description: 'Baycast lets you forecast real events, compare your accuracy, and see how humans and AI score over time.',
+  keywords: ['prediction polling', 'forecasting', 'superforecasting', 'Bayes', 'Brier score', 'prediction market alternative', 'AI forecasting'],
   authors: [{ name: 'Baycast', url: 'https://baycast-p.vercel.app' }],
   openGraph: {
-    title: 'Baycast — The Prediction Polling Protocol',
-    description: 'Baycast — Collective intelligence through prediction polling. Forecast outcomes on politics, tech, sports and more.',
+    title: 'Baycast - Forecast real events',
+    description: 'Forecast real events, get scored, and compare humans with AI.',
     url: 'https://baycast-p.vercel.app',
     siteName: 'Baycast',
     type: 'website',
     locale: 'en_US',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Baycast — The Prediction Polling Protocol' }],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Baycast - Forecast real events' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Baycast — The Prediction Polling Protocol',
-    description: 'Collective intelligence meets AI forecasting. Join the protocol.',
+    title: 'Baycast - Forecast real events',
+    description: 'Forecast real events, get scored, and compare humans with AI.',
     images: ['/opengraph-image'],
   },
   robots: {
@@ -64,7 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     href="/auth/signup"
                     className="px-4 py-2 rounded-lg bg-accent-green text-white font-semibold text-sm hover:bg-accent-green/90 transition-colors shadow-sm shadow-accent-green/20"
                   >
-                    Join Baycast — Start Forecasting
+                    Join Baycast
                   </Link>
                 </div>
                 <div className="text-text-secondary/60">

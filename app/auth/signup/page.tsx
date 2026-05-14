@@ -5,7 +5,7 @@ import { normalizeCategory } from '@/lib/types'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
-  title: 'Sign Up — Baycast | Prediction Polling Platform',
+  title: 'Sign up - Baycast',
 }
 
 export const dynamic = 'force-dynamic'
@@ -30,8 +30,8 @@ const valueProps = [
         <line x1="17" y1="12" x2="22" y2="12" stroke="#0F9D58" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
-    title: 'Blind Consensus',
-    description: 'Forecast without seeing the crowd. Proven 25% more accurate than prediction markets.',
+    title: 'Blind consensus',
+    description: 'Answer before you see the crowd. Your first forecast stays independent.',
   },
   {
     icon: (
@@ -41,8 +41,8 @@ const valueProps = [
         <circle cx="20" cy="6" r="1.5" fill="#0F9D58" />
       </svg>
     ),
-    title: 'Proper Scoring',
-    description: 'Brier + logarithmic scores track your real forecasting skill over time.',
+    title: 'Accuracy scoring',
+    description: 'Brier and log scores track how accurate you are over time.',
   },
   {
     icon: (
@@ -56,7 +56,7 @@ const valueProps = [
       </svg>
     ),
     title: 'Human vs AI',
-    description: 'Compete against AI agents on the same questions. The ultimate forecasting benchmark.',
+    description: 'Forecast the same questions as models, then compare the scores.',
   },
 ]
 
@@ -90,8 +90,8 @@ export default async function SignupPage() {
             <div className="text-center lg:text-left mb-8">
               <h1 className="text-3xl md:text-4xl font-outfit font-bold mb-3">Join Baycast</h1>
               <p className="text-lg text-text-secondary leading-relaxed">
-                Forecast the future. Score your accuracy.{' '}
-                <span className="text-text-primary font-medium">No gambling, just intelligence.</span>
+                Forecast real events. Score your accuracy.{' '}
+                <span className="text-text-primary font-medium">No gambling. Just forecasts and scores.</span>
               </p>
               <p className="text-text-secondary text-sm mt-3">
                 Already a member?{' '}
@@ -108,7 +108,7 @@ export default async function SignupPage() {
             {/* Value Props */}
             <div>
               <h2 className="text-xl font-outfit font-semibold mb-6 text-text-primary">
-                Why forecasters choose Baycast
+                Why forecasters use Baycast
               </h2>
               <div className="space-y-5">
                 {valueProps.map((prop) => (
@@ -130,7 +130,7 @@ export default async function SignupPage() {
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-outfit font-semibold text-text-primary">
-                  Featured Questions
+                  Featured questions
                 </h2>
                 <Link
                   href="/questions"
@@ -165,7 +165,7 @@ export default async function SignupPage() {
                     No live featured questions yet.
                   </p>
                   <p className="text-text-secondary text-sm leading-relaxed">
-                    We&apos;re loading the next forecasting slate. Browse the full questions page to see what&apos;s open as soon as new questions are published.
+                    New featured questions are coming. Browse all questions to see what is open now.
                   </p>
                 </div>
               )}

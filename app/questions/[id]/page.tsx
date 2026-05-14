@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .single()
 
   if (!question) {
-    return { title: 'Question Not Found — Baycast' }
+    return { title: 'Question not found - Baycast' }
   }
 
   const q = question as Pick<Question, 'id' | 'title' | 'description' | 'category' | 'status'>
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // BCP: Do NOT include aggregate probability in page title — leaks consensus to
   // browser tabs, search results, and social shares before user has forecasted.
-  const title = `${q.title} — Baycast`
+  const title = `${q.title} - Baycast`
   const description = `${q.category} · ${q.status.charAt(0).toUpperCase() + q.status.slice(1)} · ${fcCount} forecaster${fcCount !== 1 ? 's' : ''}${q.description ? `. ${q.description}` : ''}`
   const ogImageUrl = `/questions/${q.id}/opengraph-image`
 
@@ -254,8 +254,7 @@ export default async function QuestionDetailPage({ params }: Props) {
           </div>
           <p className="text-text-secondary text-sm">
             Forecasts are hidden during the blind phase to prevent anchoring bias.
-            Submit your independent prediction now — the aggregate and individual
-            forecasts will be revealed when this phase ends.
+Submit your forecast now. The aggregate and individual forecasts stay hidden until the reveal.
           </p>
         </div>
       )}
@@ -288,7 +287,7 @@ export default async function QuestionDetailPage({ params }: Props) {
           </div>
           <div className="text-text-secondary text-sm">
             {(!isBlind && consensusUnlocked) && forecasters === 0
-              ? 'No forecasts yet — be the first!'
+              ? 'No forecasts yet. Be first.'
               : 'Consensus'}
           </div>
         </div>

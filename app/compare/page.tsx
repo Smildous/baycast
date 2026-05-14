@@ -4,9 +4,9 @@ import { buildSEO } from '@/lib/seo'
 export const dynamic = 'force-dynamic'
 
 export const metadata = buildSEO({
-  title: 'Baycast vs Polymarket vs Metaculus vs Manifold — Platform Comparison',
+  title: 'Baycast vs Polymarket vs Metaculus vs Manifold - Comparison',
   description:
-    'Compare Baycast with Polymarket, Metaculus, Manifold Markets, and Kalshi. See why prediction polls with blind consensus outperform prediction markets on accuracy, accessibility, and regulatory safety.',
+    'Compare Baycast with Polymarket, Metaculus, Manifold, and Kalshi. Baycast uses private forecasts first, not trades or market prices.',
   path: '/compare',
   ogImage: '/opengraph-image',
 })
@@ -23,7 +23,7 @@ const comparisonRows = [
   },
   {
     feature: 'Money involved',
-    baycast: 'None — 100% free',
+    baycast: 'None. Free to use',
     polymarket: 'Real money (crypto)',
     metaculus: 'None',
     manifold: 'Play money (Mana)',
@@ -55,19 +55,19 @@ const comparisonRows = [
   },
   {
     feature: 'Herding bias',
-    baycast: 'Eliminated via blind phase',
-    polymarket: 'Present — prices anchor traders',
-    metaculus: 'Present — visible community median',
-    manifold: 'Present — prices anchor traders',
-    kalshi: 'Present — prices anchor traders',
+    baycast: 'Reduced by hidden first forecasts',
+    polymarket: 'Possible. Prices can anchor traders',
+    metaculus: 'Possible. Community median is visible',
+    manifold: 'Possible. Prices can anchor traders',
+    kalshi: 'Possible. Prices can anchor traders',
   },
   {
     feature: 'Whale manipulation',
-    baycast: 'Impossible — equal weighting',
-    polymarket: 'Possible — large capital moves prices',
-    metaculus: 'Low — community median but visible',
-    manifold: 'Possible — large balances move prices',
-    kalshi: 'Possible — large capital moves prices',
+    baycast: 'Harder. Forecasts count equally',
+    polymarket: 'Possible. Large capital can move prices',
+    metaculus: 'Lower. Community median is visible',
+    manifold: 'Possible. Large balances can move prices',
+    kalshi: 'Possible. Large capital can move prices',
   },
   {
     feature: 'Barrier to entry',
@@ -80,18 +80,18 @@ const comparisonRows = [
   {
     feature: 'Gambling risk',
     baycast: 'None',
-    polymarket: 'High — real-money wagers',
+    polymarket: 'High. Real-money wagers',
     metaculus: 'None',
-    manifold: 'Low — play money simulates gambling',
-    kalshi: 'High — real-money wagers',
+    manifold: 'Low. Play money simulates gambling',
+    kalshi: 'High. Real-money wagers',
   },
   {
     feature: 'Regulatory risk',
-    baycast: 'None',
-    polymarket: 'High — CFTC/SEC scrutiny',
+    baycast: 'Lower. No betting or trading',
+    polymarket: 'High. CFTC/SEC scrutiny',
     metaculus: 'None',
-    manifold: 'Medium — varies by jurisdiction',
-    kalshi: 'Medium — CFTC-regulated',
+    manifold: 'Medium. Varies by jurisdiction',
+    kalshi: 'Medium. CFTC-regulated',
   },
   {
     feature: 'Calibration tracking',
@@ -124,17 +124,17 @@ const faqs = [
   {
     question: 'How is this different from Polymarket?',
     answer:
-      'Polymarket is a real-money prediction market where you buy and sell outcome contracts using cryptocurrency. Baycast is a prediction poll: you submit a probability estimate (0–100%) and get scored on accuracy using the Brier score. There\'s no money, no trading, and no financial risk. Polymarket\'s prices can be manipulated by large traders ("whales"), and the platform faces significant regulatory scrutiny. Baycast eliminates both problems — forecasts are hidden during the blind phase (preventing herding), and there\'s no money involved (eliminating regulatory risk).',
+      'Polymarket is a real-money market where users buy and sell outcome contracts. Baycast is a prediction poll. You submit a probability, then get scored when the outcome is known. There is no money, no trading, and no financial upside from moving a price. Forecasts also stay hidden until you answer, which reduces crowd copying.',
   },
   {
     question: 'Why would I forecast without money?',
     answer:
-      'Because intrinsic motivation — curiosity, intellectual challenge, reputation, and the desire to test your judgment against reality — is a powerful driver. Wikipedia\'s contributors aren\'t paid. Chess players on Lichess aren\'t earning a salary. Baycast provides precise accuracy feedback via Brier scores, competitive leaderboards, and calibration charts showing improvement over time. Additionally, a Baycast accuracy track record is a portable credential — verifiable evidence of judgment quality meaningful in professional contexts where decision-making under uncertainty matters.',
+      'Because some people want to know if their judgment is actually good. Baycast gives you scores, leaderboards, and a record of your forecasts over time. Money is not the point. Accuracy is.',
   },
   {
     question: 'How do you prevent manipulation?',
     answer:
-      'Baycast\'s architecture makes manipulation structurally difficult. The Blind Consensus Protocol means you cannot see or influence other forecasts during Phase A. Median aggregation ensures a single outlier can\'t shift the aggregate. Each user gets exactly one forecast per question. Because there\'s no money, the primary motivation for manipulation (financial profit) doesn\'t exist. Compare this to Polymarket, where a single well-capitalized trader can move market prices by 10-20% with a single trade.',
+      'Baycast makes manipulation harder by removing the main prize. There is no market price to move and no payout to win. Forecasts stay hidden until you answer, and each person counts equally in the consensus.',
   },
   {
     question: 'Is this gambling?',
@@ -144,17 +144,17 @@ const faqs = [
   {
     question: 'How accurate are prediction polls vs. markets?',
     answer:
-      'The Good Judgment Project outperformed intelligence community analysts with access to classified information, using Brier-scored forecasts from trained volunteers. Prediction markets suffer from well-documented failures: low-volume markets are noisy, prices can reflect liquidity dynamics rather than genuine beliefs, and participants are self-selected (skewed toward crypto-savvy, risk-tolerant demographics). Baycast\'s Blind Consensus Protocol is designed to maximize polling accuracy by eliminating the herding bias that reduces both market and traditional poll accuracy.',
+      'Markets can be useful, but prices do not always equal belief. Low-volume markets can be noisy, and visible prices can anchor people. Baycast starts with private forecasts, then reveals the crowd later. The goal is a cleaner first signal.',
   },
   {
     question: 'Can AI participate?',
     answer:
-      'Yes — and they already do. AI models submit forecasts alongside humans through the exact same Blind Consensus Protocol. Their forecasts are hidden during Phase A, revealed during Phase B, and scored with the same Brier scoring rules. AI agents are labeled in the UI and separated in the leaderboard so you can compare human vs. AI performance on each question.',
+      'Yes. AI models forecast the same questions as humans. They are labeled in the product and scored with the same rules, so you can compare human and AI performance question by question.',
   },
   {
     question: 'Why should I trust Baycast over Metaculus?',
     answer:
-      'Metaculus is an excellent platform with a strong community. But Baycast offers several advantages: the Blind Consensus Protocol eliminates the herding bias that Metaculus\'s visible community median creates; the UX is designed for broader accessibility; AI agents forecast alongside humans; and the lower barrier to entry means a larger, more diverse crowd — and diverse crowds produce better aggregates than homogeneous ones.',
+      'Metaculus is strong. Baycast is different. Forecasts stay hidden until you answer, the interface is lighter, and AI models forecast beside humans. The product is built for fast, scored forecasting rather than deep discussion threads.',
   },
 ]
 
@@ -206,7 +206,7 @@ export default function ComparePage() {
             </span>
           </h1>
           <p className="text-text-secondary text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-            Why Baycast&apos;s blind consensus approach produces better forecasts than Polymarket, Metaculus, Manifold, and Kalshi — without the gambling, the whales, or the regulatory risk.
+            Baycast is for scored forecasts, not trading. You answer first, then see how the crowd and AI models scored.
           </p>
         </div>
       </section>
@@ -217,10 +217,10 @@ export default function ComparePage() {
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-accent-green/5 rounded-full blur-[100px] pointer-events-none" />
           <div className="relative">
             <h2 className="text-2xl md:text-3xl font-outfit font-semibold mb-6">
-              The core insight
+              The basic idea
             </h2>
             <p className="text-text-secondary leading-relaxed mb-6">
-              Prediction markets create financial incentives, and financial incentives attract capital. That sounds great in theory — but in practice, markets are vulnerable to actors who aren&apos;t trying to be accurate. They&apos;re trying to <strong className="text-text-primary">move the price</strong>.
+              Prediction markets attract capital. That can be useful, but some activity reflects strategy, liquidity, or price movement more than pure forecasting.
             </p>
             <p className="text-text-secondary leading-relaxed mb-6">
               A prediction poll where every participant has equal weight produces a signal that isn&apos;t drowned out by whoever has the deepest pockets. There&apos;s no profitable manipulation strategy when there&apos;s nothing to manipulate <em className="text-text-primary">for</em>.
@@ -231,19 +231,19 @@ export default function ComparePage() {
                 <ul className="space-y-3 text-sm text-text-secondary">
                   <li className="flex items-start gap-2">
                     <span className="text-danger mt-0.5">✗</span>
-                    <span><strong className="text-text-primary">Whale manipulation</strong> — large capital moves prices regardless of information quality</span>
+                    <span><strong className="text-text-primary">Whale manipulation</strong>: large capital can move prices regardless of information quality</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-danger mt-0.5">✗</span>
-                    <span><strong className="text-text-primary">Herding bias</strong> — visible prices cause late movers to anchor on the crowd</span>
+                    <span><strong className="text-text-primary">Herding bias</strong>: visible prices can anchor late forecasters on the crowd</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-danger mt-0.5">✗</span>
-                    <span><strong className="text-text-primary">High barriers</strong> — KYC, crypto wallets, funding requirements exclude most people</span>
+                    <span><strong className="text-text-primary">High barriers</strong>: KYC, wallets, and funding requirements exclude many people</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-danger mt-0.5">✗</span>
-                    <span><strong className="text-text-primary">Regulatory risk</strong> — CFTC/SEC scrutiny, country bans, legal uncertainty</span>
+                    <span><strong className="text-text-primary">Regulatory risk</strong>: legal status depends on the market and country</span>
                   </li>
                 </ul>
               </div>
@@ -252,19 +252,19 @@ export default function ComparePage() {
                 <ul className="space-y-3 text-sm text-text-secondary">
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Equal weighting</strong> — every forecaster has exactly one vote, no whale influence</span>
+                    <span><strong className="text-text-primary">Equal weighting</strong>: every forecaster gets one forecast</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Blind consensus</strong> — forecasts hidden during Phase A, eliminating anchoring</span>
+                    <span><strong className="text-text-primary">Blind consensus</strong>: forecasts stay hidden at first</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Zero friction</strong> — email signup, no money, no crypto, global access</span>
+                    <span><strong className="text-text-primary">Low friction</strong>: email signup, no money, no crypto</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Proper scoring</strong> — Brier scores reward genuine accuracy, not trading savvy</span>
+                    <span><strong className="text-text-primary">Proper scoring</strong>: Brier scores reward accuracy, not trading skill</span>
                   </li>
                 </ul>
               </div>
@@ -276,10 +276,10 @@ export default function ComparePage() {
       {/* ── Feature Comparison Table ── */}
       <section className="mb-24">
         <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">
-          Full Feature Comparison
+          Full comparison
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto">
-          How Baycast stacks up against the major prediction platforms — across accuracy, accessibility, and trust.
+          How Baycast compares with the main prediction platforms.
         </p>
 
         <div className="overflow-x-auto -mx-4 px-4">
@@ -328,18 +328,18 @@ export default function ComparePage() {
       {/* ── Key Differentiators ── */}
       <section className="mb-24">
         <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">
-          Five Key Differentiators
+          What is different
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto">
-          What makes Baycast fundamentally different from every other forecasting platform.
+          The parts that matter most.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
             {
               number: '01',
-              title: 'Blind Consensus Protocol',
-              description: 'Every forecast is hidden during Phase A — nobody can see what others predicted. This eliminates anchoring, herding, and the bandwagon effect that plagues every competitor.',
+              title: 'Blind consensus',
+              description: 'Forecasts stay hidden until you submit yours. That reduces anchoring and keeps the first signal cleaner.',
               icon: (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z" stroke="currentColor" strokeWidth="1.5" fill="none" className="text-accent-green" />
@@ -350,8 +350,8 @@ export default function ComparePage() {
             },
             {
               number: '02',
-              title: 'No Money = No Regulatory Risk',
-              description: 'No wagers, no trading, no financial instruments. Baycast can operate globally from day one — New York, Berlin, Tokyo, São Paulo — without CFTC enforcement or gambling licenses.',
+              title: 'No betting or trading',
+              description: 'Baycast has no wagers, no contracts, and no financial instruments. You forecast. The system scores accuracy.',
               icon: (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" fill="none" className="text-accent-green" />
@@ -361,8 +361,8 @@ export default function ComparePage() {
             },
             {
               number: '03',
-              title: 'Proper Scoring Rules',
-              description: 'Brier scores and logarithmic scoring reward genuine calibration — your expected score is maximized when you report your true honest belief. No strategic advantage to hedging or exaggerating.',
+              title: 'Scored forecasts',
+              description: 'Brier and log scores reward calibrated forecasts. Guessing wildly hurts your record over time.',
               icon: (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M3 3v18h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-green" />
@@ -372,8 +372,8 @@ export default function ComparePage() {
             },
             {
               number: '04',
-              title: 'AI + Human Forecasting',
-              description: 'AI agents compete side by side with humans under identical conditions. The most apples-to-apples comparison of AI and human forecasting available anywhere — live today.',
+              title: 'Human and AI forecasting',
+              description: 'Humans and AI models answer the same questions. Both get scored under the same rules.',
               icon: (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.5" fill="none" className="text-accent-green" />
@@ -385,8 +385,8 @@ export default function ComparePage() {
             },
             {
               number: '05',
-              title: 'Scientific Rigor Meets Accessibility',
-              description: 'The methodological rigor of academic forecasting (Brier scoring, median aggregation, blind consensus) in an experience anyone can understand in under 60 seconds. No PhD required.',
+              title: 'Simple interface, serious scoring',
+              description: 'The product stays simple, but the scoring is real. You can start fast and still build a useful track record.',
               icon: (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" fill="none" className="text-accent-green" />
@@ -461,14 +461,14 @@ export default function ComparePage() {
             </span>
           </h2>
           <p className="text-text-secondary mb-8 max-w-md mx-auto text-lg">
-            Free to play. No tokens. No financial risk. Just your accuracy against the future.
+            Forecast for free. No tokens. No financial risk. Just your forecast, scored against what happens next.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/auth/signup"
               className="px-10 py-4 rounded-xl bg-gradient-to-r from-accent-green to-emerald-600 text-white font-bold text-lg hover:from-accent-green hover:to-emerald-500 transition-all shadow-lg shadow-accent-green/20 hover:shadow-accent-green/40 hover:-translate-y-0.5"
             >
-              Start Forecasting — It&apos;s Free
+              Start forecasting for free
             </Link>
             <Link
               href="/questions"
