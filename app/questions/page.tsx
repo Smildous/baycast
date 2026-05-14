@@ -5,7 +5,7 @@ import WelcomeBanner from '@/components/WelcomeBanner'
 import QuestionCard from '@/components/QuestionCard'
 import type { Question } from '@/lib/types'
 import { CATEGORIES, normalizeCategory } from '@/lib/types'
-import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
+import { autoCloseExpiredQuestions, aggregateProbabilities, isClosingSoon } from '@/lib/utils'
 import { buildSEO } from '@/lib/seo'
 
 export const metadata = buildSEO({
@@ -19,6 +19,7 @@ export const metadata = buildSEO({
 export const dynamic = 'force-dynamic'
 
 const PAGE_SIZE = 10
+const CLOSING_SOON_WINDOW_DAYS = 14
 
 type SortOption = 'closing-soon' | 'newest' | 'most-active'
 
@@ -106,27 +107,29 @@ export default async function QuestionsPage({ searchParams }: Props) {
     ? allQuestions.filter(q => normalizeCategory(q.category) === normalizedCategory)
     : allQuestions
 
-  // Count open questions for the heading (always count open regardless of current filter)
-  const { count: openCount } = await supabase
+  // Fetch open questions separately so the open count and "Closing Soon"
+  // section both respect the active category filter.
+  const { data: openData } = await supabase
     .from('questions')
-    .select('*', { count: 'exact', head: true })
+    .select('*')
     .eq('status', 'open')
 
-  // Fetch "Closing Soon" section: top 3 open questions by closes_at ascending
-  // Only show if there are 3+ open questions
-  const showClosingSoon = (openCount ?? 0) >= 3
-  let closingSoonQuestions: Question[] = []
+  const openQuestions = (openData ?? []) as Question[]
+  const filteredOpenQuestions = normalizedCategory
+    ? openQuestions.filter(q => normalizeCategory(q.category) === normalizedCategory)
+    : openQuestions
+  const openCount = filteredOpenQuestions.length
+
+  // "Closing Soon" should only include genuinely near-term questions.
+  const closingSoonQuestions = filteredOpenQuestions
+    .filter((q) => isClosingSoon(q.closes_at, CLOSING_SOON_WINDOW_DAYS))
+    .sort((a, b) => new Date(a.closes_at).getTime() - new Date(b.closes_at).getTime())
+    .slice(0, 3)
+
+  const showClosingSoon = statusFilter === 'open' && closingSoonQuestions.length > 0
   let closingSoonEnriched: Question[] = []
 
   if (showClosingSoon) {
-    const { data: closingSoonData } = await supabase
-      .from('questions')
-      .select('*')
-      .eq('status', 'open')
-      .order('closes_at', { ascending: true })
-      .limit(3)
-
-    closingSoonQuestions = (closingSoonData ?? []) as Question[]
     const csIds = closingSoonQuestions.map(q => q.id)
     const csAggregates = await fetchAggregates(supabase, csIds)
     closingSoonEnriched = closingSoonQuestions.map(q => {

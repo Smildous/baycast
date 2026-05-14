@@ -176,7 +176,13 @@ function CrossIcon() {
 
 function renderCell(value: string | boolean) {
   if (typeof value === 'boolean') {
-    return value ? <CheckIcon /> : <CrossIcon />
+    const label = value ? 'Yes' : 'No'
+    return (
+      <span className="inline-flex items-center justify-center gap-2">
+        {value ? <CheckIcon /> : <CrossIcon />}
+        <span>{label}</span>
+      </span>
+    )
   }
   return <span>{value}</span>
 }

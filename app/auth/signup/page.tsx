@@ -1,9 +1,19 @@
-import AuthForm from '@/components/AuthForm'
-import Link from 'next/link'
 import type { Metadata } from 'next'
+import Link from 'next/link'
+import AuthForm from '@/components/AuthForm'
+import { normalizeCategory } from '@/lib/types'
+import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
   title: 'Sign Up — Baycast | Prediction Polling Platform',
+}
+
+export const dynamic = 'force-dynamic'
+
+interface FeaturedQuestionPreview {
+  id: string
+  title: string
+  category: string
 }
 
 // --- Value proposition data ---
@@ -50,24 +60,26 @@ const valueProps = [
   },
 ]
 
-// --- Featured questions (hardcoded, no Supabase) ---
-// AQ-189: Updated dates from 2025 to 2026 to maintain credibility
-const featuredQuestions = [
-  {
-    category: 'Geopolitics',
-    title: 'Will there be a ceasefire agreement in the Ukraine-Russia conflict before September 2026?',
-  },
-  {
-    category: 'Technology',
-    title: 'Will OpenAI release GPT-5 with demonstrated agentic capabilities before Q4 2026?',
-  },
-  {
-    category: 'Science',
-    title: 'Will a new drug receive FDA breakthrough therapy designation for Alzheimer\'s in 2026?',
-  },
-]
+async function getFeaturedQuestions(): Promise<FeaturedQuestionPreview[]> {
+  const supabase = createClient()
+  const { data } = await supabase
+    .from('questions')
+    .select('id, title, category, closes_at')
+    .eq('status', 'open')
+    .gte('closes_at', new Date().toISOString())
+    .order('closes_at', { ascending: true })
+    .limit(3)
 
-export default function SignupPage() {
+  return (data ?? []).map((question) => ({
+    id: question.id,
+    title: question.title,
+    category: normalizeCategory(question.category),
+  }))
+}
+
+export default async function SignupPage() {
+  const featuredQuestions = await getFeaturedQuestions()
+
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       {/* ── Top section: Form + Value Props side-by-side on desktop ── */}
@@ -127,23 +139,36 @@ export default function SignupPage() {
                   View all →
                 </Link>
               </div>
-              <div className="space-y-3">
-                {featuredQuestions.map((q) => (
-                  <div
-                    key={q.title}
-                    className="bg-bg-surface border border-border-dark rounded-xl p-5 hover:border-accent-green/20 transition-colors"
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs px-2 py-0.5 rounded-full border border-border-dark text-text-secondary">
-                        {q.category}
-                      </span>
-                    </div>
-                    <p className="text-text-primary text-sm font-medium leading-snug line-clamp-2">
-                      {q.title}
-                    </p>
-                  </div>
-                ))}
-              </div>
+
+              {featuredQuestions.length > 0 ? (
+                <div className="space-y-3">
+                  {featuredQuestions.map((question) => (
+                    <Link
+                      key={question.id}
+                      href={`/questions/${question.id}`}
+                      className="block bg-bg-surface border border-border-dark rounded-xl p-5 hover:border-accent-green/20 transition-colors"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs px-2 py-0.5 rounded-full border border-border-dark text-text-secondary">
+                          {question.category}
+                        </span>
+                      </div>
+                      <p className="text-text-primary text-sm font-medium leading-snug line-clamp-2">
+                        {question.title}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-bg-surface border border-border-dark rounded-xl p-5">
+                  <p className="text-text-primary text-sm font-medium mb-1">
+                    No live featured questions yet.
+                  </p>
+                  <p className="text-text-secondary text-sm leading-relaxed">
+                    We&apos;re loading the next forecasting slate. Browse the full questions page to see what&apos;s open as soon as new questions are published.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

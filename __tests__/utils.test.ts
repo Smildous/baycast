@@ -8,6 +8,7 @@ import {
   cn,
   formatDate,
   questionPhase,
+  isClosingSoon,
 } from '@/lib/utils'
 
 // ─── brierScore ──────────────────────────────────────────────────────────────
@@ -116,6 +117,23 @@ describe('daysRemaining', () => {
     const future = new Date(Date.now() + 5 * 86400000).toISOString()
     expect(daysRemaining(future)).toBeGreaterThanOrEqual(4)
     expect(daysRemaining(future)).toBeLessThanOrEqual(5)
+  })
+})
+
+describe('isClosingSoon', () => {
+  it('returns true for dates inside the default window', () => {
+    const soon = new Date(Date.now() + 7 * 86400000).toISOString()
+    expect(isClosingSoon(soon)).toBe(true)
+  })
+
+  it('returns false for dates outside the default window', () => {
+    const later = new Date(Date.now() + 30 * 86400000).toISOString()
+    expect(isClosingSoon(later)).toBe(false)
+  })
+
+  it('returns false for past dates', () => {
+    const past = new Date(Date.now() - 86400000).toISOString()
+    expect(isClosingSoon(past)).toBe(false)
   })
 })
 

@@ -29,6 +29,18 @@ export function daysRemaining(closesAt: string): number {
 }
 
 /**
+ * Returns true when a question closes within the next N days.
+ * Past dates are never considered "closing soon".
+ */
+export function isClosingSoon(closesAt: string, windowDays = 14): boolean {
+  const diff = new Date(closesAt).getTime() - Date.now()
+  if (diff < 0) return false
+
+  const windowMs = windowDays * 24 * 60 * 60 * 1000
+  return diff <= windowMs
+}
+
+/**
  * Format a probability (0-100) as a display string.
  */
 export function formatProbability(p: number): string {
