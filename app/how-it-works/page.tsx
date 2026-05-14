@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 export const metadata = buildSEO({
   title: 'How Baycast works',
   description:
-    'Baycast hides forecasts at first, then reveals them together. Make a forecast, see the crowd later, and get scored when the outcome is known.',
+    'Baycast turns independent probability forecasts into collective intelligence. Make a forecast before seeing the crowd, then get scored when the outcome is known.',
   path: '/how-it-works',
   ogImage: '/opengraph-image',
 })
@@ -22,7 +22,7 @@ const faqJsonLd: Record<string, unknown> = {
       name: 'What is blind consensus?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Blind consensus means forecasts stay hidden until you answer. First, everyone submits a probability without seeing the crowd. Later, forecasts are revealed and Baycast computes the crowd probability.',
+        text: 'Blind consensus means forecasts stay hidden until you answer. First, everyone submits an independent probability. Later, forecasts are revealed and Baycast computes the collective forecast.',
       },
     },
     {
@@ -30,7 +30,7 @@ const faqJsonLd: Record<string, unknown> = {
       name: 'Why does Baycast hide forecasts during Phase A?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'If people see the crowd too early, they often anchor on it. Baycast hides forecasts first so each person has to make their own call.',
+        text: 'If people see the crowd too early, they often anchor on it. Baycast hides forecasts first so each person contributes an independent signal before the collective forecast is shown.',
       },
     },
     {
@@ -38,7 +38,7 @@ const faqJsonLd: Record<string, unknown> = {
       name: 'How is the aggregate probability calculated?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Baycast uses the median forecast. It is less sensitive to outliers, and each forecaster counts equally.',
+        text: 'Baycast uses the median forecast to form the collective probability. It is less sensitive to outliers, and each forecaster counts equally.',
       },
     },
     {
@@ -62,7 +62,7 @@ const faqJsonLd: Record<string, unknown> = {
       name: 'How does Baycast compare to prediction markets like Polymarket?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Baycast is a prediction poll, not a market. There is no money, no trading, and no price to move. You submit a probability and get scored.',
+        text: 'Baycast is a prediction poll built for collective intelligence, not a market built around prices. There is no money, no trading, and no price to move. You submit a probability and get scored.',
       },
     },
     {
@@ -95,7 +95,7 @@ export default function HowItWorksPage() {
             Works
           </h1>
           <p className="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Baycast hides forecasts at first, then reveals them together. You make your call before you see the crowd.
+            Baycast turns independent forecasts into collective intelligence. Make your call before seeing the crowd, then compare your judgment with the aggregate signal.
           </p>
         </div>
       </section>
@@ -103,10 +103,10 @@ export default function HowItWorksPage() {
       {/* ── Protocol Overview ── */}
       <section className="mb-24">
         <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">
-          How the forecast flow works
+          How collective forecasting works
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto">
-          Every question follows the same simple flow.
+          Every question follows a simple flow designed to keep forecasts independent before they become a collective signal.
         </p>
 
         {/* Phase flow diagram */}
@@ -154,9 +154,9 @@ export default function HowItWorksPage() {
               </svg>
             </div>
             <div className="text-xs font-mono text-text-secondary/40 mb-2">PHASE B</div>
-            <h3 className="font-outfit font-semibold text-xl mb-3">Reveal the crowd</h3>
+            <h3 className="font-outfit font-semibold text-xl mb-3">Reveal the collective signal</h3>
             <p className="text-text-secondary text-sm leading-relaxed mb-4">
-              Forecasts are revealed together. Baycast uses the <span className="text-text-primary font-medium">median</span> as the crowd probability.
+              Forecasts are revealed together. Baycast uses the <span className="text-text-primary font-medium">median</span> as the collective probability.
             </p>
             <ul className="text-left text-sm text-text-secondary space-y-2">
               <li className="flex items-start gap-2">
@@ -211,7 +211,7 @@ export default function HowItWorksPage() {
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-accent-blue/5 rounded-full blur-[100px] pointer-events-none" />
           <div className="relative">
             <h2 className="text-2xl md:text-3xl font-outfit font-semibold mb-6">
-              Why the blind phase matters
+              Why blind forecasting improves collective intelligence
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
@@ -240,15 +240,15 @@ export default function HowItWorksPage() {
                 <ul className="space-y-3 text-sm text-text-secondary">
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Independent first calls</strong>: answer before seeing others</span>
+                    <span><strong className="text-text-primary">Independent first calls</strong>: every forecast starts as its own signal</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Equal weighting</strong>: each forecaster counts equally</span>
+                    <span><strong className="text-text-primary">Equal weighting</strong>: collective intelligence is not dominated by capital or status</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Clearer disagreement</strong>: differences stay visible</span>
+                    <span><strong className="text-text-primary">Clearer disagreement</strong>: the crowd view shows where judgment actually differs</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
@@ -317,7 +317,7 @@ export default function HowItWorksPage() {
           Prediction Markets vs Prediction Polls
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto">
-          Baycast is a prediction poll, not a market.
+          Baycast is a prediction poll built for collective intelligence, not a market built around prices.
         </p>
 
         <div className="overflow-x-auto -mx-4 px-4">
@@ -405,17 +405,17 @@ export default function HowItWorksPage() {
             {
               question: 'What is blind consensus?',
               answer:
-                'Blind consensus means forecasts stay hidden until you answer. First, everyone submits a probability without seeing the crowd. Later, forecasts are revealed and Baycast computes the crowd probability.',
+                'Blind consensus means forecasts stay hidden until you answer. First, everyone submits an independent probability. Later, forecasts are revealed and Baycast computes the collective forecast.',
             },
             {
               question: 'Why does Baycast hide forecasts during Phase A?',
               answer:
-                'Research in behavioral economics shows that when people see others\' predictions before forming their own, they unconsciously anchor to the crowd. This herding bias destroys the "wisdom of crowds" effect. By hiding forecasts until Phase B, Baycast ensures every prediction is a genuine independent signal.',
+                'When people see others\' predictions before forming their own, they often anchor to the crowd. That weakens the wisdom of crowds. By hiding forecasts until Phase B, Baycast keeps each prediction independent, which makes the later collective intelligence more useful.',
             },
             {
               question: 'How is the aggregate probability calculated?',
               answer:
-                'Baycast uses the median forecast. It is less sensitive to outliers, and each forecaster counts equally.',
+                'Baycast uses the median forecast to form the collective probability. It is less sensitive to outliers, and each forecaster counts equally.',
             },
             {
               question: 'How are forecasters scored?',
@@ -430,7 +430,7 @@ export default function HowItWorksPage() {
             {
               question: 'How does Baycast compare to prediction markets like Polymarket?',
               answer:
-                'Baycast is a prediction poll, not a market. There is no money, no trading, and no price to move. You submit a probability and get scored.',
+                'Baycast is a prediction poll built for collective intelligence, not a market built around prices. There is no money, no trading, and no price to move. You submit a probability and get scored.',
             },
             {
               question: 'Can AI agents participate in Baycast?',
@@ -476,7 +476,7 @@ export default function HowItWorksPage() {
             </span>
           </h2>
           <p className="text-text-secondary mb-8 max-w-md mx-auto text-lg">
-            Forecast for free. No tokens. No financial risk. Just your forecast, scored against what happens next.
+            Forecast for free. No tokens. No financial risk. Add your independent signal to the collective forecast and see how accurate you are.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link

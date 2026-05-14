@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 export const metadata = buildSEO({
   title: 'Baycast vs Polymarket vs Metaculus vs Manifold - Comparison',
   description:
-    'Compare Baycast with Polymarket, Metaculus, Manifold, and Kalshi. Baycast uses private forecasts first, not trades or market prices.',
+    'Compare Baycast with Polymarket, Metaculus, Manifold, and Kalshi. Baycast builds collective intelligence from private forecasts first, not trades or market prices.',
   path: '/compare',
   ogImage: '/opengraph-image',
 })
@@ -38,7 +38,7 @@ const comparisonRows = [
     kalshi: 'Profit & Loss (USD)',
   },
   {
-    feature: 'Blind consensus',
+    feature: 'Hidden first forecasts',
     baycast: true,
     polymarket: false,
     metaculus: false,
@@ -46,7 +46,7 @@ const comparisonRows = [
     kalshi: false,
   },
   {
-    feature: 'AI agent forecasting',
+    feature: 'Human and AI forecasting',
     baycast: '✅ Live',
     polymarket: '❌ No',
     metaculus: '⚠️ Experimental',
@@ -54,7 +54,7 @@ const comparisonRows = [
     kalshi: '❌ No',
   },
   {
-    feature: 'Herding bias',
+    feature: 'Crowd anchoring',
     baycast: 'Reduced by hidden first forecasts',
     polymarket: 'Possible. Prices can anchor traders',
     metaculus: 'Possible. Community median is visible',
@@ -62,7 +62,7 @@ const comparisonRows = [
     kalshi: 'Possible. Prices can anchor traders',
   },
   {
-    feature: 'Whale manipulation',
+    feature: 'Money-driven manipulation',
     baycast: 'Harder. Forecasts count equally',
     polymarket: 'Possible. Large capital can move prices',
     metaculus: 'Lower. Community median is visible',
@@ -124,17 +124,17 @@ const faqs = [
   {
     question: 'How is this different from Polymarket?',
     answer:
-      'Polymarket is a real-money market where users buy and sell outcome contracts. Baycast is a prediction poll. You submit a probability, then get scored when the outcome is known. There is no money, no trading, and no financial upside from moving a price. Forecasts also stay hidden until you answer, which reduces crowd copying.',
+      'Polymarket is a real-money market where users buy and sell outcome contracts. Baycast is a prediction poll. You submit a probability, the crowd stays hidden until you answer, and your forecast is scored when the outcome is known. No trading, no wagers, no price to move.',
   },
   {
     question: 'Why would I forecast without money?',
     answer:
-      'Because some people want to know if their judgment is actually good. Baycast gives you scores, leaderboards, and a record of your forecasts over time. Money is not the point. Accuracy is.',
+      'Because accuracy is interesting on its own. Baycast gives you scores, leaderboards, and a record of your forecasts over time, so you can see whether your judgment beats the crowd or AI.',
   },
   {
     question: 'How do you prevent manipulation?',
     answer:
-      'Baycast makes manipulation harder by removing the main prize. There is no market price to move and no payout to win. Forecasts stay hidden until you answer, and each person counts equally in the consensus.',
+      'Baycast removes the main incentive. There is no market price to push and no payout to win. Forecasts stay hidden at first, and each person counts equally in the consensus.',
   },
   {
     question: 'Is this gambling?',
@@ -144,17 +144,17 @@ const faqs = [
   {
     question: 'How accurate are prediction polls vs. markets?',
     answer:
-      'Markets can be useful, but prices do not always equal belief. Low-volume markets can be noisy, and visible prices can anchor people. Baycast starts with private forecasts, then reveals the crowd later. The goal is a cleaner first signal.',
+      'Markets can work, but prices can be noisy and can anchor people. Baycast collects independent forecasts first, then reveals the crowd. That creates a cleaner collective signal.',
   },
   {
     question: 'Can AI participate?',
     answer:
-      'Yes. AI models forecast the same questions as humans. They are labeled in the product and scored with the same rules, so you can compare human and AI performance question by question.',
+      'Yes. AI models forecast the same questions as humans. They are labeled clearly and scored with the same rules, so the comparison is direct.',
   },
   {
     question: 'Why should I trust Baycast over Metaculus?',
     answer:
-      'Metaculus is strong. Baycast is different. Forecasts stay hidden until you answer, the interface is lighter, and AI models forecast beside humans. The product is built for fast, scored forecasting rather than deep discussion threads.',
+      'Metaculus is strong. Baycast is lighter, faster, and built around hidden first forecasts plus human vs AI scoring. It is made for people who want to make a call quickly and track accuracy over time.',
   },
 ]
 
@@ -206,7 +206,7 @@ export default function ComparePage() {
             </span>
           </h1>
           <p className="text-text-secondary text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-            Baycast is for scored forecasts, not trading. You answer first, then see how the crowd and AI models scored.
+            Baycast is for scored forecasts, not trading. You answer first, then see the collective signal from humans and AI without market prices anchoring the result.
           </p>
         </div>
       </section>
@@ -223,7 +223,7 @@ export default function ComparePage() {
               Prediction markets attract capital. That can be useful, but some activity reflects strategy, liquidity, or price movement more than pure forecasting.
             </p>
             <p className="text-text-secondary leading-relaxed mb-6">
-              A prediction poll where every participant has equal weight produces a signal that isn&apos;t drowned out by whoever has the deepest pockets. There&apos;s no profitable manipulation strategy when there&apos;s nothing to manipulate <em className="text-text-primary">for</em>.
+              Baycast is built for collective intelligence instead: independent probability forecasts, equal weighting, and scoring based on what actually happens.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
               <div>
@@ -252,11 +252,11 @@ export default function ComparePage() {
                 <ul className="space-y-3 text-sm text-text-secondary">
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Equal weighting</strong>: every forecaster gets one forecast</span>
+                    <span><strong className="text-text-primary">Equal weighting</strong>: every forecaster contributes to the collective signal</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Blind consensus</strong>: forecasts stay hidden at first</span>
+                    <span><strong className="text-text-primary">Blind consensus</strong>: independent forecasts reduce herding before the crowd view appears</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
@@ -264,7 +264,7 @@ export default function ComparePage() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent-green mt-0.5">✓</span>
-                    <span><strong className="text-text-primary">Proper scoring</strong>: Brier scores reward accuracy, not trading skill</span>
+                    <span><strong className="text-text-primary">Proper scoring</strong>: Brier scores reward calibrated judgment, not trading skill</span>
                   </li>
                 </ul>
               </div>
@@ -328,10 +328,10 @@ export default function ComparePage() {
       {/* ── Key Differentiators ── */}
       <section className="mb-24">
         <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">
-          What is different
+          What makes Baycast different
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-2xl mx-auto">
-          The parts that matter most.
+          The mechanics that turn forecasts into useful collective intelligence.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -339,7 +339,7 @@ export default function ComparePage() {
             {
               number: '01',
               title: 'Blind consensus',
-              description: 'Forecasts stay hidden until you submit yours. That reduces anchoring and keeps the first signal cleaner.',
+              description: 'Forecasts stay hidden until you submit yours. That protects independent judgment and creates a cleaner collective signal.',
               icon: (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z" stroke="currentColor" strokeWidth="1.5" fill="none" className="text-accent-green" />
@@ -373,7 +373,7 @@ export default function ComparePage() {
             {
               number: '04',
               title: 'Human and AI forecasting',
-              description: 'Humans and AI models answer the same questions. Both get scored under the same rules.',
+              description: 'Humans and AI models answer the same questions, creating a shared benchmark for collective and machine intelligence.',
               icon: (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.5" fill="none" className="text-accent-green" />
@@ -418,7 +418,7 @@ export default function ComparePage() {
           Frequently Asked Questions
         </h2>
         <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">
-          Common questions about Baycast vs. prediction markets.
+          Common questions about Baycast, prediction markets, and crowd forecasting.
         </p>
 
         <div className="space-y-4 max-w-3xl mx-auto">
@@ -461,7 +461,7 @@ export default function ComparePage() {
             </span>
           </h2>
           <p className="text-text-secondary mb-8 max-w-md mx-auto text-lg">
-            Forecast for free. No tokens. No financial risk. Just your forecast, scored against what happens next.
+            Forecast for free. No tokens. No financial risk. Build your accuracy record and add your signal to the collective forecast.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link

@@ -31,10 +31,10 @@ export default function ConsensusGate({
   return (
     <div className="mb-8 p-5 rounded-xl border border-yellow-800/50 bg-yellow-900/20">
       <div className="text-yellow-300 font-semibold mb-2">
-        🔒 Make {FORECASTS_TO_UNLOCK} forecasts to see crowd numbers
+        🔒 Make {FORECASTS_TO_UNLOCK} forecasts to see the collective signal
       </div>
       <p className="text-text-secondary text-sm mb-4">
-        Call {FORECASTS_TO_UNLOCK} questions first. Then we&apos;ll show the crowd numbers across Baycast.
+        Add your own independent calls first. Then we&apos;ll unlock the crowd numbers across Baycast.
       </p>
 
       {/* Progress bar */}

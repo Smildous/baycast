@@ -82,7 +82,7 @@ function StepWelcome({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
           <div>
             <h3 className="font-semibold text-text-primary text-sm">Blind Forecasts</h3>
             <p className="text-text-secondary text-sm">
-              Your prediction is hidden until Phase B — no anchoring bias.
+              Your prediction is hidden until Phase B, so the crowd cannot anchor you.
             </p>
           </div>
         </div>
@@ -92,7 +92,7 @@ function StepWelcome({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
           <div>
             <h3 className="font-semibold text-text-primary text-sm">Scored Accuracy</h3>
             <p className="text-text-secondary text-sm">
-              Ranked by Brier score — not just right or wrong. Express your uncertainty.
+              Ranked by Brier score, so calibrated uncertainty matters.
             </p>
           </div>
         </div>
@@ -190,7 +190,7 @@ function StepGuidedForecast({
             <span className="text-yellow-300 font-semibold text-sm">BLIND PHASE ACTIVE</span>
           </div>
           <p className="text-text-secondary text-sm leading-relaxed">
-            Your prediction is locked and hidden from everyone else. No anchoring, no herding — just your honest assessment.
+            Your prediction is locked and hidden from everyone else. No anchoring, no herding. Just your own assessment.
           </p>
         </div>
 
@@ -223,7 +223,7 @@ function StepGuidedForecast({
         <div className="text-center">
           <div className="text-4xl mb-2">📊</div>
           <h2 className="text-2xl font-outfit font-extrabold text-text-primary mb-2">
-            Phase B — Revision Phase
+            Phase B: revision phase
           </h2>
           <p className="text-text-secondary text-sm">
             The blind is lifted! Here&apos;s what {MOCK_TOTAL_FORECASTERS} others predicted:
@@ -340,7 +340,7 @@ function StepGuidedForecast({
           </p>
           <p className="text-text-secondary text-xs mt-1">
             {isGreatScore
-              ? 'Excellent calibration — you nailed it!'
+              ? 'Excellent calibration. You nailed it!'
               : isGoodScore
                 ? 'Solid prediction. Closer to 0 is better.'
                 : 'A learning opportunity. Brier scores reward well-calibrated uncertainty.'}
@@ -377,7 +377,7 @@ function StepGuidedForecast({
           Try a forecast
         </h2>
         <p className="text-text-secondary text-sm">
-          This is a demo — give it a try! Your forecast is hidden until Phase B.
+          This is a demo. Give it a try. Your forecast is hidden until Phase B.
         </p>
       </div>
 

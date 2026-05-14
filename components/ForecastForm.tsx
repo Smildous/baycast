@@ -167,7 +167,7 @@ export default function ForecastForm({
                 <p className="text-text-secondary text-sm">
                   You set your prediction to{' '}
                   <span className="font-mono text-accent-green font-bold">{guestProbability}%</span>.
-                  Create a free account to lock it in and track your accuracy.
+                  Create a free account to lock it in, track your accuracy, and compare with the collective forecast.
                 </p>
               </div>
 
@@ -261,7 +261,7 @@ export default function ForecastForm({
         <div className="p-3 rounded-lg bg-yellow-900/20 border border-yellow-800/40 text-yellow-300 text-sm">
           🔒 <strong>Blind phase active:</strong> Your forecast is private. Other forecasters
           cannot see your prediction until the blind phase ends. Make your best independent
-          estimate. You can revise later.
+          estimate. It helps keep the collective signal clean. You can revise later.
         </div>
       )}
       {!isBlind && existingForecast && (
@@ -290,7 +290,7 @@ export default function ForecastForm({
                 Your first forecast is in!
               </p>
               <p className="text-text-secondary text-sm">
-                You&apos;re in. Come back when this question resolves to see your score.
+                You&apos;ve added your signal to Baycast. Come back when this question resolves to see your score and compare with the crowd.
               </p>
             </div>
             <button
@@ -327,7 +327,7 @@ export default function ForecastForm({
       )}
       {success && !error && (
         <div className="p-3 rounded-lg bg-success/10 border border-success/30 text-success text-sm">
-          Forecast saved.
+          Forecast saved. Your signal is locked in.
         </div>
       )}
 

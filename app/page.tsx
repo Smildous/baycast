@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic'
 export const metadata = buildSEO({
   title: 'Baycast - Predict Real Events',
   description:
-    'Forecast real events, get scored on accuracy, and see how you compare. No money. No gambling.',
+    'Forecast real events, build a scored accuracy record, and see collective intelligence emerge from independent human and AI predictions. No money. No gambling.',
   path: '',
 })
 
@@ -110,7 +110,7 @@ export default async function HomePage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-green"></span>
             </span>
-            Live now: human and AI forecasting
+            Live now: collective human and AI forecasting
           </div>
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-outfit font-extrabold leading-tight mb-6 tracking-tight">
@@ -120,7 +120,7 @@ export default async function HomePage() {
             </span>
           </h1>
           <p className="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Forecast real events alongside AI models. Track your accuracy when questions resolve.{' '}
+            Collective intelligence starts with independent judgment. Forecast real events, compare with AI models, and see the crowd signal after you answer.{' '}
             <span className="text-text-primary font-medium">No money. No gambling.</span>
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
@@ -187,7 +187,7 @@ export default async function HomePage() {
       {/* ── How Baycast Works ── */}
       <section className="mb-24">
         <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">How Baycast Works</h2>
-        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Prediction polling, not gambling. You make the call. The outcome scores it.</p>
+        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Prediction polling, not gambling. Make your own call first, then see how the collective forecast compares when the outcome is scored.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
@@ -216,7 +216,7 @@ export default async function HomePage() {
                 </svg>
               ),
               title: 'Answer before the crowd',
-              description: 'You do not see the crowd until after you answer.',
+              description: 'Your independent forecast helps create a cleaner collective signal.',
             },
             {
               step: '03',
@@ -246,7 +246,7 @@ export default async function HomePage() {
       {/* Why Baycast is different */}
       <section className="mb-24">
         <h2 className="text-2xl md:text-3xl font-outfit font-semibold text-center mb-4">Why Baycast is different</h2>
-        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Not another prediction market. A place to make probability forecasts without trading.</p>
+        <p className="text-text-secondary text-center mb-12 max-w-lg mx-auto">Not another prediction market. Baycast turns independent forecasts into collective intelligence without trading, betting, or market prices.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
@@ -261,8 +261,8 @@ export default async function HomePage() {
             },
             {
               icon: '🧠',
-              title: 'Blind consensus',
-              description: 'Answer first. See the crowd later. That keeps the first call clean.',
+              title: 'Cleaner crowd signal',
+              description: 'Answer first. See the crowd later. Independent forecasts make collective intelligence work better.',
             },
           ].map((card) => (
             <div key={card.title} className="bg-bg-surface border border-border-dark rounded-xl p-6 text-center hover:border-accent-green/20 transition-colors">
@@ -279,7 +279,7 @@ export default async function HomePage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl md:text-3xl font-outfit font-semibold">Live questions</h2>
-            <p className="text-text-secondary text-sm mt-1">These need your forecast right now</p>
+            <p className="text-text-secondary text-sm mt-1">Add your forecast before the crowd moves</p>
           </div>
           <Link href="/questions" className="text-accent-blue hover:underline text-sm font-medium whitespace-nowrap">
             View all →
@@ -317,7 +317,7 @@ export default async function HomePage() {
             </span>
           </h2>
           <p className="text-text-secondary mb-8 max-w-md mx-auto text-lg">
-            Forecast for free. No tokens. No financial risk. Just your forecast, scored against what happens next.
+            Forecast for free. No tokens. No financial risk. Build your accuracy record and add your signal to Baycast's collective forecast.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
@@ -335,7 +335,7 @@ export default async function HomePage() {
           </div>
           {stats.users >= 50 && (
             <p className="text-text-secondary/60 text-xs mt-6">
-              Join {stats.users} forecaster{stats.users !== 1 ? 's' : ''} already on Baycast
+              Join {stats.users} forecaster{stats.users !== 1 ? 's' : ''} building the Baycast crowd signal
             </p>
           )}
         </div>

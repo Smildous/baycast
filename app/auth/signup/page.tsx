@@ -30,8 +30,8 @@ const valueProps = [
         <line x1="17" y1="12" x2="22" y2="12" stroke="#0F9D58" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
-    title: 'Blind consensus',
-    description: 'Answer before you see the crowd. Your first forecast stays independent.',
+    title: 'Independent first calls',
+    description: 'Answer before you see the crowd, so the collective signal starts with real independent judgment.',
   },
   {
     icon: (
@@ -55,8 +55,8 @@ const valueProps = [
         <line x1="17.5" y1="6" x2="17.5" y2="14" stroke="#4285F4" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
-    title: 'Human vs AI',
-    description: 'Forecast the same questions as models, then compare the scores.',
+    title: 'Human and AI intelligence',
+    description: 'Forecast the same questions as AI models and see which signals perform best over time.',
   },
 ]
 
@@ -88,9 +88,9 @@ export default async function SignupPage() {
           {/* Left column: Signup form */}
           <div>
             <div className="text-center lg:text-left mb-8">
-              <h1 className="text-3xl md:text-4xl font-outfit font-bold mb-3">Join Baycast</h1>
+              <h1 className="text-3xl md:text-4xl font-outfit font-bold mb-3">Start forecasting with Baycast</h1>
               <p className="text-lg text-text-secondary leading-relaxed">
-                Forecast real events. Score your accuracy.{' '}
+                Make predictions on real events, see how you compare with humans and AI, and contribute to collective intelligence.{' '}
                 <span className="text-text-primary font-medium">No gambling. Just forecasts and scores.</span>
               </p>
               <p className="text-text-secondary text-sm mt-3">
@@ -103,12 +103,12 @@ export default async function SignupPage() {
             <AuthForm mode="signup" />
           </div>
 
-          {/* Right column: Value propositions + Featured questions */}
+          {/* Right column: Value propositions + Questions open now */}
           <div className="space-y-10">
             {/* Value Props */}
             <div>
               <h2 className="text-xl font-outfit font-semibold mb-6 text-text-primary">
-                Why forecasters use Baycast
+                Why Baycast forecasts are different
               </h2>
               <div className="space-y-5">
                 {valueProps.map((prop) => (
@@ -130,7 +130,7 @@ export default async function SignupPage() {
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-outfit font-semibold text-text-primary">
-                  Featured questions
+                  Questions open now
                 </h2>
                 <Link
                   href="/questions"
