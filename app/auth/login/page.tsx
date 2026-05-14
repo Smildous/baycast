@@ -20,6 +20,10 @@ export default function LoginPage() {
               Join for free
             </Link>
           </p>
+          <ul className="mx-auto mt-4 max-w-sm list-disc space-y-2 pl-5 text-left text-sm text-text-secondary">
+            <li>Save your forecasts and revisit them anytime.</li>
+            <li>See blind consensus and compare after you forecast.</li>
+          </ul>
         </div>
         <AuthForm mode="login" />
         <p className="text-center text-text-secondary text-sm mt-4">
