@@ -159,6 +159,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
         return new Date(a.closes_at).getTime() - new Date(b.closes_at).getTime()
     }
   })
+  const headerOpenCount = statusFilter === 'open' ? sorted.length : openCount
 
   // Exclude questions already shown in the Closing Soon section from the main list
   const closingSoonIds = new Set(closingSoonQuestions.map(q => q.id))
@@ -243,7 +244,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
         <h1 className="text-3xl font-outfit font-bold mb-2">
           Questions
           <span className="text-lg font-normal text-text-secondary ml-2">
-            ({openCount ?? 0} open)
+            ({headerOpenCount} open)
           </span>
         </h1>
         <p className="text-text-secondary">Every forecast you add sharpens the collective estimate.</p>
