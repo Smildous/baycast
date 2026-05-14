@@ -17,6 +17,11 @@ import RelatedQuestions from '@/components/RelatedQuestions'
 import ConsensusGate from '@/components/ConsensusGate'
 import type { Question, Forecast, ForecastPrediction } from '@/lib/types'
 import { formatDate, questionPhase } from '@/lib/utils'
+import {
+  formatParticipationLabel,
+  formatParticipationValue,
+  publicQuestionMetadataDescription,
+} from '@/lib/forecaster-count-visibility'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://baycast-p.vercel.app'
 
@@ -35,18 +40,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const q = question as Pick<Question, 'id' | 'title' | 'description' | 'category' | 'status'>
   const url = `${BASE_URL}/questions/${q.id}`
 
-  // Fetch forecast count for OG description
-  const { count: forecastCount } = await supabase
-    .from('forecasts')
-    .select('*', { count: 'exact', head: true })
-    .eq('question_id', q.id)
-
-  const fcCount = forecastCount ?? 0
-
-  // BCP: Do NOT include aggregate probability in page title — leaks consensus to
-  // browser tabs, search results, and social shares before user has forecasted.
+  // BCP: Public metadata is not viewer-aware. Do not include aggregate probability
+  // or exact forecaster count in browser tabs, search results, or social shares.
   const title = `${q.title} - Baycast`
-  const description = `${q.category} · ${q.status.charAt(0).toUpperCase() + q.status.slice(1)} · ${fcCount} forecaster${fcCount !== 1 ? 's' : ''}${q.description ? `. ${q.description}` : ''}`
+  const description = publicQuestionMetadataDescription(q.category, q.status, q.description)
   const ogImageUrl = `/questions/${q.id}/opengraph-image`
 
   return {
@@ -160,7 +157,8 @@ export default async function QuestionDetailPage({ params }: Props) {
     historyData =
       allForecasts?.map((f) => (f.prediction as ForecastPrediction).probability) ?? []
   } else {
-    // During blind phase OR consensus is locked: only count forecasters
+    // During blind phase OR consensus is locked: only distinguish zero from nonzero.
+    // The exact count stays out of UI and metadata until consensus is unlocked.
     const { count } = await supabase
       .from('forecasts')
       .select('*', { count: 'exact', head: true })
@@ -192,7 +190,9 @@ export default async function QuestionDetailPage({ params }: Props) {
         ? `Resolved: ${JSON.stringify(q.resolution)}`
         : avgProb !== null
           ? `Consensus probability: ${avgProb}%`
-          : 'No forecasts yet',
+          : forecasters === 0
+            ? 'No forecasts yet'
+            : 'Forecast before seeing the community consensus.',
     },
   }
 
@@ -253,8 +253,7 @@ export default async function QuestionDetailPage({ params }: Props) {
             🔒 Blind Consensus Phase Active
           </div>
           <p className="text-text-secondary text-sm">
-            Forecasts are hidden during the blind phase to prevent anchoring bias.
-Submit your forecast now. The aggregate and individual forecasts stay hidden until the reveal.
+            Forecasts are hidden to keep your first estimate independent. Submit your forecast to see the community signal after it unlocks.
           </p>
         </div>
       )}
@@ -293,16 +292,10 @@ Submit your forecast now. The aggregate and individual forecasts stay hidden unt
         </div>
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
           <div className="text-2xl font-mono font-bold text-text-primary">
-            {forecasters >= 50
-              ? ((isBlind || !consensusUnlocked) ? `${forecasters}` : forecasters)
-              : '—'}
+            {formatParticipationValue(forecasters, !isBlind && consensusUnlocked)}
           </div>
           <div className="text-text-secondary text-sm">
-            {forecasters >= 50
-              ? `Forecaster${forecasters !== 1 ? 's' : ''}`
-              : forecasters > 0
-                ? 'Growing community'
-                : 'No forecasts yet'}
+            {formatParticipationLabel(forecasters, !isBlind && consensusUnlocked)}
           </div>
         </div>
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">

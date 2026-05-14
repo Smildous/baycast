@@ -4,7 +4,7 @@ import QuestionCard from '@/components/QuestionCard'
 import EmptyState from '@/components/EmptyState'
 import JsonLdScript from '@/components/JsonLdScript'
 import type { Question } from '@/lib/types'
-import { autoCloseExpiredQuestions, aggregateProbabilities } from '@/lib/utils'
+import { autoCloseExpiredQuestions } from '@/lib/utils'
 import { buildSEO } from '@/lib/seo'
 
 // Ensure the landing page is always dynamically rendered so stats reflect the live DB
@@ -65,21 +65,19 @@ async function getTrending(): Promise<Question[]> {
     const ids = questions.map((q) => q.id)
     const { data: forecasts } = await supabase
       .from('forecasts')
-      .select('question_id, prediction')
+      .select('question_id')
       .in('question_id', ids)
 
     if (forecasts) {
-      const grouped = new Map<string, number[]>()
+      const questionsWithForecasts = new Set<string>()
       for (const row of forecasts) {
-        const probs = grouped.get(row.question_id) ?? []
-        probs.push((row.prediction as { probability: number }).probability)
-        grouped.set(row.question_id, probs)
+        questionsWithForecasts.add(row.question_id)
       }
       for (const q of questions) {
-        const probs = grouped.get(q.id)
-        if (probs && probs.length > 0) {
-          q.aggregate_probability = aggregateProbabilities(probs)
-          q.forecasters_count = probs.length
+        if (questionsWithForecasts.has(q.id)) {
+          q.aggregate_probability = undefined
+          q.forecasters_count = undefined
+          q.has_forecasts = true
         }
       }
     }

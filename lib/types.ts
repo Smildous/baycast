@@ -117,6 +117,7 @@ export interface Question {
   created_by: string;
   // aggregated fields (from views/joins)
   forecasters_count?: number;
+  has_forecasts?: boolean;
   aggregate_probability?: number;
 }
 

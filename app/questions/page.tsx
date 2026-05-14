@@ -5,7 +5,7 @@ import WelcomeBanner from '@/components/WelcomeBanner'
 import QuestionCard from '@/components/QuestionCard'
 import type { Question } from '@/lib/types'
 import { CATEGORIES, normalizeCategory } from '@/lib/types'
-import { autoCloseExpiredQuestions, aggregateProbabilities, isClosingSoon } from '@/lib/utils'
+import { autoCloseExpiredQuestions, isClosingSoon } from '@/lib/utils'
 import { buildSEO } from '@/lib/seo'
 
 export const metadata = buildSEO({
@@ -15,7 +15,7 @@ export const metadata = buildSEO({
   ogImage: '/opengraph-image',
 })
 
-// Ensure dynamic rendering so filters and counts reflect live DB state
+// Ensure dynamic rendering so filters reflect live DB state
 export const dynamic = 'force-dynamic'
 
 const PAGE_SIZE = 10
@@ -33,28 +33,27 @@ interface Props {
   searchParams: { category?: string; status?: string; page?: string; sort?: string }
 }
 
-// Récupère les prévisions agrégées pour un ensemble de questions
-async function fetchAggregates(
+// Fetches only enough participation state to render neutral locked copy.
+// Public list views must not serialize exact counts or aggregate probability.
+async function fetchParticipationStates(
   supabase: any,
   questionIds: string[]
-): Promise<Map<string, { avg: number; count: number }>> {
+): Promise<Map<string, { hasForecasts: boolean }>> {
   if (questionIds.length === 0) return new Map()
   const { data } = await supabase
     .from('forecasts')
-    .select('question_id, prediction')
+    .select('question_id')
     .in('question_id', questionIds)
   if (!data) return new Map()
 
-  const grouped = new Map<string, number[]>()
+  const grouped = new Set<string>()
   for (const row of data) {
-    const probs = grouped.get(row.question_id) ?? []
-    probs.push((row.prediction as { probability: number }).probability)
-    grouped.set(row.question_id, probs)
+    grouped.add(row.question_id)
   }
 
-  const result = new Map<string, { avg: number; count: number }>()
-  for (const [qid, probs] of Array.from(grouped.entries())) {
-    result.set(qid, { avg: aggregateProbabilities(probs), count: probs.length })
+  const result = new Map<string, { hasForecasts: boolean }>()
+  for (const qid of Array.from(grouped.values())) {
+    result.set(qid, { hasForecasts: true })
   }
   return result
 }
@@ -131,13 +130,14 @@ export default async function QuestionsPage({ searchParams }: Props) {
 
   if (showClosingSoon) {
     const csIds = closingSoonQuestions.map(q => q.id)
-    const csAggregates = await fetchAggregates(supabase, csIds)
+    const csAggregates = await fetchParticipationStates(supabase, csIds)
     closingSoonEnriched = closingSoonQuestions.map(q => {
-      const agg = csAggregates.get(q.id)
+      const participationState = csAggregates.get(q.id)
       return {
         ...q,
-        aggregate_probability: agg?.avg ?? undefined,
-        forecasters_count: agg?.count ?? 0,
+        aggregate_probability: undefined,
+        forecasters_count: undefined,
+        has_forecasts: participationState?.hasForecasts ?? false,
       }
     })
   }
@@ -153,7 +153,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
       case 'newest':
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       case 'most-active':
-        return (b.forecasters_count ?? 0) - (a.forecasters_count ?? 0)
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       case 'closing-soon':
       default:
         return new Date(a.closes_at).getTime() - new Date(b.closes_at).getTime()
@@ -174,15 +174,16 @@ export default async function QuestionsPage({ searchParams }: Props) {
   const to = from + PAGE_SIZE - 1
   const questions = mainQuestions.slice(from, to + 1)
 
-  // Fetch aggregates for paginated questions
+  // Fetch locked participation state for paginated questions
   const ids = questions.map((q) => q.id)
-  const aggregates = await fetchAggregates(supabase, ids)
+  const participation = await fetchParticipationStates(supabase, ids)
   const enriched = questions.map((q) => {
-    const agg = aggregates.get(q.id)
+    const participationState = participation.get(q.id)
     return {
       ...q,
-      aggregate_probability: agg?.avg ?? undefined,
-      forecasters_count: agg?.count ?? 0,
+      aggregate_probability: undefined,
+      forecasters_count: undefined,
+      has_forecasts: participationState?.hasForecasts ?? false,
     }
   })
 

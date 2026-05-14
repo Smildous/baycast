@@ -68,33 +68,9 @@ export default async function Image({ params }: { params: { id: string } }) {
     .eq('id', params.id)
     .single()
 
-  // Fetch forecast count
-  const { count: forecastCount } = await supabase
-    .from('forecasts')
-    .select('*', { count: 'exact', head: true })
-    .eq('question_id', params.id)
-
-  // Fetch aggregate probability
-  const { data: forecasts } = await supabase
-    .from('forecasts')
-    .select('prediction')
-    .eq('question_id', params.id)
-
-  const avgProb =
-    forecasts && forecasts.length > 0
-      ? Math.round(
-          forecasts.reduce(
-            (sum: number, f: { prediction: { probability: number } }) =>
-              sum + f.prediction.probability,
-            0
-          ) / forecasts.length
-        )
-      : null
-
   const title = question?.title ?? 'Unknown Question'
   const category = question?.category ?? 'Other'
   const status = question?.status ?? 'open'
-  const fcCount = forecastCount ?? 0
 
   const statusColor = STATUS_COLORS[status] ?? '#718096'
   const statusLabel = STATUS_LABELS[status] ?? status
@@ -267,7 +243,7 @@ export default async function Image({ params }: { params: { id: string } }) {
                   letterSpacing: '-2px',
                 }}
               >
-                {avgProb !== null ? `${avgProb}%` : '—'}
+                —
               </div>
               <div
                 style={{
@@ -276,7 +252,7 @@ export default async function Image({ params }: { params: { id: string } }) {
                   fontWeight: 500,
                 }}
               >
-                {avgProb !== null ? 'Community Forecast' : 'No forecasts yet'}
+                Forecast first to see consensus
               </div>
             </div>
 
@@ -300,10 +276,10 @@ export default async function Image({ params }: { params: { id: string } }) {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '28px', fontWeight: 700, color: '#E2E8F0' }}>
-                  {fcCount}
+                  Forecast first
                 </span>
                 <span style={{ fontSize: '16px', color: '#718096' }}>
-                  Forecaster{fcCount !== 1 ? 's' : ''}
+                  to see participation
                 </span>
               </div>
               <div
