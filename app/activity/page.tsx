@@ -22,6 +22,12 @@ interface ActivityRow {
   questions: { id: string; title: string; status: string } | null
 }
 
+function formatProbability(raw: number): number {
+  const value = Number.isFinite(raw) ? raw : 50
+  const normalized = value <= 1 ? value * 100 : value
+  return Math.min(100, Math.max(0, Math.round(normalized)))
+}
+
 function timeAgo(dateStr: string): string {
   const now = Date.now()
   const then = new Date(dateStr).getTime()
@@ -84,7 +90,7 @@ export default async function ActivityPage() {
         <div className="space-y-1">
           {items.map((item) => {
             const displayName = item.profiles?.display_name ?? 'Anonymous'
-            const probability = Math.min(100, Math.max(0, Math.round(item.prediction.probability * 100)))
+            const probability = formatProbability(item.prediction.probability)
             const questionTitle = item.questions?.title ?? 'Unknown Question'
             const questionHref = item.questions ? `/questions/${item.questions.id}` : '#'
 
