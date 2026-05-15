@@ -300,7 +300,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 <td colSpan={6} className="p-0">
                   <EmptyState
                     icon="📊"
-                    title="No forecasts yet"
+                    title="Forecast history is empty"
                     description="This forecaster hasn't made any predictions. Browse open questions to get started."
                     cta={{ label: 'Browse Questions', href: '/questions' }}
                   />
@@ -374,7 +374,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           <div className="bg-bg-surface border border-border-dark rounded-xl">
             <EmptyState
               icon="📊"
-              title="No forecasts yet"
+              title="Forecast history is empty"
               description="This forecaster hasn't made any predictions. Browse open questions to get started."
               cta={{ label: 'Browse Questions', href: '/questions' }}
               className="py-12"

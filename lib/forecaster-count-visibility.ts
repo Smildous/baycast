@@ -1,11 +1,11 @@
 export function formatForecasterCount(count: number): string {
-  if (count === 0) return 'No forecasts yet'
+  if (count === 0) return 'Awaiting forecasts'
   return `${count} forecaster${count === 1 ? '' : 's'}`
 }
 
 export function formatParticipationLabel(count: number, unlocked: boolean): string {
   if (unlocked) return formatForecasterCount(count)
-  return count === 0 ? 'No forecasts yet' : 'Growing community'
+  return 'Community signal locked'
 }
 
 export function formatParticipationValue(count: number, unlocked: boolean): string {

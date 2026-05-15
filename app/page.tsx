@@ -59,31 +59,12 @@ async function getTrending(): Promise<Question[]> {
     .eq('status', 'open')
     .order('closes_at', { ascending: true })
     .limit(5)
-  const questions = (data ?? []) as Question[]
-
-  if (questions.length > 0) {
-    const ids = questions.map((q) => q.id)
-    const { data: forecasts } = await supabase
-      .from('forecasts')
-      .select('question_id')
-      .in('question_id', ids)
-
-    if (forecasts) {
-      const questionsWithForecasts = new Set<string>()
-      for (const row of forecasts) {
-        questionsWithForecasts.add(row.question_id)
-      }
-      for (const q of questions) {
-        if (questionsWithForecasts.has(q.id)) {
-          q.aggregate_probability = undefined
-          q.forecasters_count = undefined
-          q.has_forecasts = true
-        }
-      }
-    }
-  }
-
-  return questions
+  return ((data ?? []) as Question[]).map((q) => ({
+    ...q,
+    aggregate_probability: undefined,
+    forecasters_count: undefined,
+    has_forecasts: undefined,
+  }))
 }
 
 export default async function HomePage() {

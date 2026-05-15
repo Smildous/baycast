@@ -33,31 +33,6 @@ interface Props {
   searchParams: { category?: string; status?: string; page?: string; sort?: string }
 }
 
-// Fetches only enough participation state to render neutral locked copy.
-// Public list views must not serialize exact counts or aggregate probability.
-async function fetchParticipationStates(
-  supabase: any,
-  questionIds: string[]
-): Promise<Map<string, { hasForecasts: boolean }>> {
-  if (questionIds.length === 0) return new Map()
-  const { data } = await supabase
-    .from('forecasts')
-    .select('question_id')
-    .in('question_id', questionIds)
-  if (!data) return new Map()
-
-  const grouped = new Set<string>()
-  for (const row of data) {
-    grouped.add(row.question_id)
-  }
-
-  const result = new Map<string, { hasForecasts: boolean }>()
-  for (const qid of Array.from(grouped.values())) {
-    result.set(qid, { hasForecasts: true })
-  }
-  return result
-}
-
 /**
  * Build a query string from an explicit set of params.
  * Always starts from scratch — never appends to existing params,
@@ -129,15 +104,12 @@ export default async function QuestionsPage({ searchParams }: Props) {
   let closingSoonEnriched: Question[] = []
 
   if (showClosingSoon) {
-    const csIds = closingSoonQuestions.map(q => q.id)
-    const csAggregates = await fetchParticipationStates(supabase, csIds)
     closingSoonEnriched = closingSoonQuestions.map(q => {
-      const participationState = csAggregates.get(q.id)
       return {
         ...q,
         aggregate_probability: undefined,
         forecasters_count: undefined,
-        has_forecasts: participationState?.hasForecasts ?? false,
+        has_forecasts: undefined,
       }
     })
   }
@@ -174,16 +146,14 @@ export default async function QuestionsPage({ searchParams }: Props) {
   const to = from + PAGE_SIZE - 1
   const questions = mainQuestions.slice(from, to + 1)
 
-  // Fetch locked participation state for paginated questions
-  const ids = questions.map((q) => q.id)
-  const participation = await fetchParticipationStates(supabase, ids)
+  // Public list cards stay BCP-neutral: no aggregate probability, exact counts,
+  // or zero/nonzero participation state before the user unlocks consensus.
   const enriched = questions.map((q) => {
-    const participationState = participation.get(q.id)
     return {
       ...q,
       aggregate_probability: undefined,
       forecasters_count: undefined,
-      has_forecasts: participationState?.hasForecasts ?? false,
+      has_forecasts: undefined,
     }
   })
 

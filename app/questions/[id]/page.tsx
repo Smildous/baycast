@@ -156,14 +156,6 @@ export default async function QuestionDetailPage({ params }: Props) {
         : null
     historyData =
       allForecasts?.map((f) => (f.prediction as ForecastPrediction).probability) ?? []
-  } else {
-    // During blind phase OR consensus is locked: only distinguish zero from nonzero.
-    // The exact count stays out of UI and metadata until consensus is unlocked.
-    const { count } = await supabase
-      .from('forecasts')
-      .select('*', { count: 'exact', head: true })
-      .eq('question_id', params.id)
-    forecasters = count ?? 0
   }
 
   if (forecastsError) {
@@ -190,9 +182,7 @@ export default async function QuestionDetailPage({ params }: Props) {
         ? `Resolved: ${JSON.stringify(q.resolution)}`
         : avgProb !== null
           ? `Consensus probability: ${avgProb}%`
-          : forecasters === 0
-            ? 'No forecasts yet'
-            : 'Forecast before seeing the community consensus.',
+          : 'Forecast before seeing the community consensus.',
     },
   }
 
@@ -286,7 +276,7 @@ export default async function QuestionDetailPage({ params }: Props) {
           </div>
           <div className="text-text-secondary text-sm">
             {(!isBlind && consensusUnlocked) && forecasters === 0
-              ? 'No forecasts yet. Be first.'
+              ? 'Awaiting forecasts'
               : 'Consensus'}
           </div>
         </div>

@@ -75,8 +75,8 @@ export default async function ActivityPage() {
         <div className="bg-bg-surface border border-border-dark rounded-xl">
           <EmptyState
             icon="🔮"
-            title="No forecasts yet — be the first!"
-            description="The community hasn't made any predictions yet. Browse open questions and cast the first forecast."
+            title="Activity will appear here"
+            description="Browse open questions and add your forecast to Baycast."
             cta={{ label: 'Browse Questions', href: '/questions' }}
           />
         </div>

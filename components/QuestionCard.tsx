@@ -2,16 +2,12 @@ import Link from 'next/link'
 import type { Question } from '@/lib/types'
 import CategoryBadge from './CategoryBadge'
 import Countdown from './Countdown'
-import ProbBar from './ProbBar'
 
 interface Props {
   question: Question
 }
 
 export default function QuestionCard({ question: q }: Props) {
-  // BCP: Never show aggregate probability or exact forecaster count on list/card views.
-  const hasForecasts = q.has_forecasts ?? (q.forecasters_count ?? 0) > 0
-
   return (
     <Link
       href={`/questions/${q.id}`}
@@ -28,7 +24,7 @@ export default function QuestionCard({ question: q }: Props) {
             {q.title}
           </h3>
           <div className="mt-2 text-text-secondary text-xs">
-            {hasForecasts ? 'Join the forecast' : 'Be the first to forecast'}
+            Add your forecast
           </div>
         </div>
       </div>
