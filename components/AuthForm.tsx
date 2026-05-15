@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { updateSignupSuccessFlag } from '@/lib/auth/signup-success'
 
 interface Props {
   mode: 'login' | 'signup'
@@ -59,8 +60,6 @@ export default function AuthForm({ mode }: Props) {
     const supabase = createClient()
 
     if (mode === 'signup') {
-      // Set flag so the welcome banner shows after email confirmation
-      localStorage.setItem('baycast_just_signed_up', 'true')
       supabase.auth
         .signUp({
           email,
@@ -71,9 +70,10 @@ export default function AuthForm({ mode }: Props) {
           },
         })
         .then(({ error }) => {
+          // Set flag only after Supabase accepts signup so validation and auth errors do not trigger onboarding
+          updateSignupSuccessFlag(error)
           if (error) {
             setError(error.message)
-            localStorage.removeItem('baycast_just_signed_up')
           } else {
             setInfo('Check your email to confirm your account.')
           }

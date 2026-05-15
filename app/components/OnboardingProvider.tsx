@@ -35,7 +35,7 @@ export function useOnboarding() {
 }
 
 /** Routes where the onboarding modal must NOT appear */
-const AUTH_ROUTE_PREFIX='***';
+const AUTH_ROUTE_PREFIX = '/auth'
 
 /** Routes where onboarding modal must NOT appear (blocks critical UI like category filters) */
 const NO_ONBOARDING_ROUTES = ['/questions'] as const;
