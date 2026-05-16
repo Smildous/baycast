@@ -310,7 +310,14 @@ export default async function QuestionsPage({ searchParams }: Props) {
         </div>
       )}
 
-      <QuestionsList questions={enriched} />
+      <QuestionsList
+        questions={enriched}
+        emptyState={sortOption === 'closing-soon' ? {
+          icon: '⏳',
+          title: `No questions closing in the next ${CLOSING_SOON_WINDOW_DAYS} days`,
+          description: 'Use Newest for the full open set, or come back when the first resolution windows get closer.',
+        } : undefined}
+      />
 
       {/* Pagination */}
       {enriched.length > 0 && totalPages > 1 && (

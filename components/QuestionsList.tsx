@@ -7,9 +7,14 @@ import type { Question } from '@/lib/types'
 
 interface Props {
   questions: Question[]
+  emptyState?: {
+    icon?: string
+    title: string
+    description: string
+  }
 }
 
-export default function QuestionsList({ questions }: Props) {
+export default function QuestionsList({ questions, emptyState }: Props) {
   const [search, setSearch] = useState('')
 
   const filtered = useMemo(() => {
@@ -45,9 +50,9 @@ export default function QuestionsList({ questions }: Props) {
       {filtered.length === 0 ? (
         <div className="bg-bg-surface border border-border-dark rounded-xl">
           <EmptyState
-            icon="🔍"
-            title="No match"
-            description="Try another word, or clear the search."
+            icon={emptyState?.icon ?? '🔍'}
+            title={emptyState?.title ?? 'No match'}
+            description={emptyState?.description ?? 'Try another word, or clear the search.'}
           />
         </div>
       ) : (
