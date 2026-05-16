@@ -260,10 +260,10 @@ export default async function QuestionDetailPage({ params }: Props) {
       {!hasUserForecasted && !user && isOpen && (
         <div className="mb-8 p-5 rounded-xl border border-accent-blue/30 bg-accent-blue/10">
           <div className="text-accent-blue font-semibold mb-1">
-            Sign in to forecast and see the community consensus
+            Lock your forecast before consensus
           </div>
           <p className="text-text-secondary text-sm">
-            Join Baycast to submit your prediction and unlock the aggregate probability.
+            Sign up to save your probability, unlock the comparison after your call, and start building a streak and profile score.
           </p>
         </div>
       )}

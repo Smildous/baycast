@@ -30,8 +30,8 @@ const valueProps = [
         <line x1="17" y1="12" x2="22" y2="12" stroke="#0F9D58" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
-    title: 'Independent first calls',
-    description: 'Answer before you see the crowd, so the collective signal starts with real independent judgment.',
+    title: 'Lock your call first',
+    description: "Make a forecast before you see consensus. Your first read stays yours, not the crowd's.",
   },
   {
     icon: (
@@ -41,8 +41,8 @@ const valueProps = [
         <circle cx="20" cy="6" r="1.5" fill="#0F9D58" />
       </svg>
     ),
-    title: 'Accuracy scoring',
-    description: 'Brier and log scores track how accurate you are over time.',
+    title: 'Build a score you can trust',
+    description: 'Every saved forecast can count toward your profile score once the question resolves.',
   },
   {
     icon: (
@@ -55,8 +55,8 @@ const valueProps = [
         <line x1="17.5" y1="6" x2="17.5" y2="14" stroke="#4285F4" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
-    title: 'Human and AI intelligence',
-    description: 'Forecast the same questions as AI models and see which signals perform best over time.',
+    title: 'Start a forecast streak',
+    description: 'Come back for the next question and keep your profile streak alive one forecast at a time.',
   },
 ]
 
@@ -88,10 +88,10 @@ export default async function SignupPage() {
           {/* Left column: Signup form */}
           <div>
             <div className="text-center lg:text-left mb-8">
-              <h1 className="text-3xl md:text-4xl font-outfit font-bold mb-3">Start forecasting with Baycast</h1>
+              <h1 className="text-3xl md:text-4xl font-outfit font-bold mb-3">Lock your first forecast</h1>
               <p className="text-lg text-text-secondary leading-relaxed">
-                Make predictions on real events, see how you compare with humans and AI, and contribute to collective intelligence.{' '}
-                <span className="text-text-primary font-medium">No gambling. Just forecasts and scores.</span>
+                Pick your probability before you see the consensus. Save it to unlock comparison later and start building a streak and profile score.{' '}
+                <span className="text-text-primary font-medium">No gambling. Just forecasts you can stand behind.</span>
               </p>
               <p className="text-text-secondary text-sm mt-3">
                 Already a member?{' '}
@@ -108,7 +108,7 @@ export default async function SignupPage() {
             {/* Value Props */}
             <div>
               <h2 className="text-xl font-outfit font-semibold mb-6 text-text-primary">
-                Why Baycast forecasts are different
+                What you get when you sign up
               </h2>
               <div className="space-y-5">
                 {valueProps.map((prop) => (

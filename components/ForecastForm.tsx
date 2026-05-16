@@ -103,7 +103,7 @@ export default function ForecastForm({
       <div className="space-y-6">
         {/* Interactive trial slider — same component as authenticated users */}
         <form onSubmit={handleGuestSubmit} className="space-y-6">
-          <p className="text-text-secondary text-sm">Try it. Set your probability:</p>
+          <p className="text-text-secondary text-sm">Try it. Set your probability before the crowd can shape your call:</p>
           <div onMouseUp={handleSliderPointerUp} onTouchEnd={handleSliderPointerUp}>
             <ForecastSlider
               value={guestProbability}
@@ -121,7 +121,9 @@ export default function ForecastForm({
 
         {/* Signup CTA links */}
         <div className="text-center pt-2 border-t border-border-dark">
-          <p className="text-text-secondary mb-4">Sign up to save your forecast and get scored.</p>
+          <p className="text-text-secondary mb-4">
+            Sign up to lock this forecast, unlock comparison after your call, and start your profile score.
+          </p>
           <div className="flex items-center justify-center gap-3">
             <Link
               href="/auth/signup"
@@ -162,12 +164,12 @@ export default function ForecastForm({
               <div className="text-center mb-6">
                 <div className="text-4xl mb-3">🎯</div>
                 <h3 className="text-xl font-outfit font-bold text-text-primary mb-2">
-                  Sign up to submit your forecast!
+                  Lock this forecast
                 </h3>
                 <p className="text-text-secondary text-sm">
                   You set your prediction to{' '}
                   <span className="font-mono text-accent-green font-bold">{guestProbability}%</span>.
-                  Create a free account to lock it in, track your accuracy, and compare with the collective forecast.
+                  Create a free account to save it before seeing consensus, then track your accuracy and forecast streak.
                 </p>
               </div>
 

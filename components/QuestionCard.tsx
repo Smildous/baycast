@@ -24,7 +24,7 @@ export default function QuestionCard({ question: q }: Props) {
             {q.title}
           </h3>
           <div className="mt-2 text-text-secondary text-xs">
-            Add your forecast
+            Lock your call before consensus
           </div>
         </div>
       </div>
