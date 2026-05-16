@@ -221,95 +221,6 @@ export default async function QuestionsPage({ searchParams }: Props) {
         <p className="text-text-secondary">Every forecast you add sharpens the collective estimate.</p>
       </div>
 
-      {/* Category filters */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        <a
-          href={filterHref({ category: undefined })}
-          className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
-            !normalizedCategory
-              ? 'border-accent-green text-accent-green bg-accent-green/10'
-              : 'border-border-dark text-text-secondary hover:border-accent-green/50'
-          }`}
-        >
-          All
-        </a>
-        {categoriesWithQuestions.map((cat) => (
-          <a
-            key={cat}
-            href={filterHref({ category: cat })}
-            className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
-              normalizedCategory === cat
-                ? 'border-accent-green text-accent-green bg-accent-green/10'
-                : 'border-border-dark text-text-secondary hover:border-accent-green/50'
-            }`}
-          >
-            {cat}
-          </a>
-        ))}
-      </div>
-
-      {/* Status filter + Sort controls */}
-      <div className="flex flex-wrap items-center gap-2 mb-8">
-        {[
-          { label: 'Open', value: 'open' },
-          { label: 'Closed', value: 'closed' },
-          { label: 'Resolved', value: 'resolved' },
-        ].map(({ label, value }) => {
-          // "Open" is active when status is explicitly 'open' or not set (default)
-          const isActive = label === 'Open'
-            ? (searchParams.status === undefined || searchParams.status === 'open')
-            : searchParams.status === value
-          return (
-            <a
-              key={label}
-              href={filterHref({ status: value })}
-              className={`px-4 py-1.5 rounded-lg border text-sm transition-colors ${
-                isActive
-                  ? 'border-accent-blue text-accent-blue bg-accent-blue/10'
-                  : 'border-border-dark text-text-secondary hover:border-accent-blue/30'
-              }`}
-            >
-              {label}
-            </a>
-          )
-        })}
-
-        {/* Sort separator */}
-        <span className="text-border-dark mx-1 hidden sm:inline">|</span>
-
-        {/* Sort controls */}
-        {SORT_OPTIONS.map(({ label, value }) => {
-          const isActive = sortOption === value
-          return (
-            <a
-              key={value}
-              href={filterHref({ sort: value })}
-              className={`px-4 py-1.5 rounded-lg border text-sm transition-colors ${
-                isActive
-                  ? 'border-accent-green text-accent-green bg-accent-green/10'
-                  : 'border-border-dark text-text-secondary hover:border-accent-green/30'
-              }`}
-            >
-              {label}
-            </a>
-          )
-        })}
-      </div>
-
-      {/* Closing Soon section */}
-      {showClosingSoon && closingSoonEnriched.length > 0 && (
-        <div className="mb-8 border border-amber-500/30 bg-amber-500/5 rounded-xl p-5">
-          <h2 className="text-lg font-outfit font-semibold mb-4 text-amber-400">
-            ⚡ Closing Soon
-          </h2>
-          <div className="space-y-3">
-            {closingSoonEnriched.map((q) => (
-              <QuestionCard key={q.id} question={q} />
-            ))}
-          </div>
-        </div>
-      )}
-
       <QuestionsList
         questions={enriched}
         emptyState={sortOption === 'closing-soon' ? {
@@ -317,6 +228,98 @@ export default async function QuestionsPage({ searchParams }: Props) {
           title: `No questions closing in the next ${CLOSING_SOON_WINDOW_DAYS} days`,
           description: 'Use Newest for the full open set, or come back when the first resolution windows get closer.',
         } : undefined}
+        afterSearch={(
+          <>
+            {/* Category filters */}
+            <div className="flex flex-wrap gap-2 mb-8">
+              <a
+                href={filterHref({ category: undefined })}
+                className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
+                  !normalizedCategory
+                    ? 'border-accent-green text-accent-green bg-accent-green/10'
+                    : 'border-border-dark text-text-secondary hover:border-accent-green/50'
+                }`}
+              >
+                All
+              </a>
+              {categoriesWithQuestions.map((cat) => (
+                <a
+                  key={cat}
+                  href={filterHref({ category: cat })}
+                  className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
+                    normalizedCategory === cat
+                      ? 'border-accent-green text-accent-green bg-accent-green/10'
+                      : 'border-border-dark text-text-secondary hover:border-accent-green/50'
+                  }`}
+                >
+                  {cat}
+                </a>
+              ))}
+            </div>
+
+            {/* Status filter + Sort controls */}
+            <div className="flex flex-wrap items-center gap-2 mb-8">
+              {[
+                { label: 'Open', value: 'open' },
+                { label: 'Closed', value: 'closed' },
+                { label: 'Resolved', value: 'resolved' },
+              ].map(({ label, value }) => {
+                // "Open" is active when status is explicitly 'open' or not set (default)
+                const isActive = label === 'Open'
+                  ? (searchParams.status === undefined || searchParams.status === 'open')
+                  : searchParams.status === value
+                return (
+                  <a
+                    key={label}
+                    href={filterHref({ status: value })}
+                    className={`px-4 py-1.5 rounded-lg border text-sm transition-colors ${
+                      isActive
+                        ? 'border-accent-blue text-accent-blue bg-accent-blue/10'
+                        : 'border-border-dark text-text-secondary hover:border-accent-blue/30'
+                    }`}
+                  >
+                    {label}
+                  </a>
+                )
+              })}
+
+              {/* Sort separator */}
+              <span className="text-border-dark mx-1 hidden sm:inline">|</span>
+
+              {/* Sort controls */}
+              {SORT_OPTIONS.map(({ label, value }) => {
+                const isActive = sortOption === value
+                return (
+                  <a
+                    key={value}
+                    href={filterHref({ sort: value })}
+                    className={`px-4 py-1.5 rounded-lg border text-sm transition-colors ${
+                      isActive
+                        ? 'border-accent-green text-accent-green bg-accent-green/10'
+                        : 'border-border-dark text-text-secondary hover:border-accent-green/30'
+                    }`}
+                  >
+                    {label}
+                  </a>
+                )
+              })}
+            </div>
+
+            {/* Closing Soon section */}
+            {showClosingSoon && closingSoonEnriched.length > 0 && (
+              <div className="mb-8 border border-amber-500/30 bg-amber-500/5 rounded-xl p-5">
+                <h2 className="text-lg font-outfit font-semibold mb-4 text-amber-400">
+                  ⚡ Closing Soon
+                </h2>
+                <div className="space-y-3">
+                  {closingSoonEnriched.map((q) => (
+                    <QuestionCard key={q.id} question={q} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
       />
 
       {/* Pagination */}

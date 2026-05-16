@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import type { ReactNode } from 'react'
 import QuestionCard from './QuestionCard'
 import EmptyState from './EmptyState'
 import type { Question } from '@/lib/types'
@@ -12,9 +13,10 @@ interface Props {
     title: string
     description: string
   }
+  afterSearch?: ReactNode
 }
 
-export default function QuestionsList({ questions, emptyState }: Props) {
+export default function QuestionsList({ questions, emptyState, afterSearch }: Props) {
   const [search, setSearch] = useState('')
 
   const filtered = useMemo(() => {
@@ -45,6 +47,8 @@ export default function QuestionsList({ questions, emptyState }: Props) {
           className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-bg-surface border border-border-dark text-text-primary placeholder:text-text-secondary/60 text-sm focus:outline-none focus:border-accent-green/50 focus:ring-1 focus:ring-accent-green/20 transition-colors"
         />
       </div>
+
+      {afterSearch}
 
       {/* Filtered results */}
       {filtered.length === 0 ? (
