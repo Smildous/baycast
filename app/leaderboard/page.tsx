@@ -126,9 +126,9 @@ export default async function LeaderboardPage({ searchParams }: Props) {
         <div className="bg-bg-surface border border-border-dark rounded-xl">
           <EmptyState
             icon="🏆"
-            title="Be the first to forecast and claim the #1 spot"
-            description="The leaderboard is waiting for its champion. Make your first prediction and you'll automatically rise to the top."
-            cta={{ label: user ? 'Browse Questions' : 'Sign Up & Predict', href: user ? '/questions' : '/auth/signup' }}
+            title="Scores appear after questions resolve"
+            description="Forecasts are live now, but leaderboard scores start once a question has a final outcome. Add your forecast today so it counts when resolution happens."
+            cta={{ label: user ? 'Forecast Now' : 'Sign Up to Forecast', href: user ? '/questions' : '/auth/signup' }}
           />
         </div>
       ) : (
