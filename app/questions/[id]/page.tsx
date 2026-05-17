@@ -15,6 +15,7 @@ import JsonLdScript from '@/components/JsonLdScript'
 import WelcomeBanner from '@/components/WelcomeBanner'
 import RelatedQuestions from '@/components/RelatedQuestions'
 import ConsensusGate from '@/components/ConsensusGate'
+import NewsContextSection from '@/components/NewsContextSection'
 import type { Question, Forecast, ForecastPrediction } from '@/lib/types'
 import { formatDate, questionPhase } from '@/lib/utils'
 import {
@@ -222,6 +223,8 @@ export default async function QuestionDetailPage({ params }: Props) {
           {q.description || 'No description provided for this question.'}
         </p>
       </div>
+
+      <NewsContextSection title={q.title} category={q.category} description={q.description} />
 
       {/* Resolution (if resolved) */}
       {isResolved && q.resolution && (
