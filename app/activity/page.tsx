@@ -46,6 +46,8 @@ function timeAgo(dateStr: string): string {
 export default async function ActivityPage() {
   const supabase = createClient()
 
+  // BCP: public activity must not reveal forecasts on open or closed questions.
+  // Only resolved questions are safe because the forecasting window is over.
   const { data: forecasts, error } = await supabase
     .from('forecasts')
     .select(`
@@ -55,8 +57,9 @@ export default async function ActivityPage() {
       user_id,
       question_id,
       profiles:profiles!forecasts_user_id_fkey ( display_name, avatar_url ),
-      questions:questions!forecasts_question_id_fkey ( id, title, status )
+      questions:questions!forecasts_question_id_fkey!inner ( id, title, status )
     `)
+    .eq('questions.status', 'resolved')
     .order('created_at', { ascending: false })
     .limit(50)
 
