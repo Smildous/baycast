@@ -19,6 +19,6 @@ export function publicQuestionMetadataDescription(
   description?: string | null
 ): string {
   const statusLabel = status.charAt(0).toUpperCase() + status.slice(1)
-  const base = `${category} · ${statusLabel} · Forecast before seeing the community consensus.`
+  const base = `${category} · ${statusLabel} · Forecast before the crowd can shape your call.`
   return description ? `${base} ${description}` : base
 }

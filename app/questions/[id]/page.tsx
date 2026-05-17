@@ -183,7 +183,7 @@ export default async function QuestionDetailPage({ params }: Props) {
         ? `Resolved: ${JSON.stringify(q.resolution)}`
         : avgProb !== null
           ? `Consensus probability: ${avgProb}%`
-          : 'Forecast before seeing the community consensus.',
+          : 'Forecast before the crowd can shape your call.',
     },
   }
 
@@ -243,7 +243,7 @@ export default async function QuestionDetailPage({ params }: Props) {
       {isBlind && (
         <div className="mb-8 p-5 rounded-xl border border-yellow-800/50 bg-yellow-900/20">
           <div className="text-yellow-300 font-semibold mb-1">
-            🔒 Blind Consensus Phase Active
+            🔒 Blind Phase Active
           </div>
           <p className="text-text-secondary text-sm">
             Forecasts are hidden to keep your first estimate independent. Submit your forecast to see the community signal after it unlocks.
@@ -263,7 +263,7 @@ export default async function QuestionDetailPage({ params }: Props) {
       {!hasUserForecasted && !user && isOpen && (
         <div className="mb-8 p-5 rounded-xl border border-accent-blue/30 bg-accent-blue/10">
           <div className="text-accent-blue font-semibold mb-1">
-            Lock your forecast before consensus
+            Lock your forecast before the crowd can shape it
           </div>
           <p className="text-text-secondary text-sm">
             Sign up to save your probability, unlock the comparison after your call, and start building a streak and profile score.
@@ -278,9 +278,11 @@ export default async function QuestionDetailPage({ params }: Props) {
             {(isBlind || !consensusUnlocked) ? '—' : avgProb !== null ? `${avgProb}%` : '—'}
           </div>
           <div className="text-text-secondary text-sm">
-            {(!isBlind && consensusUnlocked) && forecasters === 0
-              ? 'Awaiting forecasts'
-              : 'Consensus'}
+            {(!isBlind && consensusUnlocked)
+              ? forecasters === 0
+                ? 'Awaiting forecasts'
+                : 'Consensus'
+              : 'Community signal'}
           </div>
         </div>
         <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">

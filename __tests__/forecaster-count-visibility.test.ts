@@ -45,8 +45,8 @@ describe('forecaster count visibility', () => {
     )
 
     expect(description).toBe(
-      'Technology · Open · Forecast before seeing the community consensus. Will the launch happen?'
+      'Technology · Open · Forecast before the crowd can shape your call. Will the launch happen?'
     )
-    expect(description).not.toMatch(/\d+ forecaster|No forecasts yet|Growing community|50\+/)
+    expect(description).not.toMatch(/\d+ forecaster|No forecasts yet|Growing community|50\+|community consensus/)
   })
 })
