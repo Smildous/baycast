@@ -24,7 +24,6 @@ type ForecastWithQuestion = Forecast & {
     title: string
     status: string
     category: string
-    aggregate_probability?: number
     resolution?: { outcome: string; value: number } | null
   } | null
 }
@@ -77,6 +76,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   if (!profile) notFound()
 
   const p = profile as Profile
+  const isOwnProfile = user.id === p.id
 
   const page = Math.max(1, Number(searchParams.page ?? '1'))
   const offset = (page - 1) * PAGE_SIZE
@@ -93,7 +93,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       .eq('user_id', p.id),
     supabase
       .from('forecasts')
-      .select('*, questions(title, status, category, aggregate_probability, resolution)', { count: 'exact' })
+      .select('*, questions(title, status, category, resolution)', { count: 'exact' })
       .eq('user_id', p.id)
       .order('updated_at', { ascending: false })
       .range(offset, offset + PAGE_SIZE - 1),
@@ -288,7 +288,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             <tr className="border-b border-border-dark text-text-secondary text-sm">
               <th className="text-left px-4 py-3">Question</th>
               <th className="text-right px-4 py-3 w-24">Your Prob</th>
-              <th className="text-right px-4 py-3 w-28">Aggregate</th>
+              <th className="text-right px-4 py-3 w-28">Crowd</th>
               <th className="text-right px-4 py-3 w-24">Outcome</th>
               <th className="text-right px-4 py-3 w-24">Brier</th>
               <th className="text-right px-4 py-3 w-28">Date</th>
@@ -311,6 +311,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 const score = scoreMap.get(f.question_id)
                 const resolutionValue = f.questions?.resolution?.value
                 const isResolved = f.questions?.status === 'resolved'
+                const canShowPrediction = isOwnProfile || isResolved
                 const outcomeLabel = isResolved
                   ? resolutionValue === 1
                     ? 'Yes'
@@ -334,12 +335,10 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                       </Link>
                     </td>
                     <td className="px-4 py-3 text-right font-mono font-bold text-accent-green">
-                      {f.prediction.probability}%
+                      {canShowPrediction ? `${f.prediction.probability}%` : 'Locked'}
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-sm text-text-secondary">
-                      {f.questions?.aggregate_probability != null
-                        ? `${Math.round(f.questions.aggregate_probability)}%`
-                        : '—'}
+                      —
                     </td>
                     <td className="px-4 py-3 text-right text-sm">
                       {outcomeLabel ? (
@@ -385,6 +384,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             const score = scoreMap.get(f.question_id)
             const resolutionValue = f.questions?.resolution?.value
             const isResolved = f.questions?.status === 'resolved'
+            const canShowPrediction = isOwnProfile || isResolved
             const outcomeLabel = isResolved
               ? resolutionValue === 1
                 ? 'Yes'
@@ -404,14 +404,14 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                     <div className="text-sm text-text-secondary mb-1">{normalizeCategory(f.questions?.category ?? 'Other')}</div>
                     <div className="font-medium truncate">{f.questions?.title}</div>
                     <div className="flex items-center gap-3 mt-2 text-xs text-text-secondary">
-                      <span>Aggregate: {f.questions?.aggregate_probability != null ? `${Math.round(f.questions.aggregate_probability)}%` : '—'}</span>
+                      <span>Crowd: —</span>
                       {score && <span>Brier: {score.brier_score.toFixed(4)}</span>}
                       <span>{new Date(f.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
                     <div className="text-xl font-mono font-bold text-accent-green">
-                      {f.prediction.probability}%
+                      {canShowPrediction ? `${f.prediction.probability}%` : 'Locked'}
                     </div>
                     {outcomeLabel ? (
                       <div className={`text-xs font-medium mt-0.5 ${outcomeLabel === 'Yes' ? 'text-accent-green' : 'text-danger'}`}>
