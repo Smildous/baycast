@@ -206,6 +206,18 @@ export async function POST(request: Request): Promise<NextResponse<ForecastRespo
     const q = question as QuestionForAgent
     validateQuestionForAgent(q)
 
+    const { result, model } = await callLLM(q, agent, context)
+    const prediction = buildStoredAgentPrediction(result, agent, model)
+
+    if (dry_run) {
+      return NextResponse.json({
+        ok: true,
+        dry_run: true,
+        agent: { id: agent.id, display_name: agent.displayName, version: agent.version },
+        forecast: { question_id, user_id: `dry-run:${agent.id}`, prediction },
+      })
+    }
+
     const agentUserId = await ensureAgentProfile(supabase, agent)
 
     const { data: existingForecast, error: existingError } = await supabase
@@ -218,18 +230,6 @@ export async function POST(request: Request): Promise<NextResponse<ForecastRespo
     if (existingError) throw new Error(`Could not check existing agent forecast: ${existingError.message}`)
     if (existingForecast) {
       return NextResponse.json({ ok: false, error: 'Agent already forecasted this question' }, { status: 409 })
-    }
-
-    const { result, model } = await callLLM(q, agent, context)
-    const prediction = buildStoredAgentPrediction(result, agent, model)
-
-    if (dry_run) {
-      return NextResponse.json({
-        ok: true,
-        dry_run: true,
-        agent: { id: agent.id, display_name: agent.displayName, version: agent.version },
-        forecast: { question_id, user_id: agentUserId, prediction },
-      })
     }
 
     const { data: forecast, error: insertError } = await supabase
