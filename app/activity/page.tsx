@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata = buildSEO({
   title: 'Recent Forecasting Activity',
-  description: 'See the latest forecasts made by the Baycast community in real time.',
+  description: 'See Baycast forecasting activity after questions resolve.',
   path: '/activity',
 })
 
@@ -70,7 +70,7 @@ export default async function ActivityPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-outfit font-bold mb-2">Activity Feed</h1>
         <p className="text-text-secondary">
-          Real-time forecasting activity across Baycast. See what the community is predicting.
+          Public forecasting activity appears after questions resolve.
         </p>
       </div>
 
@@ -84,8 +84,8 @@ export default async function ActivityPage() {
         <div className="bg-bg-surface border border-border-dark rounded-xl">
           <EmptyState
             icon="🔮"
-            title="Activity will appear here"
-            description="Browse open questions and add your forecast to Baycast."
+            title="Activity appears after questions resolve"
+            description="Open-question forecasts stay hidden until resolution so every forecaster starts blind. Check back after the first outcomes are settled."
             cta={{ label: 'Browse Questions', href: '/questions' }}
           />
         </div>
@@ -156,7 +156,7 @@ export default async function ActivityPage() {
 
       {items.length > 0 && (
         <p className="text-center text-text-secondary text-sm mt-8">
-          Showing {items.length} most recent forecasts
+          Showing recent resolved-question forecasts
         </p>
       )}
     </div>
