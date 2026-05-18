@@ -19,6 +19,7 @@ const openQuestion: QuestionForAgent = {
   status: 'open',
   question_type: 'binary',
   resolution_source: 'National Hurricane Center',
+  blind_until: '2026-06-01T00:00:00+00:00',
   closes_at: '2026-06-15T00:00:00+00:00',
 }
 
@@ -43,6 +44,8 @@ describe('AI forecaster helpers', () => {
     expect(() => validateQuestionForAgent(openQuestion, new Date('2026-05-18T00:00:00Z'))).not.toThrow()
     expect(() => validateQuestionForAgent({ ...openQuestion, status: 'resolved' }, new Date('2026-05-18T00:00:00Z'))).toThrow('not open')
     expect(() => validateQuestionForAgent({ ...openQuestion, closes_at: '2026-01-01T00:00:00Z' }, new Date('2026-05-18T00:00:00Z'))).toThrow('already closed')
+    expect(() => validateQuestionForAgent({ ...openQuestion, blind_until: null }, new Date('2026-05-18T00:00:00Z'))).toThrow('missing blind_until')
+    expect(() => validateQuestionForAgent({ ...openQuestion, blind_until: '2026-05-17T00:00:00Z' }, new Date('2026-05-18T00:00:00Z'))).toThrow('blind phase is not active')
   })
 
   it('keeps Baycast consensus and gambling language out of the agent prompt', () => {

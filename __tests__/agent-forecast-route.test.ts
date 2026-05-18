@@ -21,6 +21,7 @@ function createQuestionQuery() {
         status: 'open',
         question_type: 'binary',
         resolution_source: 'Company announcement',
+        blind_until: '2026-06-01T00:00:00.000Z',
         closes_at: '2026-07-01T00:00:00.000Z',
       },
       error: null,
@@ -115,7 +116,7 @@ describe('POST /api/agent/forecast', () => {
 
     expect(from).toHaveBeenCalledTimes(1)
     expect(from).toHaveBeenCalledWith('questions')
-    expect(questionQuery.select).toHaveBeenCalledWith('id,title,description,category,status,question_type,resolution_source,closes_at')
+    expect(questionQuery.select).toHaveBeenCalledWith('id,title,description,category,status,question_type,resolution_source,blind_until,closes_at')
     expect(questionQuery.eq).toHaveBeenCalledWith('id', questionId)
     expect(questionQuery.single).toHaveBeenCalledTimes(1)
     expect(authAdmin.listUsers).not.toHaveBeenCalled()

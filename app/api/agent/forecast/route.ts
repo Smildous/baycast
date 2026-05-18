@@ -195,7 +195,7 @@ export async function POST(request: Request): Promise<NextResponse<ForecastRespo
 
     const { data: question, error: questionError } = await supabase
       .from('questions')
-      .select('id,title,description,category,status,question_type,resolution_source,closes_at')
+      .select('id,title,description,category,status,question_type,resolution_source,blind_until,closes_at')
       .eq('id', question_id)
       .single()
 

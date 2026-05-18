@@ -20,6 +20,7 @@ export interface QuestionForAgent {
   status: string
   question_type: string
   resolution_source: string | null
+  blind_until: string | null
   closes_at: string
 }
 
@@ -146,7 +147,13 @@ export function validateQuestionForAgent(question: QuestionForAgent, now = new D
   if (question.status !== 'open') throw new Error('Question is not open')
   if (question.question_type !== 'binary') throw new Error('Only binary questions are supported')
   if (Number.isNaN(new Date(question.closes_at).getTime())) throw new Error('Question has invalid closes_at')
+  if (!question.blind_until) throw new Error('Question is missing blind_until')
+  if (Number.isNaN(new Date(question.blind_until).getTime())) throw new Error('Question has invalid blind_until')
   if (new Date(question.closes_at).getTime() <= now.getTime()) throw new Error('Question is already closed')
+  if (new Date(question.blind_until).getTime() <= now.getTime()) throw new Error('Question blind phase is not active')
+  if (new Date(question.blind_until).getTime() >= new Date(question.closes_at).getTime()) {
+    throw new Error('Question blind_until must be before closes_at')
+  }
 }
 
 export function buildStoredAgentPrediction(
