@@ -108,6 +108,10 @@ function isMissingBlindUntilError(error) {
   return error?.code === '42703' || /blind_until/i.test(error?.message || '')
 }
 
+function isMissingColumnError(error, column) {
+  return error?.code === '42703' || (column && new RegExp(`\\b${column}\\b`, 'i').test(error?.message || ''))
+}
+
 function isActiveBlindPhase(question, now = new Date()) {
   if (!question?.blind_until) return false
   const blindUntil = new Date(question.blind_until)
@@ -164,9 +168,151 @@ export async function verifyBlindUntilLive(client, { now = new Date() } = {}) {
   }
 }
 
+const RESOLUTION_READINESS_COLUMNS = [
+  'id',
+  'title',
+  'description',
+  'status',
+  'category',
+  'question_type',
+  'options',
+  'resolution_source',
+  'closes_at',
+  'resolution_date',
+]
+
+function isBlank(value) {
+  if (value === null || value === undefined) return true
+  if (typeof value === 'string') return value.trim().length === 0
+  if (Array.isArray(value)) return value.length === 0
+  if (typeof value === 'object') return Object.keys(value).length === 0
+  return false
+}
+
+function parseDate(value) {
+  if (!value) return null
+  const parsed = new Date(value)
+  return Number.isNaN(parsed.getTime()) ? null : parsed
+}
+
+function getResolutionDate(question, availableColumns = RESOLUTION_READINESS_COLUMNS) {
+  if (availableColumns.includes('closes_at') && question.closes_at) return question.closes_at
+  if (availableColumns.includes('resolution_date') && question.resolution_date) return question.resolution_date
+  return null
+}
+
+function hasObjectiveResolutionCriteria(question) {
+  const text = `${question.description || ''} ${question.resolution_source || ''}`.toLowerCase()
+  const hasResolutionLanguage = /\b(resolves?|resolution|counts?|must|if|based on|authoritative|confirmed|official|reported|published)\b/.test(text)
+  const hasVerifiableSource = /\b(official|source|published|reported|confirmed|press release|earnings|filing|api|dataset|index|result|announcement)\b|https?:\/\//.test(text)
+  return hasResolutionLanguage && hasVerifiableSource
+}
+
+export function analyzeResolutionReadiness(questions, { now = new Date(), soonDays = 14, availableColumns = RESOLUTION_READINESS_COLUMNS } = {}) {
+  const soonUntil = new Date(now.getTime() + soonDays * 24 * 60 * 60 * 1000)
+  const openQuestions = (questions || []).filter(question => question?.status === 'open')
+  const closeColumn = availableColumns.includes('closes_at') ? 'closes_at' : availableColumns.includes('resolution_date') ? 'resolution_date' : null
+
+  const soonClosing = openQuestions.filter(question => {
+    const date = parseDate(getResolutionDate(question, availableColumns))
+    return date ? date <= soonUntil : true
+  })
+
+  const checked = soonClosing.map(question => {
+    const missing_fields = []
+    if (isBlank(question.title)) missing_fields.push('title')
+    if (isBlank(question.description)) missing_fields.push('description')
+    if (availableColumns.includes('resolution_source') && isBlank(question.resolution_source)) missing_fields.push('resolution_source')
+    if (!getResolutionDate(question, availableColumns)) missing_fields.push(closeColumn || 'close_date')
+    if (availableColumns.includes('question_type') && isBlank(question.question_type)) missing_fields.push('question_type')
+    if (question.question_type && question.question_type !== 'binary' && availableColumns.includes('options') && isBlank(question.options)) missing_fields.push('options')
+    if (!hasObjectiveResolutionCriteria(question)) missing_fields.push('objective_resolution_criteria')
+
+    const resolutionDate = getResolutionDate(question, availableColumns)
+    const parsedResolutionDate = parseDate(resolutionDate)
+    return {
+      id: question.id,
+      title: question.title,
+      category: question.category,
+      status: question.status,
+      closes_at: resolutionDate,
+      days_until_close: parsedResolutionDate ? Math.ceil((parsedResolutionDate.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)) : null,
+      missing_fields,
+      ready: missing_fields.length === 0,
+    }
+  })
+
+  const missingByField = {}
+  for (const question of checked) {
+    for (const field of question.missing_fields) missingByField[field] = (missingByField[field] || 0) + 1
+  }
+
+  return {
+    ok: checked.every(question => question.ready),
+    checked_at: now.toISOString(),
+    horizon_days: soonDays,
+    open_questions: openQuestions.length,
+    soon_closing_open_questions: checked.length,
+    ready_soon_closing_open_questions: checked.filter(question => question.ready).length,
+    not_ready_soon_closing_open_questions: checked.filter(question => !question.ready).length,
+    missing_by_field: missingByField,
+    soon_closing_questions: checked,
+  }
+}
+
+async function getPresentQuestionColumns(client, columns) {
+  const present = []
+  const missing = []
+  for (const column of columns) {
+    const { error } = await client.from('questions').select(column).limit(1)
+    if (!error) {
+      present.push(column)
+    } else if (isMissingColumnError(error, column)) {
+      missing.push(column)
+    } else {
+      throw new Error(`questions.${column} schema probe failed: ${error.message}`)
+    }
+  }
+  return { present, missing }
+}
+
+export async function verifyResolutionReadinessLive(client, { now = new Date(), soonDays = 14 } = {}) {
+  const { present, missing } = await getPresentQuestionColumns(client, RESOLUTION_READINESS_COLUMNS)
+  for (const required of ['id', 'title', 'status']) {
+    if (!present.includes(required)) {
+      const err = new Error(`questions.${required} is missing on the live schema. Cannot verify resolution readiness.`)
+      err.code = 'AQ228_MISSING_REQUIRED_COLUMN'
+      throw err
+    }
+  }
+
+  const selectedColumns = present.join(',')
+  let query = client.from('questions').select(selectedColumns).eq('status', 'open')
+  if (present.includes('closes_at')) query = query.order('closes_at', { ascending: true })
+  else if (present.includes('resolution_date')) query = query.order('resolution_date', { ascending: true })
+
+  const { data, error } = await query
+  if (error) throw new Error(`open questions resolution readiness query failed: ${error.message}`)
+
+  return {
+    ...analyzeResolutionReadiness(data || [], { now, soonDays, availableColumns: present }),
+    mode: 'readonly',
+    table: 'questions',
+    available_columns: present,
+    missing_columns: missing,
+  }
+}
+
 async function verifyBlindUntilCommand() {
   const client = await getClient()
   const report = await verifyBlindUntilLive(client)
+  console.log(JSON.stringify(report, null, 2))
+  if (!report.ok) process.exit(1)
+}
+
+async function verifyResolutionReadinessCommand() {
+  const client = await getClient()
+  const report = await verifyResolutionReadinessLive(client)
   console.log(JSON.stringify(report, null, 2))
   if (!report.ok) process.exit(1)
 }
@@ -178,10 +324,11 @@ if (isCli) {
   try {
     if (!cmd || cmd === 'status') await status()
     else if (cmd === 'verify-blind-until') await verifyBlindUntilCommand()
+    else if (cmd === 'verify-resolution-readiness') await verifyResolutionReadinessCommand()
     else if (cmd === 'insert-question') await insertQuestion(args[0])
     else if (cmd === 'update-question') await updateQuestion(args[0], args[1])
     else {
-      console.error('Usage: node scripts/supabase-admin.mjs status | verify-blind-until | insert-question question.json | update-question <id> patch.json')
+      console.error('Usage: node scripts/supabase-admin.mjs status | verify-blind-until | verify-resolution-readiness | insert-question question.json | update-question <id> patch.json')
       process.exit(2)
     }
   } catch (err) {

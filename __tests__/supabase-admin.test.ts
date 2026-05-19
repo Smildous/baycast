@@ -1,9 +1,11 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 
+let analyzeResolutionReadiness: (questions: any[], options?: { now?: Date; soonDays?: number; availableColumns?: string[] }) => any
 let verifyBlindUntilLive: (client: unknown, options?: { now?: Date }) => Promise<any>
+let verifyResolutionReadinessLive: (client: unknown, options?: { now?: Date; soonDays?: number }) => Promise<any>
 
 beforeAll(async () => {
-  ;({ verifyBlindUntilLive } = await import('../scripts/supabase-admin.mjs'))
+  ;({ analyzeResolutionReadiness, verifyBlindUntilLive, verifyResolutionReadinessLive } = await import('../scripts/supabase-admin.mjs'))
 })
 
 function makeClient({ probeError, openRows = [], openError }: { probeError?: unknown; openRows?: unknown[]; openError?: unknown } = {}) {
@@ -89,5 +91,152 @@ describe('verifyBlindUntilLive', () => {
       open_without_active_blind_phase: 2,
     })
     expect(report.unsafe_open_questions.map((question: { id: string }) => question.id)).toEqual(['missing', 'expired'])
+  })
+})
+
+
+describe('analyzeResolutionReadiness', () => {
+  it('reports soon-closing open questions that are ready for objective settlement', () => {
+    const report = analyzeResolutionReadiness(
+      [
+        {
+          id: 'ready',
+          title: 'Will the official index close above 100?',
+          description: 'This resolves YES if the official index published by the exchange closes above 100 before the deadline. Intraday values do not count.',
+          status: 'open',
+          category: 'Economy',
+          question_type: 'binary',
+          options: {},
+          resolution_source: 'https://example.com/official-index',
+          closes_at: '2026-05-25T00:00:00.000Z',
+        },
+        {
+          id: 'later',
+          title: 'Later question',
+          description: 'This resolves based on official published data.',
+          status: 'open',
+          category: 'Economy',
+          question_type: 'binary',
+          resolution_source: 'https://example.com',
+          closes_at: '2026-07-01T00:00:00.000Z',
+        },
+      ],
+      { now: new Date('2026-05-19T00:00:00.000Z'), soonDays: 14 },
+    )
+
+    expect(report).toMatchObject({
+      ok: true,
+      open_questions: 2,
+      soon_closing_open_questions: 1,
+      ready_soon_closing_open_questions: 1,
+      not_ready_soon_closing_open_questions: 0,
+    })
+    expect(report.soon_closing_questions).toHaveLength(1)
+    expect(report.soon_closing_questions[0]).toMatchObject({ id: 'ready', ready: true, missing_fields: [] })
+  })
+
+  it('flags missing settlement fields and tolerates the resolution_date schema', () => {
+    const report = analyzeResolutionReadiness(
+      [
+        {
+          id: 'missing-fields',
+          title: '',
+          description: 'Vague.',
+          status: 'open',
+          question_type: 'multiple_choice',
+          options: {},
+          resolution_source: '',
+          resolution_date: '2026-05-20T00:00:00.000Z',
+        },
+      ],
+      {
+        now: new Date('2026-05-19T00:00:00.000Z'),
+        soonDays: 14,
+        availableColumns: ['id', 'title', 'description', 'status', 'question_type', 'options', 'resolution_source', 'resolution_date'],
+      },
+    )
+
+    expect(report.ok).toBe(false)
+    expect(report.missing_by_field).toMatchObject({
+      title: 1,
+      resolution_source: 1,
+      options: 1,
+      objective_resolution_criteria: 1,
+    })
+    expect(report.soon_closing_questions[0]).toMatchObject({
+      id: 'missing-fields',
+      closes_at: '2026-05-20T00:00:00.000Z',
+      ready: false,
+    })
+  })
+})
+
+function makeResolutionReadinessClient({ missingColumns = [], openRows = [], openError }: { missingColumns?: string[]; openRows?: unknown[]; openError?: unknown } = {}) {
+  const calls: string[] = []
+
+  return {
+    calls,
+    from(table: string) {
+      expect(table).toBe('questions')
+      return {
+        select(columns: string) {
+          calls.push(columns)
+          if (!columns.includes(',')) {
+            return {
+              limit() {
+                return Promise.resolve({
+                  data: missingColumns.includes(columns) ? null : [],
+                  error: missingColumns.includes(columns) ? { code: '42703', message: `column questions.${columns} does not exist` } : null,
+                })
+              },
+            }
+          }
+
+          return {
+            eq(column: string, value: string) {
+              expect(column).toBe('status')
+              expect(value).toBe('open')
+              return {
+                order(column: string, options: { ascending: boolean }) {
+                  expect(['closes_at', 'resolution_date']).toContain(column)
+                  expect(options).toEqual({ ascending: true })
+                  return Promise.resolve({ data: openRows, error: openError || null })
+                },
+              }
+            },
+          }
+        },
+      }
+    },
+  }
+}
+
+describe('verifyResolutionReadinessLive', () => {
+  it('probes optional columns and reads open questions without writing', async () => {
+    const client = makeResolutionReadinessClient({
+      missingColumns: ['closes_at'],
+      openRows: [
+        {
+          id: 'legacy-date',
+          title: 'Legacy date question',
+          description: 'This resolves YES based on the official published result.',
+          status: 'open',
+          question_type: 'binary',
+          resolution_source: 'Official source',
+          resolution_date: '2026-05-20T00:00:00.000Z',
+        },
+      ],
+    })
+
+    const report = await verifyResolutionReadinessLive(client, { now: new Date('2026-05-19T00:00:00.000Z'), soonDays: 14 })
+
+    expect(report).toMatchObject({
+      mode: 'readonly',
+      table: 'questions',
+      missing_columns: ['closes_at'],
+      soon_closing_open_questions: 1,
+      not_ready_soon_closing_open_questions: 0,
+    })
+    expect(client.calls.some(call => call.includes('insert') || call.includes('update'))).toBe(false)
   })
 })
