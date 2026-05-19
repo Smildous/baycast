@@ -12,6 +12,7 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { createClient } from '@supabase/supabase-js'
 
 function loadEnv(file = '.env.local') {
@@ -35,12 +36,10 @@ const anonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABAS
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const adminJwt = process.env.SUPABASE_ADMIN_JWT
 
-if (!url || !anonKey) {
-  console.error('Missing SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_ANON_KEY/NEXT_PUBLIC_SUPABASE_ANON_KEY')
-  process.exit(1)
-}
-
 async function getClient({ write = false } = {}) {
+  if (!url || !anonKey) {
+    throw new Error('Missing SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_ANON_KEY/NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  }
   if (serviceKey) return createClient(url, serviceKey)
   if (adminJwt) return createClient(url, anonKey, { global: { headers: { Authorization: `Bearer ${adminJwt}` } } })
 
@@ -105,16 +104,88 @@ async function updateQuestion(id, patchFile) {
   console.log(JSON.stringify({ ok: true, updated: data }, null, 2))
 }
 
-const [cmd, ...args] = process.argv.slice(2)
-try {
-  if (!cmd || cmd === 'status') await status()
-  else if (cmd === 'insert-question') await insertQuestion(args[0])
-  else if (cmd === 'update-question') await updateQuestion(args[0], args[1])
-  else {
-    console.error('Usage: node scripts/supabase-admin.mjs status | insert-question question.json | update-question <id> patch.json')
-    process.exit(2)
+function isMissingBlindUntilError(error) {
+  return error?.code === '42703' || /blind_until/i.test(error?.message || '')
+}
+
+function isActiveBlindPhase(question, now = new Date()) {
+  if (!question?.blind_until) return false
+  const blindUntil = new Date(question.blind_until)
+  if (Number.isNaN(blindUntil.getTime()) || blindUntil <= now) return false
+  if (!question.closes_at) return true
+  const closesAt = new Date(question.closes_at)
+  return Number.isNaN(closesAt.getTime()) || blindUntil < closesAt
+}
+
+export async function verifyBlindUntilLive(client, { now = new Date() } = {}) {
+  const schemaProbe = await client.from('questions').select('blind_until').limit(1)
+  if (schemaProbe.error) {
+    if (isMissingBlindUntilError(schemaProbe.error)) {
+      const err = new Error('questions.blind_until is missing on the live schema. Apply sql/migration_006_aq226_blind_until_live_safety.sql before enabling AQ-227 live checks.')
+      err.code = 'AQ227_MISSING_BLIND_UNTIL'
+      throw err
+    }
+    throw new Error(`blind_until schema probe failed: ${schemaProbe.error.message}`)
   }
-} catch (err) {
-  console.error(JSON.stringify({ ok: false, error: err.message }, null, 2))
-  process.exit(1)
+
+  const { data, error } = await client
+    .from('questions')
+    .select('id,title,status,closes_at,blind_until')
+    .eq('status', 'open')
+    .order('closes_at', { ascending: true })
+
+  if (error) {
+    if (isMissingBlindUntilError(error)) {
+      const err = new Error('questions.blind_until is missing on the live schema. Apply sql/migration_006_aq226_blind_until_live_safety.sql before enabling AQ-227 live checks.')
+      err.code = 'AQ227_MISSING_BLIND_UNTIL'
+      throw err
+    }
+    throw new Error(`open questions blind_until query failed: ${error.message}`)
+  }
+
+  const openQuestions = data || []
+  const active = openQuestions.filter(question => isActiveBlindPhase(question, now))
+  const unsafe = openQuestions.filter(question => !isActiveBlindPhase(question, now))
+
+  return {
+    ok: unsafe.length === 0,
+    checked_at: now.toISOString(),
+    column: 'questions.blind_until',
+    column_present: true,
+    open_questions: openQuestions.length,
+    open_with_active_blind_phase: active.length,
+    open_without_active_blind_phase: unsafe.length,
+    unsafe_open_questions: unsafe.slice(0, 25).map(question => ({
+      id: question.id,
+      title: question.title,
+      closes_at: question.closes_at,
+      blind_until: question.blind_until,
+    })),
+  }
+}
+
+async function verifyBlindUntilCommand() {
+  const client = await getClient()
+  const report = await verifyBlindUntilLive(client)
+  console.log(JSON.stringify(report, null, 2))
+  if (!report.ok) process.exit(1)
+}
+
+const isCli = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href
+
+if (isCli) {
+  const [cmd, ...args] = process.argv.slice(2)
+  try {
+    if (!cmd || cmd === 'status') await status()
+    else if (cmd === 'verify-blind-until') await verifyBlindUntilCommand()
+    else if (cmd === 'insert-question') await insertQuestion(args[0])
+    else if (cmd === 'update-question') await updateQuestion(args[0], args[1])
+    else {
+      console.error('Usage: node scripts/supabase-admin.mjs status | verify-blind-until | insert-question question.json | update-question <id> patch.json')
+      process.exit(2)
+    }
+  } catch (err) {
+    console.error(JSON.stringify({ ok: false, code: err.code || undefined, error: err.message }, null, 2))
+    process.exit(1)
+  }
 }
