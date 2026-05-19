@@ -3,9 +3,10 @@ import { beforeAll, describe, expect, it } from 'vitest'
 let analyzeResolutionReadiness: (questions: any[], options?: { now?: Date; soonDays?: number; availableColumns?: string[] }) => any
 let verifyBlindUntilLive: (client: unknown, options?: { now?: Date }) => Promise<any>
 let verifyResolutionReadinessLive: (client: unknown, options?: { now?: Date; soonDays?: number }) => Promise<any>
+let verifyResolutionUrlsLive: (client: unknown) => Promise<any>
 
 beforeAll(async () => {
-  ;({ analyzeResolutionReadiness, verifyBlindUntilLive, verifyResolutionReadinessLive } = await import('../scripts/supabase-admin.mjs'))
+  ;({ analyzeResolutionReadiness, verifyBlindUntilLive, verifyResolutionReadinessLive, verifyResolutionUrlsLive } = await import('../scripts/supabase-admin.mjs'))
 })
 
 function makeClient({ probeError, openRows = [], openError }: { probeError?: unknown; openRows?: unknown[]; openError?: unknown } = {}) {
@@ -238,5 +239,124 @@ describe('verifyResolutionReadinessLive', () => {
       not_ready_soon_closing_open_questions: 0,
     })
     expect(client.calls.some(call => call.includes('insert') || call.includes('update'))).toBe(false)
+  })
+})
+
+function makeResolutionUrlsClient({ openRows = [], openError }: { openRows?: unknown[]; openError?: unknown } = {}) {
+  const calls: string[] = []
+
+  return {
+    calls,
+    from(table: string) {
+      expect(table).toBe('questions')
+      return {
+        select(columns: string) {
+          calls.push(columns)
+          if (columns === 'resolution_url') {
+            return {
+              limit() {
+                return Promise.resolve({ data: [], error: null })
+              },
+            }
+          }
+          expect(columns).toBe('id,title,status,resolution_url')
+          return {
+            eq(column: string, value: string) {
+              calls.push(`eq:${column}:${value}`)
+              expect(column).toBe('status')
+              expect(value).toBe('open')
+              return {
+                order(column: string, options: { ascending: boolean }) {
+                  calls.push(`order:${column}`)
+                  expect(column).toBe('id')
+                  expect(options).toEqual({ ascending: true })
+                  return Promise.resolve({ data: openRows, error: openError || null })
+                },
+              }
+            },
+          }
+        },
+      }
+    },
+  }
+}
+
+describe('verifyResolutionUrlsLive', () => {
+  it('falls back to resolution_source when the live schema has no resolution_url column', async () => {
+    const calls: string[] = []
+    const client = {
+      calls,
+      from(table: string) {
+        expect(table).toBe('questions')
+        return {
+          select(columns: string) {
+            calls.push(columns)
+            if (columns === 'resolution_url') {
+              return { limit: () => Promise.resolve({ data: null, error: { code: '42703', message: 'column questions.resolution_url does not exist' } }) }
+            }
+            if (columns === 'resolution_source') {
+              return { limit: () => Promise.resolve({ data: [], error: null }) }
+            }
+            expect(columns).toBe('id,title,status,resolution_source')
+            return {
+              eq(column: string, value: string) {
+                expect(column).toBe('status')
+                expect(value).toBe('open')
+                return {
+                  order(column: string, options: { ascending: boolean }) {
+                    expect(column).toBe('id')
+                    expect(options).toEqual({ ascending: true })
+                    return Promise.resolve({
+                      data: [
+                        { id: 'ready', title: 'Ready', status: 'open', resolution_source: 'https://example.com/source' },
+                        { id: 'missing', title: 'Missing', status: 'open', resolution_source: null },
+                      ],
+                      error: null,
+                    })
+                  },
+                }
+              },
+            }
+          },
+        }
+      },
+    }
+
+    const report = await verifyResolutionUrlsLive(client)
+
+    expect(report).toMatchObject({
+      ok: false,
+      resolution_url_column: 'resolution_source',
+      open_questions: 2,
+      open_with_usable_resolution_url: 1,
+      open_missing_usable_resolution_url: 1,
+    })
+    expect(report.missing_resolution_url_questions).toEqual([{ id: 'missing', title: 'Missing', resolution_url: null }])
+  })
+
+  it('checks open questions for usable resolution_url values without writing', async () => {
+    const client = makeResolutionUrlsClient({
+      openRows: [
+        { id: 'ready', title: 'Ready', status: 'open', resolution_url: 'https://example.com/source' },
+        { id: 'embedded', title: 'Embedded', status: 'open', resolution_url: 'Official source: https://example.com/source' },
+        { id: 'missing', title: 'Missing', status: 'open', resolution_url: null },
+        { id: 'blank', title: 'Blank', status: 'open', resolution_url: '   ' },
+        { id: 'bad', title: 'Bad', status: 'open', resolution_url: 'not a url' },
+      ],
+    })
+
+    const report = await verifyResolutionUrlsLive(client)
+
+    expect(report).toMatchObject({
+      ok: false,
+      mode: 'readonly',
+      table: 'questions',
+      status: 'open',
+      open_questions: 5,
+      open_with_usable_resolution_url: 2,
+      open_missing_usable_resolution_url: 3,
+    })
+    expect(report.missing_resolution_url_questions.map((question: { id: string }) => question.id)).toEqual(['missing', 'blank', 'bad'])
+    expect(client.calls).toEqual(['resolution_url', 'id,title,status,resolution_url', 'eq:status:open', 'order:id'])
   })
 })

@@ -303,6 +303,68 @@ export async function verifyResolutionReadinessLive(client, { now = new Date(), 
   }
 }
 
+function isUsableResolutionUrl(value) {
+  if (typeof value !== 'string' || value.trim().length === 0) return false
+  const urls = value.trim().match(/https?:\/\/[^\s,]+/gi) || []
+  for (const url of urls.length ? urls : [value.trim()]) {
+    try {
+      const parsed = new URL(url.replace(/[).]+$/, ''))
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return true
+    } catch {
+      // Try the next candidate.
+    }
+  }
+  return false
+}
+
+async function getResolutionUrlColumn(client) {
+  for (const column of ['resolution_url', 'resolution_source']) {
+    const { error } = await client.from('questions').select(column).limit(1)
+    if (!error) return column
+    if (!isMissingColumnError(error, column)) {
+      throw new Error(`questions.${column} schema probe failed: ${error.message}`)
+    }
+  }
+
+  const err = new Error('questions.resolution_url and questions.resolution_source are missing on the live schema. Cannot verify resolution URLs.')
+  err.code = 'AQ103B_MISSING_RESOLUTION_URL'
+  throw err
+}
+
+export async function verifyResolutionUrlsLive(client) {
+  const urlColumn = await getResolutionUrlColumn(client)
+  const { data, error } = await client
+    .from('questions')
+    .select(`id,title,status,${urlColumn}`)
+    .eq('status', 'open')
+    .order('id', { ascending: true })
+
+  if (error) {
+    throw new Error(`open questions ${urlColumn} query failed: ${error.message}`)
+  }
+
+  const openQuestions = data || []
+  const withUsableUrl = openQuestions.filter(question => isUsableResolutionUrl(question[urlColumn]))
+  const missingUsableUrl = openQuestions.filter(question => !isUsableResolutionUrl(question[urlColumn]))
+
+  return {
+    ok: missingUsableUrl.length === 0,
+    checked_at: new Date().toISOString(),
+    mode: 'readonly',
+    table: 'questions',
+    status: 'open',
+    resolution_url_column: urlColumn,
+    open_questions: openQuestions.length,
+    open_with_usable_resolution_url: withUsableUrl.length,
+    open_missing_usable_resolution_url: missingUsableUrl.length,
+    missing_resolution_url_questions: missingUsableUrl.slice(0, 100).map(question => ({
+      id: question.id,
+      title: question.title,
+      resolution_url: question[urlColumn],
+    })),
+  }
+}
+
 async function verifyBlindUntilCommand() {
   const client = await getClient()
   const report = await verifyBlindUntilLive(client)
@@ -317,6 +379,13 @@ async function verifyResolutionReadinessCommand() {
   if (!report.ok) process.exit(1)
 }
 
+async function verifyResolutionUrlsCommand() {
+  const client = await getClient()
+  const report = await verifyResolutionUrlsLive(client)
+  console.log(JSON.stringify(report, null, 2))
+  if (!report.ok) process.exit(1)
+}
+
 const isCli = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href
 
 if (isCli) {
@@ -325,10 +394,11 @@ if (isCli) {
     if (!cmd || cmd === 'status') await status()
     else if (cmd === 'verify-blind-until') await verifyBlindUntilCommand()
     else if (cmd === 'verify-resolution-readiness') await verifyResolutionReadinessCommand()
+    else if (cmd === 'verify-resolution-urls') await verifyResolutionUrlsCommand()
     else if (cmd === 'insert-question') await insertQuestion(args[0])
     else if (cmd === 'update-question') await updateQuestion(args[0], args[1])
     else {
-      console.error('Usage: node scripts/supabase-admin.mjs status | verify-blind-until | verify-resolution-readiness | insert-question question.json | update-question <id> patch.json')
+      console.error('Usage: node scripts/supabase-admin.mjs status | verify-blind-until | verify-resolution-readiness | verify-resolution-urls | insert-question question.json | update-question <id> patch.json')
       process.exit(2)
     }
   } catch (err) {

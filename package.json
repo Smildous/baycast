@@ -9,6 +9,7 @@
     "lint": "next lint",
     "verify:blind-until": "node scripts/supabase-admin.mjs verify-blind-until",
     "verify:resolution-readiness": "node scripts/supabase-admin.mjs verify-resolution-readiness",
+    "verify:resolution-urls": "node scripts/supabase-admin.mjs verify-resolution-urls",
     "test": "vitest run",
     "test:watch": "vitest"
   },
