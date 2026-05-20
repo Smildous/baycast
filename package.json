@@ -9,6 +9,7 @@
     "lint": "next lint",
     "verify:blind-until": "node scripts/supabase-admin.mjs verify-blind-until",
     "verify:resolution-readiness": "node scripts/supabase-admin.mjs verify-resolution-readiness",
+    "verify:aq231-june-resolution-hygiene": "node scripts/supabase-admin.mjs verify-resolution-readiness --from 2026-06-01T00:00:00.000Z --until 2026-06-30T23:59:59.999Z",
     "verify:resolution-urls": "node scripts/supabase-admin.mjs verify-resolution-urls",
     "update:resolution-sources": "node scripts/supabase-admin.mjs update-resolution-sources",
     "test": "vitest run",

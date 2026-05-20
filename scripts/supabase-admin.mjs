@@ -208,13 +208,21 @@ function hasObjectiveResolutionCriteria(question) {
   return hasResolutionLanguage && hasVerifiableSource
 }
 
-export function analyzeResolutionReadiness(questions, { now = new Date(), soonDays = 14, availableColumns = RESOLUTION_READINESS_COLUMNS } = {}) {
+export function analyzeResolutionReadiness(questions, { now = new Date(), soonDays = 14, from = undefined, until = undefined, availableColumns = RESOLUTION_READINESS_COLUMNS } = {}) {
   const soonUntil = new Date(now.getTime() + soonDays * 24 * 60 * 60 * 1000)
+  const windowFrom = parseDate(from)
+  const windowUntil = parseDate(until)
   const openQuestions = (questions || []).filter(question => question?.status === 'open')
   const closeColumn = availableColumns.includes('closes_at') ? 'closes_at' : availableColumns.includes('resolution_date') ? 'resolution_date' : null
 
   const soonClosing = openQuestions.filter(question => {
     const date = parseDate(getResolutionDate(question, availableColumns))
+    if (windowFrom || windowUntil) {
+      if (!date) return false
+      if (windowFrom && date < windowFrom) return false
+      if (windowUntil && date > windowUntil) return false
+      return true
+    }
     return date ? date <= soonUntil : true
   })
 
@@ -251,6 +259,8 @@ export function analyzeResolutionReadiness(questions, { now = new Date(), soonDa
     ok: checked.every(question => question.ready),
     checked_at: now.toISOString(),
     horizon_days: soonDays,
+    window_from: windowFrom ? windowFrom.toISOString() : null,
+    window_until: windowUntil ? windowUntil.toISOString() : null,
     open_questions: openQuestions.length,
     soon_closing_open_questions: checked.length,
     ready_soon_closing_open_questions: checked.filter(question => question.ready).length,
@@ -276,7 +286,7 @@ async function getPresentQuestionColumns(client, columns) {
   return { present, missing }
 }
 
-export async function verifyResolutionReadinessLive(client, { now = new Date(), soonDays = 14 } = {}) {
+export async function verifyResolutionReadinessLive(client, { now = new Date(), soonDays = 14, from = undefined, until = undefined } = {}) {
   const { present, missing } = await getPresentQuestionColumns(client, RESOLUTION_READINESS_COLUMNS)
   for (const required of ['id', 'title', 'status']) {
     if (!present.includes(required)) {
@@ -295,7 +305,7 @@ export async function verifyResolutionReadinessLive(client, { now = new Date(), 
   if (error) throw new Error(`open questions resolution readiness query failed: ${error.message}`)
 
   return {
-    ...analyzeResolutionReadiness(data || [], { now, soonDays, availableColumns: present }),
+    ...analyzeResolutionReadiness(data || [], { now, soonDays, from, until, availableColumns: present }),
     mode: 'readonly',
     table: 'questions',
     available_columns: present,
@@ -487,9 +497,35 @@ async function verifyBlindUntilCommand() {
   if (!report.ok) process.exit(1)
 }
 
-async function verifyResolutionReadinessCommand() {
+function getArgValue(args, name) {
+  const index = args.indexOf(name)
+  if (index === -1) return null
+  const value = args[index + 1]
+  if (!value || value.startsWith('--')) throw new Error(`missing value for ${name}`)
+  return value
+}
+
+function parseDateArg(args, name) {
+  const value = getArgValue(args, name)
+  if (!value) return null
+  if (!parseDate(value)) throw new Error(`${name} must be a valid date`)
+  return value
+}
+
+function parseResolutionReadinessArgs(args) {
+  const soonDaysValue = getArgValue(args, '--soon-days')
+  const soonDays = soonDaysValue ? Number(soonDaysValue) : 14
+  if (!Number.isFinite(soonDays) || soonDays < 0) throw new Error('--soon-days must be a non-negative number')
+  return {
+    soonDays,
+    from: parseDateArg(args, '--from'),
+    until: parseDateArg(args, '--until'),
+  }
+}
+
+async function verifyResolutionReadinessCommand(args = []) {
   const client = await getClient()
-  const report = await verifyResolutionReadinessLive(client)
+  const report = await verifyResolutionReadinessLive(client, parseResolutionReadinessArgs(args))
   console.log(JSON.stringify(report, null, 2))
   if (!report.ok) process.exit(1)
 }
@@ -520,13 +556,13 @@ if (isCli) {
   try {
     if (!cmd || cmd === 'status') await status()
     else if (cmd === 'verify-blind-until') await verifyBlindUntilCommand()
-    else if (cmd === 'verify-resolution-readiness') await verifyResolutionReadinessCommand()
+    else if (cmd === 'verify-resolution-readiness') await verifyResolutionReadinessCommand(args)
     else if (cmd === 'verify-resolution-urls') await verifyResolutionUrlsCommand()
     else if (cmd === 'update-resolution-sources') await updateResolutionSourcesCommand(args)
     else if (cmd === 'insert-question') await insertQuestion(args[0])
     else if (cmd === 'update-question') await updateQuestion(args[0], args[1])
     else {
-      console.error('Usage: node scripts/supabase-admin.mjs status | verify-blind-until | verify-resolution-readiness | verify-resolution-urls | update-resolution-sources fixes.json [--apply] | insert-question question.json | update-question <id> patch.json')
+      console.error('Usage: node scripts/supabase-admin.mjs status | verify-blind-until | verify-resolution-readiness [--soon-days N] [--from ISO_DATE] [--until ISO_DATE] | verify-resolution-urls | update-resolution-sources fixes.json [--apply] | insert-question question.json | update-question <id> patch.json')
       process.exit(2)
     }
   } catch (err) {

@@ -1,10 +1,10 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 
-let analyzeResolutionReadiness: (questions: any[], options?: { now?: Date; soonDays?: number; availableColumns?: string[] }) => any
+let analyzeResolutionReadiness: (questions: any[], options?: any) => any
 let parseResolutionSourceFixes: (rawFixes: unknown) => { id: string; resolution_source: string }[]
 let updateResolutionSourcesLive: (client: unknown, fixes: unknown, options?: { apply?: boolean }) => Promise<any>
 let verifyBlindUntilLive: (client: unknown, options?: { now?: Date }) => Promise<any>
-let verifyResolutionReadinessLive: (client: unknown, options?: { now?: Date; soonDays?: number }) => Promise<any>
+let verifyResolutionReadinessLive: (client: unknown, options?: any) => Promise<any>
 let verifyResolutionUrlsLive: (client: unknown) => Promise<any>
 
 beforeAll(async () => {
@@ -172,6 +172,75 @@ describe('analyzeResolutionReadiness', () => {
       ready: false,
     })
   })
+
+  it('can focus the read-only readiness report on June closing questions', () => {
+    const report = analyzeResolutionReadiness(
+      [
+        {
+          id: 'may-close',
+          title: 'May question',
+          description: 'This resolves based on the official published result.',
+          status: 'open',
+          question_type: 'binary',
+          resolution_source: 'https://example.com/may',
+          closes_at: '2026-05-31T23:59:59.000Z',
+        },
+        {
+          id: 'june-ready',
+          title: 'June ready question',
+          description: 'This resolves based on the official published result.',
+          status: 'open',
+          question_type: 'binary',
+          resolution_source: 'https://example.com/june',
+          closes_at: '2026-06-15T00:00:00.000Z',
+        },
+        {
+          id: 'june-needs-source',
+          title: 'June source question',
+          description: 'This resolves based on the official published result.',
+          status: 'open',
+          question_type: 'binary',
+          resolution_source: null,
+          closes_at: '2026-06-30T23:00:00.000Z',
+        },
+        {
+          id: 'july-close',
+          title: 'July question',
+          description: 'This resolves based on the official published result.',
+          status: 'open',
+          question_type: 'binary',
+          resolution_source: 'https://example.com/july',
+          closes_at: '2026-07-01T00:00:00.000Z',
+        },
+        {
+          id: 'undated',
+          title: 'Undated question',
+          description: 'This resolves based on the official published result.',
+          status: 'open',
+          question_type: 'binary',
+          resolution_source: 'https://example.com/undated',
+          closes_at: null,
+        },
+      ],
+      {
+        now: new Date('2026-05-20T00:00:00.000Z'),
+        from: '2026-06-01T00:00:00.000Z',
+        until: '2026-06-30T23:59:59.999Z',
+      },
+    )
+
+    expect(report).toMatchObject({
+      ok: false,
+      window_from: '2026-06-01T00:00:00.000Z',
+      window_until: '2026-06-30T23:59:59.999Z',
+      open_questions: 5,
+      soon_closing_open_questions: 2,
+      ready_soon_closing_open_questions: 1,
+      not_ready_soon_closing_open_questions: 1,
+      missing_by_field: { resolution_source: 1 },
+    })
+    expect(report.soon_closing_questions.map((question: { id: string }) => question.id)).toEqual(['june-ready', 'june-needs-source'])
+  })
 })
 
 function makeResolutionReadinessClient({ missingColumns = [], openRows = [], openError }: { missingColumns?: string[]; openRows?: unknown[]; openError?: unknown } = {}) {
@@ -240,6 +309,46 @@ describe('verifyResolutionReadinessLive', () => {
       soon_closing_open_questions: 1,
       not_ready_soon_closing_open_questions: 0,
     })
+    expect(client.calls.some(call => call.includes('insert') || call.includes('update'))).toBe(false)
+  })
+
+  it('passes a June date window through the live read-only verifier', async () => {
+    const client = makeResolutionReadinessClient({
+      openRows: [
+        {
+          id: 'june-ready',
+          title: 'June ready question',
+          description: 'This resolves based on the official published result.',
+          status: 'open',
+          question_type: 'binary',
+          resolution_source: 'https://example.com/june',
+          closes_at: '2026-06-15T00:00:00.000Z',
+        },
+        {
+          id: 'july-ready',
+          title: 'July ready question',
+          description: 'This resolves based on the official published result.',
+          status: 'open',
+          question_type: 'binary',
+          resolution_source: 'https://example.com/july',
+          closes_at: '2026-07-01T00:00:00.000Z',
+        },
+      ],
+    })
+
+    const report = await verifyResolutionReadinessLive(client, {
+      now: new Date('2026-05-20T00:00:00.000Z'),
+      from: '2026-06-01T00:00:00.000Z',
+      until: '2026-06-30T23:59:59.999Z',
+    })
+
+    expect(report).toMatchObject({
+      mode: 'readonly',
+      window_from: '2026-06-01T00:00:00.000Z',
+      window_until: '2026-06-30T23:59:59.999Z',
+      soon_closing_open_questions: 1,
+    })
+    expect(report.soon_closing_questions.map((question: { id: string }) => question.id)).toEqual(['june-ready'])
     expect(client.calls.some(call => call.includes('insert') || call.includes('update'))).toBe(false)
   })
 })
