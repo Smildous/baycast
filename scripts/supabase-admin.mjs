@@ -317,6 +317,121 @@ function isUsableResolutionUrl(value) {
   return false
 }
 
+export function parseResolutionSourceFixes(rawFixes) {
+  if (!Array.isArray(rawFixes)) {
+    throw new Error('resolution source fixes must be a JSON array')
+  }
+
+  const seen = new Set()
+  return rawFixes.map((fix, index) => {
+    if (!fix || typeof fix !== 'object' || Array.isArray(fix)) {
+      throw new Error(`fix at index ${index} must be an object`)
+    }
+
+    const id = typeof fix.id === 'string' ? fix.id.trim() : String(fix.id ?? '').trim()
+    const resolutionSource = typeof fix.resolution_source === 'string' ? fix.resolution_source.trim() : ''
+
+    if (!id) throw new Error(`fix at index ${index} is missing id`)
+    if (seen.has(id)) throw new Error(`duplicate fix id: ${id}`)
+    seen.add(id)
+    if (!resolutionSource) throw new Error(`fix ${id} is missing resolution_source`)
+    if (!isUsableResolutionUrl(resolutionSource)) throw new Error(`fix ${id} resolution_source must contain a usable http(s) URL`)
+
+    return { id, resolution_source: resolutionSource }
+  })
+}
+
+export async function updateResolutionSourcesLive(client, fixes, { apply = false } = {}) {
+  const normalizedFixes = parseResolutionSourceFixes(fixes)
+  if (normalizedFixes.length === 0) {
+    return {
+      ok: true,
+      mode: apply ? 'apply' : 'dry_run',
+      dry_run: !apply,
+      table: 'questions',
+      requested_updates: 0,
+      found_questions: 0,
+      missing_ids: [],
+      unchanged: [],
+      planned_updates: [],
+      applied_updates: [],
+    }
+  }
+
+  const ids = normalizedFixes.map(fix => fix.id)
+  const { data, error } = await client
+    .from('questions')
+    .select('id,title,status,resolution_source')
+    .in('id', ids)
+
+  if (error) throw new Error(`questions resolution_source lookup failed: ${error.message}`)
+
+  const existingById = new Map((data || []).map(question => [String(question.id), question]))
+  const missingIds = ids.filter(id => !existingById.has(id))
+  const plannedUpdates = []
+  const unchanged = []
+
+  for (const fix of normalizedFixes) {
+    const current = existingById.get(fix.id)
+    if (!current) continue
+
+    const currentSource = typeof current.resolution_source === 'string' ? current.resolution_source : current.resolution_source ?? null
+    const summary = {
+      id: fix.id,
+      title: current.title ?? null,
+      status: current.status ?? null,
+      current_resolution_source: currentSource,
+      next_resolution_source: fix.resolution_source,
+    }
+
+    if (currentSource === fix.resolution_source) unchanged.push(summary)
+    else plannedUpdates.push(summary)
+  }
+
+  if (missingIds.length > 0) {
+    return {
+      ok: false,
+      mode: apply ? 'apply' : 'dry_run',
+      dry_run: !apply,
+      table: 'questions',
+      requested_updates: normalizedFixes.length,
+      found_questions: existingById.size,
+      missing_ids: missingIds,
+      unchanged,
+      planned_updates: plannedUpdates,
+      applied_updates: [],
+    }
+  }
+
+  const appliedUpdates = []
+  if (apply) {
+    for (const update of plannedUpdates) {
+      const { data: updated, error: updateError } = await client
+        .from('questions')
+        .update({ resolution_source: update.next_resolution_source })
+        .eq('id', update.id)
+        .select('id,title,status,resolution_source')
+        .single()
+
+      if (updateError) throw new Error(`questions ${update.id} resolution_source update failed: ${updateError.message}`)
+      appliedUpdates.push(updated)
+    }
+  }
+
+  return {
+    ok: true,
+    mode: apply ? 'apply' : 'dry_run',
+    dry_run: !apply,
+    table: 'questions',
+    requested_updates: normalizedFixes.length,
+    found_questions: existingById.size,
+    missing_ids: [],
+    unchanged,
+    planned_updates: plannedUpdates,
+    applied_updates: appliedUpdates,
+  }
+}
+
 async function getResolutionUrlColumn(client) {
   for (const column of ['resolution_url', 'resolution_source']) {
     const { error } = await client.from('questions').select(column).limit(1)
@@ -386,6 +501,18 @@ async function verifyResolutionUrlsCommand() {
   if (!report.ok) process.exit(1)
 }
 
+async function updateResolutionSourcesCommand(args) {
+  const apply = args.includes('--apply')
+  const file = args.find(arg => arg !== '--apply')
+  if (!file) throw new Error('missing fixes JSON file')
+
+  const fixes = JSON.parse(fs.readFileSync(file, 'utf8'))
+  const client = await getClient({ write: apply })
+  const report = await updateResolutionSourcesLive(client, fixes, { apply })
+  console.log(JSON.stringify(report, null, 2))
+  if (!report.ok) process.exit(1)
+}
+
 const isCli = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href
 
 if (isCli) {
@@ -395,10 +522,11 @@ if (isCli) {
     else if (cmd === 'verify-blind-until') await verifyBlindUntilCommand()
     else if (cmd === 'verify-resolution-readiness') await verifyResolutionReadinessCommand()
     else if (cmd === 'verify-resolution-urls') await verifyResolutionUrlsCommand()
+    else if (cmd === 'update-resolution-sources') await updateResolutionSourcesCommand(args)
     else if (cmd === 'insert-question') await insertQuestion(args[0])
     else if (cmd === 'update-question') await updateQuestion(args[0], args[1])
     else {
-      console.error('Usage: node scripts/supabase-admin.mjs status | verify-blind-until | verify-resolution-readiness | verify-resolution-urls | insert-question question.json | update-question <id> patch.json')
+      console.error('Usage: node scripts/supabase-admin.mjs status | verify-blind-until | verify-resolution-readiness | verify-resolution-urls | update-resolution-sources fixes.json [--apply] | insert-question question.json | update-question <id> patch.json')
       process.exit(2)
     }
   } catch (err) {

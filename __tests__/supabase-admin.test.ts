@@ -1,12 +1,14 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 
 let analyzeResolutionReadiness: (questions: any[], options?: { now?: Date; soonDays?: number; availableColumns?: string[] }) => any
+let parseResolutionSourceFixes: (rawFixes: unknown) => { id: string; resolution_source: string }[]
+let updateResolutionSourcesLive: (client: unknown, fixes: unknown, options?: { apply?: boolean }) => Promise<any>
 let verifyBlindUntilLive: (client: unknown, options?: { now?: Date }) => Promise<any>
 let verifyResolutionReadinessLive: (client: unknown, options?: { now?: Date; soonDays?: number }) => Promise<any>
 let verifyResolutionUrlsLive: (client: unknown) => Promise<any>
 
 beforeAll(async () => {
-  ;({ analyzeResolutionReadiness, verifyBlindUntilLive, verifyResolutionReadinessLive, verifyResolutionUrlsLive } = await import('../scripts/supabase-admin.mjs'))
+  ;({ analyzeResolutionReadiness, parseResolutionSourceFixes, updateResolutionSourcesLive, verifyBlindUntilLive, verifyResolutionReadinessLive, verifyResolutionUrlsLive } = await import('../scripts/supabase-admin.mjs'))
 })
 
 function makeClient({ probeError, openRows = [], openError }: { probeError?: unknown; openRows?: unknown[]; openError?: unknown } = {}) {
@@ -358,5 +360,123 @@ describe('verifyResolutionUrlsLive', () => {
     })
     expect(report.missing_resolution_url_questions.map((question: { id: string }) => question.id)).toEqual(['missing', 'blank', 'bad'])
     expect(client.calls).toEqual(['resolution_url', 'id,title,status,resolution_url', 'eq:status:open', 'order:id'])
+  })
+})
+
+function makeResolutionSourceUpdateClient({ rows = [], lookupError, updateError }: { rows?: any[]; lookupError?: unknown; updateError?: unknown } = {}) {
+  const calls: string[] = []
+  const updates: any[] = []
+
+  return {
+    calls,
+    updates,
+    from(table: string) {
+      expect(table).toBe('questions')
+      return {
+        select(columns: string) {
+          calls.push(`select:${columns}`)
+          expect(columns).toBe('id,title,status,resolution_source')
+          return {
+            in(column: string, ids: string[]) {
+              calls.push(`in:${column}:${ids.join(',')}`)
+              expect(column).toBe('id')
+              return Promise.resolve({ data: rows, error: lookupError || null })
+            },
+          }
+        },
+        update(patch: { resolution_source: string }) {
+          calls.push(`update:${patch.resolution_source}`)
+          updates.push(patch)
+          return {
+            eq(column: string, id: string) {
+              calls.push(`eq:${column}:${id}`)
+              expect(column).toBe('id')
+              return {
+                select(columns: string) {
+                  calls.push(`update-select:${columns}`)
+                  expect(columns).toBe('id,title,status,resolution_source')
+                  return {
+                    single() {
+                      if (updateError) return Promise.resolve({ data: null, error: updateError })
+                      return Promise.resolve({ data: { id, title: 'Updated', status: 'open', resolution_source: patch.resolution_source }, error: null })
+                    },
+                  }
+                },
+              }
+            },
+          }
+        },
+      }
+    },
+  }
+}
+
+describe('updateResolutionSourcesLive', () => {
+  it('validates fixes before any Supabase call', () => {
+    expect(() => parseResolutionSourceFixes({})).toThrow('must be a JSON array')
+    expect(() => parseResolutionSourceFixes([{ id: 'q1', resolution_source: 'not a url' }])).toThrow('usable http(s) URL')
+    expect(() => parseResolutionSourceFixes([
+      { id: 'q1', resolution_source: 'https://example.com/a' },
+      { id: 'q1', resolution_source: 'https://example.com/b' },
+    ])).toThrow('duplicate fix id')
+  })
+
+  it('dry-runs by default and never updates rows', async () => {
+    const client = makeResolutionSourceUpdateClient({
+      rows: [
+        { id: 'q1', title: 'Needs source', status: 'open', resolution_source: null },
+        { id: 'q2', title: 'Already fixed', status: 'open', resolution_source: 'https://example.com/old' },
+      ],
+    })
+
+    const report = await updateResolutionSourcesLive(client, [
+      { id: 'q1', resolution_source: 'https://example.com/source' },
+      { id: 'q2', resolution_source: 'https://example.com/old' },
+    ])
+
+    expect(report).toMatchObject({
+      ok: true,
+      mode: 'dry_run',
+      dry_run: true,
+      requested_updates: 2,
+      found_questions: 2,
+      missing_ids: [],
+    })
+    expect(report.planned_updates.map((update: { id: string }) => update.id)).toEqual(['q1'])
+    expect(report.unchanged.map((update: { id: string }) => update.id)).toEqual(['q2'])
+    expect(client.updates).toEqual([])
+    expect(client.calls).toEqual(['select:id,title,status,resolution_source', 'in:id:q1,q2'])
+  })
+
+  it('applies updates only when apply is true and all ids exist', async () => {
+    const client = makeResolutionSourceUpdateClient({
+      rows: [{ id: 'q1', title: 'Needs source', status: 'open', resolution_source: null }],
+    })
+
+    const report = await updateResolutionSourcesLive(client, [{ id: 'q1', resolution_source: 'https://example.com/source' }], { apply: true })
+
+    expect(report).toMatchObject({
+      ok: true,
+      mode: 'apply',
+      dry_run: false,
+      requested_updates: 1,
+      found_questions: 1,
+    })
+    expect(client.updates).toEqual([{ resolution_source: 'https://example.com/source' }])
+    expect(report.applied_updates).toEqual([{ id: 'q1', title: 'Updated', status: 'open', resolution_source: 'https://example.com/source' }])
+  })
+
+  it('does not apply partial updates when any id is missing', async () => {
+    const client = makeResolutionSourceUpdateClient({
+      rows: [{ id: 'q1', title: 'Needs source', status: 'open', resolution_source: null }],
+    })
+
+    const report = await updateResolutionSourcesLive(client, [
+      { id: 'q1', resolution_source: 'https://example.com/source' },
+      { id: 'missing', resolution_source: 'https://example.com/missing' },
+    ], { apply: true })
+
+    expect(report).toMatchObject({ ok: false, mode: 'apply', missing_ids: ['missing'] })
+    expect(client.updates).toEqual([])
   })
 })
