@@ -21,6 +21,16 @@ export const dynamic = 'force-dynamic'
 const PAGE_SIZE = 10
 const CLOSING_SOON_WINDOW_DAYS = 14
 
+type PublicQuestion = Omit<Question, 'aggregate_probability' | 'forecasters_count' | 'has_forecasts'>
+
+function toPublicQuestion(question: Question): PublicQuestion {
+  const { aggregate_probability, forecasters_count, has_forecasts, ...publicQuestion } = question
+  void aggregate_probability
+  void forecasters_count
+  void has_forecasts
+  return publicQuestion
+}
+
 type SortOption = 'closing-soon' | 'newest' | 'most-active'
 
 const SORT_OPTIONS: { label: string; value: SortOption }[] = [
@@ -104,14 +114,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
   let closingSoonEnriched: Question[] = []
 
   if (showClosingSoon) {
-    closingSoonEnriched = closingSoonQuestions.map(q => {
-      return {
-        ...q,
-        aggregate_probability: undefined,
-        forecasters_count: undefined,
-        has_forecasts: undefined,
-      }
-    })
+    closingSoonEnriched = closingSoonQuestions.map(toPublicQuestion)
   }
 
   // Server-side sort. The explicit "Closing Soon" filter should not show
@@ -132,6 +135,9 @@ export default async function QuestionsPage({ searchParams }: Props) {
     }
   })
   const headerOpenCount = statusFilter === 'open' ? sorted.length : openCount
+  const headerCountLabel = sortOption === 'closing-soon' && statusFilter === 'open'
+    ? `${headerOpenCount} closing soon`
+    : `${headerOpenCount} open`
 
   // Exclude questions already shown in the Closing Soon section from the main list
   const closingSoonIds = new Set(closingSoonQuestions.map(q => q.id))
@@ -148,14 +154,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
 
   // Public list cards stay BCP-neutral: no aggregate probability, exact counts,
   // or zero/nonzero participation state before the user unlocks consensus.
-  const enriched = questions.map((q) => {
-    return {
-      ...q,
-      aggregate_probability: undefined,
-      forecasters_count: undefined,
-      has_forecasts: undefined,
-    }
-  })
+  const enriched = questions.map(toPublicQuestion)
 
   // Only show category buttons that have at least 1 question (AQ-105)
   const categoriesWithQuestions = CATEGORIES.filter((cat) =>
@@ -215,7 +214,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
         <h1 className="text-3xl font-outfit font-bold mb-2">
           Questions
           <span className="text-lg font-normal text-text-secondary ml-2">
-            ({headerOpenCount} open)
+            ({headerCountLabel})
           </span>
         </h1>
         <p className="text-text-secondary">Every forecast you add sharpens the collective estimate.</p>

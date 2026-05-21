@@ -17,6 +17,8 @@ export const metadata = buildSEO({
   path: '',
 })
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://baycast-p.vercel.app'
+
 const websiteJsonLd: Record<string, unknown> = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -30,14 +32,24 @@ const websiteJsonLd: Record<string, unknown> = {
   },
 }
 
-const organizationJsonLd: Record<string, unknown> = {
+const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Baycast',
-  description: 'Crowd prediction platform',
-  url: 'https://baycast-p.vercel.app',
-  logo: 'https://baycast-p.vercel.app/logo.png',
+  url: BASE_URL,
+  logo: `${BASE_URL}/icon-512x512.png`,
+  description: 'Prediction polling platform for calibrated collective intelligence.',
   sameAs: [],
+}
+
+type PublicQuestion = Omit<Question, 'aggregate_probability' | 'forecasters_count' | 'has_forecasts'>
+
+function toPublicQuestion(question: Question): PublicQuestion {
+  const { aggregate_probability, forecasters_count, has_forecasts, ...publicQuestion } = question
+  void aggregate_probability
+  void forecasters_count
+  void has_forecasts
+  return publicQuestion
 }
 
 async function getStats() {
@@ -59,12 +71,7 @@ async function getTrending(): Promise<Question[]> {
     .eq('status', 'open')
     .order('closes_at', { ascending: true })
     .limit(5)
-  return ((data ?? []) as Question[]).map((q) => ({
-    ...q,
-    aggregate_probability: undefined,
-    forecasters_count: undefined,
-    has_forecasts: undefined,
-  }))
+  return ((data ?? []) as Question[]).map(toPublicQuestion)
 }
 
 export default async function HomePage() {
