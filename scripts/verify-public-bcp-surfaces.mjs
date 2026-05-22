@@ -7,7 +7,13 @@
  */
 
 const DEFAULT_BASE_URL = 'https://baycast-p.vercel.app'
-const ROUTES = ['/', '/questions', '/leaderboard', '/activity']
+const ROUTES = [
+  '/',
+  '/questions',
+  '/questions/13aa9f2f-3226-4213-a04f-0cc2b87ad248',
+  '/leaderboard',
+  '/activity',
+]
 
 const baseUrl = normalizeBaseUrl(process.env.BAYCAST_BASE_URL || DEFAULT_BASE_URL)
 
@@ -19,6 +25,14 @@ const checks = [
   {
     name: 'forecasters_count field name',
     pattern: /forecasters_count/g,
+  },
+  {
+    name: 'forecastCount field name',
+    pattern: /forecastCount/g,
+  },
+  {
+    name: 'fcCount field name',
+    pattern: /fcCount/g,
   },
   {
     name: 'exact forecaster count copy',
