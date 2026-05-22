@@ -12,6 +12,7 @@
     "verify:aq231-june-resolution-hygiene": "node scripts/supabase-admin.mjs verify-resolution-readiness --from 2026-06-01T00:00:00.000Z --until 2026-06-30T23:59:59.999Z",
     "verify:resolution-urls": "node scripts/supabase-admin.mjs verify-resolution-urls",
     "verify:first-resolution-readiness": "node scripts/first-resolution-readiness.mjs",
+    "verify:first-settlement-evidence": "node scripts/first-settlement-evidence.mjs",
     "verify:public-bcp": "node scripts/verify-public-bcp-surfaces.mjs",
     "update:resolution-sources": "node scripts/supabase-admin.mjs update-resolution-sources",
     "test": "vitest run",
