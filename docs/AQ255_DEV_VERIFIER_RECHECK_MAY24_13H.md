@@ -21,14 +21,26 @@ Public BCP surface verification passed.
 ```
 
 Commande: `npm run verify:first-settlement-evidence`
-Résultat: échec attendu dans cet environnement, avant lecture Supabase, faute de variables Supabase.
+Résultat initial depuis `/root/baycast-dev`: échec avant lecture Supabase, faute de variables Supabase dans ce clone.
+
+Correction Odin: rerun depuis le repo canonique `/root/baycast`, où `.env.local` est disponible.
+Résultat canonique: succès.
 
 Sortie utile:
 
 ```json
 {
-  "ok": false,
-  "error": "Missing SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_ANON_KEY/NEXT_PUBLIC_SUPABASE_ANON_KEY"
+  "ok": true,
+  "mode": "readonly",
+  "table": "questions",
+  "candidate_reason": "Apple Mac Pro exact match",
+  "candidate": {
+    "title": "Will Apple announce a new Mac Pro at WWDC 2026?",
+    "status": "open",
+    "closes_at": "2026-06-13T00:00:00+00:00",
+    "resolution_source": "Apple WWDC and Apple Newsroom: https://developer.apple.com/wwdc26/ and https://www.apple.com/newsroom/",
+    "resolution_url": null
+  }
 }
 ```
 
@@ -37,4 +49,4 @@ Résultat: succès, aucune sortie.
 
 Inspection source: `scripts/first-settlement-evidence.mjs` annonce en commentaire qu'il lit seulement `questions`, ne lit jamais `forecasts`, et le code confirme que les appels Supabase utilisent `client.from('questions')` pour les probes de colonnes et la recherche June 2026. Aucun appel `client.from('forecasts')` n'est présent dans ce vérificateur.
 
-Conclusion: le gate public BCP passe. Le gate first-settlement n'a pas pu interroger Supabase ici car les variables d'environnement manquent, mais le vérificateur est bien limité à `questions` et ne requête pas `forecasts`.
+Conclusion: le gate public BCP passe. Le gate first-settlement passe depuis le repo canonique. Le vérificateur est limité à `questions` et ne requête pas `forecasts`.
