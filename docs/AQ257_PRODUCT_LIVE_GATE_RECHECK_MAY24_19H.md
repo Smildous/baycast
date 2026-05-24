@@ -1,0 +1,15 @@
+# AQ-257 product live gate recheck, 24 mai 2026 19h
+
+J'ai fait le passage en navigateur public sur `https://baycast-p.vercel.app`, sans lire Supabase, sans ouvrir la table `forecasts`, et sans utiliser les données privées de participation. Le but était simple: vérifier que la surface publique garde le Blind Consensus en place avant le premier règlement Apple Mac Pro.
+
+La home charge bien. Elle affiche les liens principaux, les cartes de questions live et la question `Will Apple announce a new Mac Pro at WWDC 2026?` dès le premier écran. Le lien découvert depuis cette carte pointe vers `/questions/13aa9f2f-3226-4213-a04f-0cc2b87ad248`. Je n'ai pas vu de probabilité de consensus, pas de nombre exact de forecasters, pas de ligne d'activité sur question ouverte, et pas de copie de pari ou de gambling. La formule la plus sensible vue sur la home est `Free to play`, mais le reste de la page reste dans le vocabulaire prediction polling, forecast, crowd signal et scoring.
+
+`/questions` charge avec `Questions(44 open)`. Apple Mac Pro est visible sur la première page avec `20d left` et le texte `Lock your call before the crowd can shape it`. Les cartes ne montrent pas de probabilité de consensus et ne donnent pas de compteur exact de forecasters. Les métadonnées publiques de la page questions restent génériques: elles parlent de questions ouvertes, de probability estimates et de scoring, sans participation chiffrée.
+
+La route directe Apple Mac Pro est bien active: `/questions/13aa9f2f-3226-4213-a04f-0cc2b87ad248`. La page affiche le titre attendu, les critères de résolution, les liens de contexte, le bloc `Community signal locked`, la date `Jun 13, 2026`, et le formulaire `Add your forecast` pour un utilisateur non connecté. Le JSON-LD public indique `dateModified: 2026-06-13T00:00:00+00:00`. La question reste donc ouverte. Je n'ai vu ni libellé resolved, ni résultat, ni settlement avant `2026-06-13T00:00:00+00:00`. Le consensus reste masqué, sans valeur numérique publique et sans compteur exact.
+
+`/leaderboard` charge et affiche `Scores appear after questions resolve`. Aucun score prématuré n'est publié. Rien ne montre des forecasts de questions ouvertes, une probabilité de consensus, ou un nombre exact de forecasters. La page garde le message attendu: les scores commencent après outcome final.
+
+`/activity` charge et affiche `Activity appears after questions resolve`. C'est le point le plus important du recheck: aucune activité de question ouverte n'est listée. Le texte public dit clairement que les forecasts de questions ouvertes restent cachés jusqu'à la résolution, ce qui protège le BCP côté surface publique.
+
+Conclusion AQ-257: pass produit. Les pages demandées répondent, Apple Mac Pro reste ouvert jusqu'au 13 juin 2026 UTC, et je n'ai pas trouvé de fuite publique BCP sur ce passage: pas de consensus probability, pas de forecaster count exact, pas de rows d'activité sur questions ouvertes, pas de vocabulaire betting ou gambling. Le seul point à surveiller reste le wording `Free to play`, acceptable ici mais à éviter si on veut une séparation encore plus nette avec l'univers jeu d'argent.
