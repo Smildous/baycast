@@ -24,6 +24,20 @@ describe('getQuestionNewsContext', () => {
     expect(links.map((link) => link.source)).toContain('OpenAI')
   })
 
+  it('uses only Apple WWDC and Apple Newsroom for Apple Mac Pro context', () => {
+    const links = getQuestionNewsContext({
+      title: 'Will Apple announce a new Mac Pro at WWDC 2026?',
+      category: 'Technology',
+    })
+
+    expect(links.map((link) => link.url)).toEqual([
+      'https://developer.apple.com/wwdc26/',
+      'https://www.apple.com/newsroom/',
+    ])
+    expect(JSON.stringify(links)).not.toContain('NIST')
+    expect(JSON.stringify(links)).not.toContain('OpenAI')
+  })
+
   it('returns an empty list when no safe static context exists', () => {
     const links = getQuestionNewsContext({
       title: 'Will the local demo day finish before lunch?',

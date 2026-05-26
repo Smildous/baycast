@@ -135,6 +135,14 @@ const CONTEXT_LINKS: NewsContextEntry[] = [
     keywords: ['who', 'health', 'outbreak', 'virus', 'disease', 'pandemic', 'vaccine'],
   },
   {
+    title: 'Apple WWDC',
+    source: 'Apple',
+    url: 'https://developer.apple.com/wwdc26/',
+    summary: 'Official Apple Worldwide Developers Conference updates and event information.',
+    categories: ['Technology'],
+    keywords: ['apple', 'wwdc', 'mac', 'mac pro', 'ios'],
+  },
+  {
     title: 'Apple Newsroom',
     source: 'Apple',
     url: 'https://www.apple.com/newsroom/',
@@ -210,6 +218,7 @@ const CONTEXT_LINKS: NewsContextEntry[] = [
 
 const MAX_CONTEXT_LINKS = 3
 const MIN_CONTEXT_LINKS = 2
+const APPLE_CONTEXT_URLS = new Set(['https://developer.apple.com/wwdc26/', 'https://www.apple.com/newsroom/'])
 
 function normalizeText(value: string | null | undefined): string {
   return (value ?? '').toLowerCase()
@@ -219,6 +228,10 @@ function hasKeyword(entry: NewsContextEntry, haystack: string): boolean {
   return entry.keywords.some((keyword) => haystack.includes(keyword))
 }
 
+function isAppleHardwareQuestion(haystack: string): boolean {
+  return haystack.includes('apple') || haystack.includes('mac pro') || haystack.includes('wwdc')
+}
+
 export function getQuestionNewsContext(input: {
   title: string
   category: string
@@ -226,6 +239,16 @@ export function getQuestionNewsContext(input: {
 }): NewsContextLink[] {
   const category = normalizeCategory(input.category)
   const haystack = `${normalizeText(input.title)} ${normalizeText(input.description)}`
+
+  if (isAppleHardwareQuestion(haystack)) {
+    return CONTEXT_LINKS.filter((entry) => APPLE_CONTEXT_URLS.has(entry.url)).map((entry) => ({
+      title: entry.title,
+      source: entry.source,
+      url: entry.url,
+      summary: entry.summary,
+    }))
+  }
+
   const matches = CONTEXT_LINKS.filter((entry) => hasKeyword(entry, haystack))
   const categoryMatches = CONTEXT_LINKS.filter((entry) => entry.categories.includes(category))
 
