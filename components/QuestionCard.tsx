@@ -24,7 +24,9 @@ export default function QuestionCard({ question: q }: Props) {
             {q.title}
           </h3>
           <div className="mt-2 text-text-secondary text-xs">
-            Lock your call before the crowd can shape it
+            {q.status === 'resolved'
+              ? 'Resolved. Scores now count against the final outcome'
+              : 'Lock your call before the crowd can shape it'}
           </div>
         </div>
       </div>

@@ -311,34 +311,36 @@ export default async function QuestionDetailPage({ params }: Props) {
       )}
 
       {/* Stats row — only show aggregate after blind phase AND consensus unlocked */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
-          <div className="text-2xl font-mono font-bold text-accent-green">
-            {(isBlind || !consensusUnlocked) ? '—' : avgProb !== null ? `${avgProb}%` : '—'}
+      {!isResolved && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
+            <div className="text-2xl font-mono font-bold text-accent-green">
+              {(isBlind || !consensusUnlocked) ? '—' : avgProb !== null ? `${avgProb}%` : '—'}
+            </div>
+            <div className="text-text-secondary text-sm">
+              {(!isBlind && consensusUnlocked)
+                ? forecasters === 0
+                  ? 'Awaiting forecasts'
+                  : 'Consensus'
+                : 'Community signal'}
+            </div>
           </div>
-          <div className="text-text-secondary text-sm">
-            {(!isBlind && consensusUnlocked)
-              ? forecasters === 0
-                ? 'Awaiting forecasts'
-                : 'Consensus'
-              : 'Community signal'}
+          <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
+            <div className="text-2xl font-mono font-bold text-text-primary">
+              {formatParticipationValue(forecasters, !isBlind && consensusUnlocked)}
+            </div>
+            <div className="text-text-secondary text-sm">
+              {formatParticipationLabel(forecasters, !isBlind && consensusUnlocked)}
+            </div>
+          </div>
+          <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
+            <div className="text-2xl font-mono font-bold text-text-primary">
+              {q.closes_at ? formatDate(q.closes_at) : 'TBD'}
+            </div>
+            <div className="text-text-secondary text-sm">Closes</div>
           </div>
         </div>
-        <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
-          <div className="text-2xl font-mono font-bold text-text-primary">
-            {formatParticipationValue(forecasters, !isBlind && consensusUnlocked)}
-          </div>
-          <div className="text-text-secondary text-sm">
-            {formatParticipationLabel(forecasters, !isBlind && consensusUnlocked)}
-          </div>
-        </div>
-        <div className="bg-bg-surface border border-border-dark rounded-xl p-4 text-center">
-          <div className="text-2xl font-mono font-bold text-text-primary">
-            {q.closes_at ? formatDate(q.closes_at) : 'TBD'}
-          </div>
-          <div className="text-text-secondary text-sm">Closes</div>
-        </div>
-      </div>
+      )}
 
       {/* Probability bar — hidden during blind phase or when consensus is locked */}
       {!isBlind && consensusUnlocked && avgProb !== null && (
