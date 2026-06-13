@@ -4,11 +4,13 @@ Recheck fait le 2026-06-13T07:03:04Z depuis `/root/baycast`. Rien n'a été envo
 
 Verdict: NO-SEND.
 
-Le gate reste fermé. Après la tentative de settlement Apple, il manque encore les deux preuves qui rendraient une distribution propre: une note publique de settlement et des scores visibles en production. Sans ça, envoyer ferait partir les gens vers une page qui dit encore d'attendre la résolution.
+Mise à jour Odin après le live settlement: le score est maintenant visible, mais le gate reste fermé. `/leaderboard` montre S Simba avec Brier 0.2500. `/activity` montre le forecast Apple résolu. La page Apple Mac Pro est en état `Resolved` avec outcome `no`.
 
-Côté note publique, je n'ai pas trouvé de lien stable. Dans les docs, les mentions de settlement que j'ai vues restent des rechecks, des scripts de vérification ou des plans. En production, les routes publiques évidentes sur `https://baycast-p.vercel.app` ne donnent pas de note publiable: `/settlement`, `/settlements`, `/resolution`, `/resolutions`, `/notes`, `/blog`, `/updates`, `/questions/13aa9f2f-3226-4213-a04f-0cc2b87ad248/settlement` et `/questions/13aa9f2f-3226-4213-a04f-0cc2b87ad248/resolved` répondent 404.
+Il manque encore deux éléments pour distribuer proprement: une note publique stable qui explique le settlement sans payload JSON brut, et une warm target list privée hors git. Sans ces deux éléments, envoyer maintenant transforme le premier score en lien froid au lieu d'une preuve claire.
 
-Côté produit visible, il n'y a toujours pas de score exploitable. `/leaderboard` répond 200, mais affiche `Scores appear after questions resolve`. `/activity` répond 200, mais affiche `Activity appears after questions resolve`. `/questions?status=resolved` répond 200, mais garde `Questions(44 open)` et `No match`. La page Apple Mac Pro répond 200, mais elle est encore présentée comme ouverte côté public: `Closes today`, `Community signal locked`, formulaire `Add your forecast`, signup et login. Je ne vois ni utilisateur classé, ni Brier réel, ni Log Score réel, ni activité post-résolution.
+Côté note publique, les routes évidentes sur `https://baycast-p.vercel.app` ne donnent pas de note publiable: `/settlement`, `/settlements`, `/resolution`, `/resolutions`, `/notes`, `/blog`, `/updates`, `/questions/13aa9f2f-3226-4213-a04f-0cc2b87ad248/settlement` et `/questions/13aa9f2f-3226-4213-a04f-0cc2b87ad248/resolved` répondent 404. La page question suffit pour vérifier le résultat, pas pour faire un push propre.
+
+Côté produit visible, le score existe. Côté qualité de scoring, il reste un gap live: la table `scores` accepte `brier_score`, mais pas `log_score`. Le premier write avec `log_score` a échoué, puis Odin a récupéré en insérant le Brier seul. Le whitepaper demande Brier plus log score. La distribution doit donc rester sobre tant que le log score live n'est pas migré.
 
 Côté canal sortant, email est prêt mais seul. `himalaya account doctor` passe en OK pour TOML, IMAP et SMTP. `x-cli` existe aussi, mais je n'ai trouvé aucune variable d'environnement `X_` ou `TWITTER_` dans ce run. Je n'ai lancé aucune commande d'envoi.
 
