@@ -18,6 +18,7 @@ import ConsensusGate from '@/components/ConsensusGate'
 import NewsContextSection from '@/components/NewsContextSection'
 import type { Question, Forecast, ForecastPrediction } from '@/lib/types'
 import { formatDate, questionPhase } from '@/lib/utils'
+import { formatResolutionOutcome } from '@/lib/resolution'
 import {
   formatParticipationLabel,
   formatParticipationValue,
@@ -169,6 +170,8 @@ export default async function QuestionDetailPage({ params }: Props) {
     )
   }
 
+  const resolutionOutcome = isResolved ? formatResolutionOutcome(q.resolution) : 'Unknown'
+
   // JSON-LD structured data for SEO (schema.org Question)
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -179,8 +182,8 @@ export default async function QuestionDetailPage({ params }: Props) {
     dateModified: q.resolved_at || q.closes_at,
     acceptedAnswer: {
       '@type': 'Answer',
-      text: isResolved && q.resolution
-        ? `Resolved: ${JSON.stringify(q.resolution)}`
+      text: isResolved
+        ? `Resolved: ${resolutionOutcome}`
         : avgProb !== null
           ? `Consensus probability: ${avgProb}%`
           : 'Forecast before the crowd can shape your call.',
@@ -227,15 +230,51 @@ export default async function QuestionDetailPage({ params }: Props) {
       <NewsContextSection title={q.title} category={q.category} description={q.description} />
 
       {/* Resolution (if resolved) */}
-      {isResolved && q.resolution && (
+      {isResolved && (
         <div className="mb-6 p-4 rounded-xl border border-success/40 bg-success/10">
-          <div className="text-success font-semibold mb-1">Question resolved</div>
-          <div className="text-text-primary">
-            Resolution: <span className="font-mono font-bold">{JSON.stringify(q.resolution)}</span>
+          <div className="text-success font-semibold mb-3">Status: Resolved</div>
+          <div className="grid gap-3 text-sm sm:grid-cols-2">
+            <div>
+              <div className="text-text-secondary">Outcome</div>
+              <div className="text-2xl font-mono font-bold text-text-primary">{resolutionOutcome}</div>
+            </div>
+            <div>
+              <div className="text-text-secondary">Resolved date</div>
+              <div className="font-medium text-text-primary">
+                {q.resolved_at ? formatDate(q.resolved_at) : 'Not specified'}
+              </div>
+            </div>
           </div>
-          <div className="text-text-secondary text-sm mt-1">
-            {q.resolved_at && `On ${formatDate(q.resolved_at)}`}
+          <div className="text-text-secondary text-sm mt-4">
+            Scores use the final Yes/No outcome for this resolved question. Open-question consensus stays hidden until the protocol allows it.
           </div>
+          {q.resolution_source && (() => {
+            const raw = q.resolution_source.trim()
+            const isValidUrl = /^https?:\/\/\S+$/.test(raw)
+            if (isValidUrl) {
+              const href = normalizeUrl(raw)
+              return (
+                <div className="text-sm text-text-secondary mt-3">
+                  Resolution source:{' '}
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-accent-blue hover:underline break-all"
+                  >
+                    {href}
+                  </a>
+                </div>
+              )
+            }
+
+            return (
+              <div className="text-sm text-text-secondary mt-3">
+                Resolution source:{' '}
+                <span className="text-text-primary">{raw || 'Not specified'}</span>
+              </div>
+            )
+          })()}
         </div>
       )}
 
@@ -317,7 +356,7 @@ export default async function QuestionDetailPage({ params }: Props) {
       )}
 
       {/* Source */}
-      {q.resolution_source && (() => {
+      {!isResolved && q.resolution_source && (() => {
         const raw = q.resolution_source.trim()
         // Validate URL: must start with http(s):// and contain no spaces
         const isValidUrl = /^https?:\/\/\S+$/.test(raw)
@@ -347,7 +386,7 @@ export default async function QuestionDetailPage({ params }: Props) {
       })()}
 
       {/* Show fallback if resolution_source is null */}
-      {!q.resolution_source && (
+      {!isResolved && !q.resolution_source && (
         <div className="mb-8 text-sm text-text-secondary">
           Resolution source:{' '}
           <span className="text-text-primary">Not specified</span>
