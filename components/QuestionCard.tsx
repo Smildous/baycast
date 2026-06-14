@@ -3,8 +3,10 @@ import type { Question } from '@/lib/types'
 import CategoryBadge from './CategoryBadge'
 import Countdown from './Countdown'
 
+export type QuestionCardQuestion = Pick<Question, 'id' | 'title' | 'category' | 'closes_at' | 'status'>
+
 interface Props {
-  question: Question
+  question: QuestionCardQuestion
 }
 
 export default function QuestionCard({ question: q }: Props) {

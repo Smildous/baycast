@@ -21,14 +21,18 @@ export const dynamic = 'force-dynamic'
 const PAGE_SIZE = 10
 const CLOSING_SOON_WINDOW_DAYS = 14
 
-type PublicQuestion = Omit<Question, 'aggregate_probability' | 'forecasters_count' | 'has_forecasts'>
+// Public list cards stay BCP-neutral: no aggregate probability, exact counts,
+// zero/nonzero participation state, or raw settlement payload.
+type PublicQuestion = Pick<Question, 'id' | 'title' | 'category' | 'closes_at' | 'status'>
 
 function toPublicQuestion(question: Question): PublicQuestion {
-  const { aggregate_probability, forecasters_count, has_forecasts, ...publicQuestion } = question
-  void aggregate_probability
-  void forecasters_count
-  void has_forecasts
-  return publicQuestion
+  return {
+    id: question.id,
+    title: question.title,
+    category: question.category,
+    closes_at: question.closes_at,
+    status: question.status,
+  }
 }
 
 type SortOption = 'closing-soon' | 'newest' | 'most-active'
@@ -111,7 +115,7 @@ export default async function QuestionsPage({ searchParams }: Props) {
     .slice(0, 3)
 
   const showClosingSoon = statusFilter === 'open' && sortOption !== 'closing-soon' && closingSoonQuestions.length > 0
-  let closingSoonEnriched: Question[] = []
+  let closingSoonEnriched: PublicQuestion[] = []
 
   if (showClosingSoon) {
     closingSoonEnriched = closingSoonQuestions.map(toPublicQuestion)

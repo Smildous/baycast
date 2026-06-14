@@ -4,10 +4,10 @@ import { useState, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import QuestionCard from './QuestionCard'
 import EmptyState from './EmptyState'
-import type { Question } from '@/lib/types'
+import type { QuestionCardQuestion } from './QuestionCard'
 
 interface Props {
-  questions: Question[]
+  questions: QuestionCardQuestion[]
   emptyState?: {
     icon?: string
     title: string
