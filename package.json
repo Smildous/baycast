@@ -14,6 +14,7 @@
     "verify:first-resolution-readiness": "node scripts/first-resolution-readiness.mjs",
     "verify:first-settlement-evidence": "node scripts/first-settlement-evidence.mjs",
     "verify:public-bcp": "node scripts/verify-public-bcp-surfaces.mjs",
+    "verify:distribution-gate": "node scripts/verify-distribution-gate.mjs",
     "update:resolution-sources": "node scripts/supabase-admin.mjs update-resolution-sources",
     "test": "vitest run",
     "test:watch": "vitest"
