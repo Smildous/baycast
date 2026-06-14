@@ -158,7 +158,7 @@ export default async function HomePage() {
             ? [{ value: stats.users, label: 'Forecasters joined', icon: '👥' }]
             : [{ value: 'AI vs Human', label: 'Forecasting', icon: '🤖' }]
           ),
-          { value: '100%', label: 'Free to play', icon: '🎯' },
+          { value: 'Blind-first', label: 'Prediction polling', icon: '🎯' },
         ].map((s) => (
           <div key={s.label} className="bg-bg-surface border border-border-dark rounded-xl p-6 text-center hover:border-accent-green/20 transition-colors">
             <div className="text-2xl mb-2">{s.icon}</div>
