@@ -1,10 +1,11 @@
 # AQ-419, gate de déployabilité du 18 juin à 19h UTC
 
-Passage fait le 2026-06-18 à 19:03 UTC sur `/root/baycast-dev`.
+Passage fait le 2026-06-18 entre 19:03 et 19:07 UTC sur `/root/baycast-dev`.
 
-Base vérifiée : `c18716603cba30940015c978aa76597342772dbe`.
+Base vérifiée après rebase : `668169b` plus ce document AQ419.
 Branche : `main`.
 Synchronisation initiale : `git fetch origin && git pull --ff-only origin main`, dépôt déjà à jour.
+Synchronisation finale : `git pull --rebase origin main`, conflit add/add sur le doc AQ419 résolu en gardant ce nouveau gate, puis suite complète relancée verte.
 Runtime local : Node `v22.22.2`, npm `10.9.7`. Pas de bascule Node 20 nécessaire.
 
 ## Verdict
@@ -79,23 +80,23 @@ Exit code : 0
 
  RUN  v4.1.5 /root/baycast-dev
 
- ✓ __tests__/supabase-admin.test.ts (13 tests) 88ms
- ✓ __tests__/agent-forecast-route.test.ts (1 test) 96ms
- ✓ __tests__/utils.test.ts (37 tests) 39ms
- ✓ __tests__/ai-forecaster.test.ts (7 tests) 19ms
- ✓ __tests__/news-context.test.ts (5 tests) 12ms
- ✓ __tests__/onboarding.test.ts (16 tests) 10ms
- ✓ __tests__/badges.test.ts (19 tests) 13ms
- ✓ __tests__/resolution.test.ts (2 tests) 6ms
+ ✓ __tests__/supabase-admin.test.ts (13 tests) 93ms
+ ✓ __tests__/agent-forecast-route.test.ts (1 test) 66ms
+ ✓ __tests__/utils.test.ts (37 tests) 29ms
+ ✓ __tests__/news-context.test.ts (5 tests) 10ms
  ✓ __tests__/signup-success.test.ts (3 tests) 5ms
- ✓ __tests__/forecaster-count-visibility.test.ts (4 tests) 5ms
+ ✓ __tests__/badges.test.ts (19 tests) 14ms
+ ✓ __tests__/onboarding.test.ts (16 tests) 9ms
+ ✓ __tests__/ai-forecaster.test.ts (7 tests) 8ms
  ✓ __tests__/activity-copy.test.ts (2 tests) 9ms
- ✓ __tests__/setup.test.ts (1 test) 7ms
+ ✓ __tests__/forecaster-count-visibility.test.ts (4 tests) 10ms
+ ✓ __tests__/resolution.test.ts (2 tests) 4ms
+ ✓ __tests__/setup.test.ts (1 test) 4ms
 
  Test Files  12 passed (12)
       Tests  110 passed (110)
-   Start at  19:01:43
-   Duration  14.01s (transform 371ms, setup 746ms, import 400ms, tests 309ms, environment 10.48s)
+   Start at  19:06:33
+   Duration  13.18s (transform 343ms, setup 813ms, import 386ms, tests 260ms, environment 9.74s)
 ```
 
 ### `rm -rf .next && npm run build`
