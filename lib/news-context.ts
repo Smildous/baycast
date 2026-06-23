@@ -183,6 +183,22 @@ const CONTEXT_LINKS: NewsContextEntry[] = [
     keywords: ['league', 'playoff', 'championship', 'world cup', 'team', 'match'],
   },
   {
+    title: 'FIFA World Cup 2026',
+    source: 'FIFA',
+    url: 'https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026',
+    summary: 'Official tournament hub for fixtures, match centre links, and final scores.',
+    categories: ['Sports'],
+    keywords: ['fifa', 'world cup', 'opening match'],
+  },
+  {
+    title: 'OpenAI ChatGPT release notes',
+    source: 'OpenAI Help Center',
+    url: 'https://help.openai.com/en/articles/6825453-chatgpt-release-notes',
+    summary: 'Official ChatGPT release notes for public product launches and model updates.',
+    categories: ['AI', 'Technology'],
+    keywords: ['openai', 'chatgpt', 'release notes', 'video generation model'],
+  },
+  {
     title: 'Official Olympic Games news',
     source: 'Olympics',
     url: 'https://olympics.com/en/news/',
@@ -219,6 +235,11 @@ const CONTEXT_LINKS: NewsContextEntry[] = [
 const MAX_CONTEXT_LINKS = 3
 const MIN_CONTEXT_LINKS = 2
 const APPLE_CONTEXT_URLS = new Set(['https://developer.apple.com/wwdc26/', 'https://www.apple.com/newsroom/'])
+const FIFA_CONTEXT_URLS = new Set(['https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026'])
+const OPENAI_CONTEXT_URLS = new Set([
+  'https://openai.com/news/',
+  'https://help.openai.com/en/articles/6825453-chatgpt-release-notes',
+])
 
 function normalizeText(value: string | null | undefined): string {
   return (value ?? '').toLowerCase()
@@ -232,6 +253,23 @@ function isAppleHardwareQuestion(haystack: string): boolean {
   return haystack.includes('apple') || haystack.includes('mac pro') || haystack.includes('wwdc')
 }
 
+function isFifaWorldCupQuestion(haystack: string): boolean {
+  return haystack.includes('fifa') || haystack.includes('world cup') || haystack.includes('opening match')
+}
+
+function isOpenAiReleaseQuestion(haystack: string): boolean {
+  return haystack.includes('openai') || haystack.includes('video generation model')
+}
+
+function linksFor(urls: Set<string>): NewsContextLink[] {
+  return CONTEXT_LINKS.filter((entry) => urls.has(entry.url)).map((entry) => ({
+    title: entry.title,
+    source: entry.source,
+    url: entry.url,
+    summary: entry.summary,
+  }))
+}
+
 export function getQuestionNewsContext(input: {
   title: string
   category: string
@@ -241,12 +279,15 @@ export function getQuestionNewsContext(input: {
   const haystack = `${normalizeText(input.title)} ${normalizeText(input.description)}`
 
   if (isAppleHardwareQuestion(haystack)) {
-    return CONTEXT_LINKS.filter((entry) => APPLE_CONTEXT_URLS.has(entry.url)).map((entry) => ({
-      title: entry.title,
-      source: entry.source,
-      url: entry.url,
-      summary: entry.summary,
-    }))
+    return linksFor(APPLE_CONTEXT_URLS)
+  }
+
+  if (isFifaWorldCupQuestion(haystack)) {
+    return linksFor(FIFA_CONTEXT_URLS)
+  }
+
+  if (isOpenAiReleaseQuestion(haystack)) {
+    return linksFor(OPENAI_CONTEXT_URLS)
   }
 
   const matches = CONTEXT_LINKS.filter((entry) => hasKeyword(entry, haystack))

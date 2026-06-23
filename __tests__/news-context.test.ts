@@ -38,6 +38,34 @@ describe('getQuestionNewsContext', () => {
     expect(JSON.stringify(links)).not.toContain('OpenAI')
   })
 
+  it('uses only FIFA for the World Cup opening match context', () => {
+    const links = getQuestionNewsContext({
+      title: 'Will the 2026 FIFA World Cup opening match have at least three total goals?',
+      category: 'Sports',
+    })
+
+    expect(links.map((link) => link.url)).toEqual([
+      'https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026',
+    ])
+    expect(JSON.stringify(links)).not.toContain('AI.gov')
+    expect(JSON.stringify(links)).not.toContain('The Athletic')
+    expect(JSON.stringify(links)).not.toContain('ESPN')
+  })
+
+  it('uses only OpenAI official sources for OpenAI release context', () => {
+    const links = getQuestionNewsContext({
+      title: 'Will OpenAI release a new public video generation model before July 1, 2026?',
+      category: 'Technology',
+    })
+
+    expect(links.map((link) => link.url)).toEqual([
+      'https://openai.com/news/',
+      'https://help.openai.com/en/articles/6825453-chatgpt-release-notes',
+    ])
+    expect(JSON.stringify(links)).not.toContain('NIST')
+    expect(JSON.stringify(links)).not.toContain('NASA')
+  })
+
   it('returns an empty list when no safe static context exists', () => {
     const links = getQuestionNewsContext({
       title: 'Will the local demo day finish before lunch?',
