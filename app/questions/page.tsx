@@ -106,7 +106,6 @@ export default async function QuestionsPage({ searchParams }: Props) {
   const filteredOpenQuestions = normalizedCategory
     ? openQuestions.filter(q => normalizeCategory(q.category) === normalizedCategory)
     : openQuestions
-  const openCount = filteredOpenQuestions.length
 
   // "Closing Soon" should only include genuinely near-term questions.
   const closingSoonQuestions = filteredOpenQuestions
@@ -138,10 +137,15 @@ export default async function QuestionsPage({ searchParams }: Props) {
         return new Date(a.closes_at).getTime() - new Date(b.closes_at).getTime()
     }
   })
-  const headerOpenCount = statusFilter === 'open' ? sorted.length : openCount
+  const statusLabel = statusFilter === 'resolved'
+    ? 'resolved'
+    : statusFilter === 'closed'
+      ? 'closed'
+      : 'open'
+  const headerQuestionCount = statusFilter === 'open' ? sorted.length : filtered.length
   const headerCountLabel = sortOption === 'closing-soon' && statusFilter === 'open'
-    ? `${headerOpenCount} closing soon`
-    : `${headerOpenCount} open`
+    ? `${headerQuestionCount} closing soon`
+    : `${headerQuestionCount} ${statusLabel}`
 
   // Exclude questions already shown in the Closing Soon section from the main list
   const closingSoonIds = new Set(closingSoonQuestions.map(q => q.id))
