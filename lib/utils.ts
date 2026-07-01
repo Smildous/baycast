@@ -28,13 +28,17 @@ export function daysRemaining(closesAt: string): number {
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
 }
 
+export function hasQuestionClosed(closesAt: string): boolean {
+  return new Date(closesAt).getTime() <= Date.now()
+}
+
 /**
  * Returns true when a question closes within the next N days.
  * Past dates are never considered "closing soon".
  */
 export function isClosingSoon(closesAt: string, windowDays = 14): boolean {
   const diff = new Date(closesAt).getTime() - Date.now()
-  if (diff < 0) return false
+  if (hasQuestionClosed(closesAt)) return false
 
   const windowMs = windowDays * 24 * 60 * 60 * 1000
   return diff <= windowMs
@@ -80,7 +84,7 @@ export async function autoCloseExpiredQuestions(
     .from('questions')
     .update({ status: 'closed' })
     .eq('status', 'open')
-    .lt('closes_at', new Date().toISOString())
+    .lte('closes_at', new Date().toISOString())
 }
 
 /**

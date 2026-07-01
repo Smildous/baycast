@@ -1,4 +1,4 @@
-import { daysRemaining } from '@/lib/utils'
+import { daysRemaining, hasQuestionClosed } from '@/lib/utils'
 import type { QuestionStatus } from '@/lib/types'
 
 interface Props {
@@ -15,6 +15,14 @@ export default function Countdown({ closesAt, status }: Props) {
     )
   }
   if (status === 'closed') {
+    return (
+      <span className="text-xs px-2 py-0.5 rounded-full bg-border-dark text-text-secondary border border-border-dark">
+        Closed
+      </span>
+    )
+  }
+
+  if (hasQuestionClosed(closesAt)) {
     return (
       <span className="text-xs px-2 py-0.5 rounded-full bg-border-dark text-text-secondary border border-border-dark">
         Closed
