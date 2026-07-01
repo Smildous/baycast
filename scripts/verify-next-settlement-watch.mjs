@@ -11,13 +11,13 @@ const CANDIDATES = [
   {
     label: 'FIFA opening match at least three goals',
     titleSubstring: '2026 FIFA World Cup opening match',
-    expectedStatus: 'open',
+    expectedStatus: 'resolved',
     expectedClosesAt: '2026-06-30T23:59:59+00:00',
   },
   {
     label: 'OpenAI public video generation model before July 1 2026',
     titleSubstring: 'OpenAI release a new public video generation model before July 1, 2026',
-    expectedStatus: 'open',
+    expectedStatus: 'resolved',
     expectedClosesAt: '2026-06-30T23:59:59+00:00',
   },
   {
