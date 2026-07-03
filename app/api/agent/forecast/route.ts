@@ -53,8 +53,16 @@ interface ForecastResponse {
 const DEFAULT_MODEL = 'gpt-4o'
 const DEFAULT_BASE_URL = 'https://api.openai.com/v1'
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+const QUESTION_COLUMNS_WITH_BLIND_UNTIL = 'id,title,description,category,status,question_type,resolution_source,blind_until,closes_at'
+const QUESTION_COLUMNS_DRY_RUN_FALLBACK = 'id,title,description,category,status,question_type,resolution_source,closes_at'
 
 type SupabaseServiceClient = any
+
+type QuestionReadResult = {
+  question: QuestionForAgent | null
+  error: { message?: string; code?: string } | null
+  usedSyntheticBlindUntil: boolean
+}
 
 function getEnv(key: string, fallback: string): string {
   return process.env[key] || fallback
@@ -79,6 +87,56 @@ function createServiceClient(): SupabaseServiceClient {
       persistSession: false,
     },
   })
+}
+
+function isMissingBlindUntilError(error: { message?: string; code?: string } | null | undefined): boolean {
+  if (!error) return false
+  const message = error.message?.toLowerCase() || ''
+  return error.code === '42703' && message.includes('blind_until')
+}
+
+function synthesizeDryRunBlindUntil(question: Record<string, unknown>, now = new Date()): string {
+  const closesAt = typeof question.closes_at === 'string' ? new Date(question.closes_at) : null
+  if (!closesAt || Number.isNaN(closesAt.getTime())) {
+    throw new Error('Question is missing closes_at')
+  }
+  if (closesAt.getTime() <= now.getTime()) {
+    throw new Error('Question blind phase is not active')
+  }
+
+  const syntheticTime = now.getTime() + Math.max(1, Math.floor((closesAt.getTime() - now.getTime()) / 2))
+  return new Date(syntheticTime).toISOString()
+}
+
+async function readQuestionForAgent(supabase: SupabaseServiceClient, questionId: string, dryRun: boolean): Promise<QuestionReadResult> {
+  const { data: question, error: questionError } = await supabase
+    .from('questions')
+    .select(QUESTION_COLUMNS_WITH_BLIND_UNTIL)
+    .eq('id', questionId)
+    .single()
+
+  if (!questionError || !isMissingBlindUntilError(questionError) || !dryRun) {
+    return { question: question as QuestionForAgent | null, error: questionError, usedSyntheticBlindUntil: false }
+  }
+
+  const { data: fallbackQuestion, error: fallbackError } = await supabase
+    .from('questions')
+    .select(QUESTION_COLUMNS_DRY_RUN_FALLBACK)
+    .eq('id', questionId)
+    .single()
+
+  if (fallbackError || !fallbackQuestion) {
+    return { question: null, error: fallbackError, usedSyntheticBlindUntil: false }
+  }
+
+  return {
+    question: {
+      ...(fallbackQuestion as Record<string, unknown>),
+      blind_until: synthesizeDryRunBlindUntil(fallbackQuestion as Record<string, unknown>),
+    } as QuestionForAgent,
+    error: null,
+    usedSyntheticBlindUntil: true,
+  }
 }
 
 async function callLLM(
@@ -193,13 +251,12 @@ export async function POST(request: Request): Promise<NextResponse<ForecastRespo
     const agent = getAgentPersona(body.agent_id)
     const supabase = createServiceClient()
 
-    const { data: question, error: questionError } = await supabase
-      .from('questions')
-      .select('id,title,description,category,status,question_type,resolution_source,blind_until,closes_at')
-      .eq('id', question_id)
-      .single()
+    const { question, error: questionError, usedSyntheticBlindUntil } = await readQuestionForAgent(supabase, question_id, Boolean(dry_run))
 
     if (questionError || !question) {
+      if (isMissingBlindUntilError(questionError)) {
+        return NextResponse.json({ ok: false, error: 'questions.blind_until is unavailable' }, { status: 500 })
+      }
       return NextResponse.json({ ok: false, error: 'Question not found' }, { status: 404 })
     }
 
@@ -213,6 +270,7 @@ export async function POST(request: Request): Promise<NextResponse<ForecastRespo
       return NextResponse.json({
         ok: true,
         dry_run: true,
+        synthetic_blind_until: usedSyntheticBlindUntil,
         agent: { id: agent.id, display_name: agent.displayName, version: agent.version },
         forecast: { question_id, user_id: `dry-run:${agent.id}`, prediction },
       })
