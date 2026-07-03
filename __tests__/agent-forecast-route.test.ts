@@ -8,7 +8,13 @@ vi.mock('@supabase/supabase-js', () => ({
 
 const questionId = '123e4567-e89b-12d3-a456-426614174000'
 
-function createQuestionQuery({ row, error }: { row?: Record<string, unknown>; error?: Record<string, unknown> | null } = {}) {
+function createQuestionQuery({
+  row,
+  error,
+}: {
+  row?: Record<string, unknown> | null
+  error?: Record<string, unknown> | null
+} = {}) {
   const query = {
     select: vi.fn(() => query),
     eq: vi.fn(() => query),
