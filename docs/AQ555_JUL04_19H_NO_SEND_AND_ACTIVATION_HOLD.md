@@ -70,7 +70,7 @@ No consensus claim. No betting frame. Held, not posted.
 
 ## Activation gate before any send
 
-Before anyone uses this copy, AQ-546 must be cleared, the public BCP page must be checked clean, X must be authenticated for X use, and the private warm target list must have complete permissioned rows. A human owner still needs to approve the exact copy, exact channel, and exact target set.
+Before this copy is used, AQ-546 must be cleared, the public BCP page must be checked clean, X must be authenticated for X use, and the private warm target list must have complete permissioned rows. Odin can choose the exact copy, channel, and target set once those gates are true.
 
 If any part is missing, stop. Keep this document as a prepared no-send pack.
 
