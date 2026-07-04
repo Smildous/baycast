@@ -16,6 +16,7 @@
     "verify:public-bcp": "node scripts/verify-public-bcp-surfaces.mjs",
     "verify:distribution-gate": "node scripts/verify-distribution-gate.mjs",
     "verify:next-settlement-watch": "node scripts/verify-next-settlement-watch.mjs",
+    "verify:agent-secret-gate": "node scripts/verify-agent-secret-gate.mjs",
     "update:resolution-sources": "node scripts/supabase-admin.mjs update-resolution-sources",
     "test": "vitest run",
     "test:watch": "vitest"
