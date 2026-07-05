@@ -2,7 +2,7 @@
 
 Verdict: NOTHING SENT.
 
-Rien n'a été publié, posté ou envoyé. Ce pack est prêt pour validation, pas pour diffusion tant que le gate reste fermé.
+Rien n'a été publié, posté ou envoyé. Ce pack est prêt à rester en attente, pas à partir tant que le gate reste fermé.
 
 ## Gate de distribution public
 
