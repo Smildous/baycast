@@ -75,11 +75,12 @@ Manual production route check:
 | Route | HTTP | Title | Internal markers | Exact forecaster count copy | BCP strings seen |
 | --- | ---: | --- | --- | --- | --- |
 | `/` | 200 | `Baycast - Predict Real Events` | none | no | `Lock your call before the crowd can shape it`, `Blind-first`, `Prediction polling` |
-| `/questions` | 200 | `Browse Prediction Questions — Baycast` | none | no | `Lock your call before the crowd can shape it` |
-| `/questions?status=resolved` | 200 | `Browse Prediction Questions — Baycast` | none | no | none from the checked open-question BCP string list |
-| `/questions/5cc9fe74-5306-49d9-bec3-251ad276a779` | 200 | `Will Microsoft announce a new first-party Xbox handheld before August 1, 2026? - Baycast` | none | no | none from the checked open-question BCP string list |
-| `/leaderboard` | 200 | `Forecaster Leaderboard — Baycast` | none | no | none from the checked open-question BCP string list |
-| `/activity` | 200 | `Recent Forecasting Activity — Baycast` | none | no | none from the checked open-question BCP string list |
+| `/questions` | 200 | browse questions title | none | no | `Lock your call before the crowd can shape it` |
+| `/questions?status=resolved` | 200 | browse questions title | none | no | none from the checked open-question BCP string list |
+| `/questions?sort=closing-soon` | 200 | closing soon title | none | no | none from the checked open-question BCP string list |
+| `/questions/5cc9fe74-5306-49d9-bec3-251ad276a779` | 200 | Xbox handheld detail title | none | no | none from the checked open-question BCP string list |
+| `/leaderboard` | 200 | leaderboard title | none | no | none from the checked open-question BCP string list |
+| `/activity` | 200 | activity title | none | no | none from the checked open-question BCP string list |
 
 Markers checked on every route above: `aggregate_probability`, `forecasters_count`, `forecastCount`, `fcCount`, plus exact count copy matching `number forecaster(s)`.
 
